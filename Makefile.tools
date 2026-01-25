@@ -1,0 +1,22 @@
+# Compiler and flags
+CXX = g++
+CXXFLAGS = -g -O2 -std=c++17 \
+           -IVST_SDK_2.4/pluginterfaces/vst2.x
+
+# Tools and their specific libraries
+TOOLS = simple_host_gui simple_host
+
+# Tool-specific libraries
+simple_host_gui_LDLIBS = -ldl -lX11
+simple_host_LDLIBS = -ldl
+
+# Default target: build all tools
+all: $(TOOLS)
+
+# Pattern rule: compile each tool
+%: tools/%.cpp
+	$(CXX) $(CXXFLAGS) $< -o $@ $($@_LDLIBS)
+
+# Clean
+clean:
+	rm -f $(TOOLS)

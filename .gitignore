@@ -2,3 +2,5 @@ sources/
 build/
 VST_SDK_2.4/
 SN*.so
+simple_host
+simple_host_gui
