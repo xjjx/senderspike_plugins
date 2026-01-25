@@ -1,0 +1,43 @@
+name: Build Plugins and Tools
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+#    - name: Get Sender Spike sources
+#      run: curl -o sources ..
+
+#    - name: Gen Glues Files (actually I'm not sure is this needed :)
+#      run: ./gen_glue.sh
+
+    - name: Get VST 2.4 SDK
+      run: git clone https://github.com/R-Tur/VST_SDK_2.4.git
+
+#    - name: Install dependencies
+#      run: sudo apt-get update && sudo apt-get install -y libx11-dev
+
+    - name: Build NoGUI Plugins
+      run: make -f Makefile.nogui
+
+#    - name: Build Tools
+#      run: make -f Makefile.tools all
+
+    - name: List build artifacts
+      run: ls -l build tools
+
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: plugins-and-tools
+        path: |
+          SN*.so
