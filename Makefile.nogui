@@ -1,0 +1,52 @@
+# List of plugins
+PLUGINS = SN01 SN03 SN04 SN05 SN06
+
+# Compiler and flags
+CXX = g++
+CXXFLAGS = -O2 -fPIC -std=c++17 \
+	-march=native \
+	-funroll-loops \
+	-finline-functions \
+    -D__cdecl= \
+    -DSNFX_NO_SIGNAL_DEFAULT_GUI \
+    -Isources \
+    -Isources/SN01 -Isources/SN03 -Isources/SN04 -Isources/SN05 -Isources/SN06 \
+    -IVST_SDK_2.4 \
+    -IVST_SDK_2.4/public.sdk/source/vst2.x
+
+LDFLAGS = -shared
+
+# Common sources
+COMMON_SOURCES = sources/sn_core.cpp \
+                 sources/sn_vsti.cpp \
+                 VST_SDK_2.4/public.sdk/source/vst2.x/audioeffect.cpp \
+                 VST_SDK_2.4/public.sdk/source/vst2.x/audioeffectx.cpp
+
+# Directory for object files
+OBJDIR = build
+
+# Default target: build all plugins
+all: $(PLUGINS:%=%.so)
+
+# Rule to build a plugin
+%.so:
+	@echo "Building $@ ..."
+	mkdir -p $(OBJDIR)/$*
+    
+	# Compile common sources
+	$(foreach file,$(COMMON_SOURCES), \
+	    $(CXX) $(CXXFLAGS) -c $(file) -o $(OBJDIR)/$*/$(notdir $(file:.cpp=.o));)
+    
+	# Compile plugin "*e.cpp" sources
+	$(foreach file,$(wildcard sources/$*/*e.cpp), \
+	    $(CXX) $(CXXFLAGS) -c $(file) -o $(OBJDIR)/$*/$(notdir $(file:.cpp=.o));)
+    
+	# Compile plugin-specific vst_linux_entry.cpp
+	$(CXX) $(CXXFLAGS) -c sources/$*/vst_linux_entry.cpp -o $(OBJDIR)/$*/vst_linux_entry.o
+    
+	# Link all objects into .so
+	$(CXX) $(LDFLAGS) -o $@ $(OBJDIR)/$*/*.o
+
+# Clean everything
+clean:
+	rm -rf $(OBJDIR) $(PLUGINS:%=%.so)
