@@ -111,7 +111,7 @@ public:
 
 //------------------------------------------------------------------------------------
 
-class SignalNoiseVUMeterGUI : public AEffGUIEditor, public CControlListener
+class SignalNoiseVUMeterGUI : public AEffGUIEditor, public IControlListener
 {
 private:
 	SignalNoiseVU*			_vucL;	// VU meter L (top)

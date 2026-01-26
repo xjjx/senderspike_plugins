@@ -80,6 +80,7 @@ public:
 //states
 	virtual void setSampleRate(float fs);
 	virtual bool setSpeakerArrangement(VstSpeakerArrangement* in, VstSpeakerArrangement* out);
+    AEffect* getAeffect() { return &cEffect; }
 };
 
 //------------------------------------------------------------------------------------

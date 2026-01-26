@@ -15,6 +15,7 @@
 #include <aeffguieditor.h>
 #endif //SNFX_NO_SIGNAL_DEFAULT_GUI
 
+using VSTGUI::AEffGUIEditor;
 
 //------------------------------------------------------------------------------------
 // class SignalNoiseFX

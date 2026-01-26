@@ -8,10 +8,9 @@
 //
 //------------------------------------------------------------------------------------
 
-
+#include <iostream>
 #include <math.h>
 #include <sn_02g.h>
-
 
 //------------------------------------------------------------------------------------
 // factory
@@ -39,7 +38,11 @@ SignalNoiseVUMeter::SignalNoiseVUMeter(audioMasterCallback cb) : SignalNoiseFX(c
 	canDoubleReplacing(true);
 	programsAreChunks(true);
 
+	std::cout << "Debug 1:" << std::endl;
+
 	editor = new SignalNoiseVUMeterGUI(this);
+
+	std::cout << "Debug 2:" << std::endl;
 }
 
 //------------------------------------------------------------------------------------
@@ -291,11 +294,11 @@ void SignalNoiseVUMeterGUI::toggleUserInterface()
 	bool xl = effect->getParameter(SNE_XTND) > 0.5;
 	long id = xl ? 200 : 100;
 
-	CBitmap* backg = new CBitmap(id+1);	// background
-	CBitmap* vustd = new CBitmap(id+2);	// std needle
-	CBitmap* vured = new CBitmap(id+3);	// red needle
-	CBitmap* strip = new CBitmap(id+8);	// tape strip
-	CBitmap* pkled = new CBitmap(id+9);	// peak led
+	CBitmap* backg = new CBitmap(VSTGUI::CResourceDescription(id+1));	// background
+	CBitmap* vustd = new CBitmap(VSTGUI::CResourceDescription(id+2));	// std needle
+	CBitmap* vured = new CBitmap(VSTGUI::CResourceDescription(id+3));	// red needle
+	CBitmap* strip = new CBitmap(VSTGUI::CResourceDescription(id+8));	// tape strip
+	CBitmap* pkled = new CBitmap(VSTGUI::CResourceDescription(id+9));	// peak led
 
 	// frame -----------------------------------------------
 
@@ -379,20 +382,20 @@ bool SignalNoiseVUMeterGUI::open(void *ptr)
 	long id = xl ? 200 : 100;
 
 	CPoint pt(0, 0);
-	CBitmap* backg = new CBitmap(id+1);	// background
-	CBitmap* vustd = new CBitmap(id+2);	// std needle
-	CBitmap* vured = new CBitmap(id+3);	// red needle
-	CBitmap* mode1 = new CBitmap(104);	// headroom
-	CBitmap* mode2 = new CBitmap(105);	// mode
-	CBitmap* mode3 = new CBitmap(106);	// hold
-	CBitmap* dummy = new CBitmap(107);	// GUI switch
-	CBitmap* strip = new CBitmap(id+8);	// tape strip
-	CBitmap* pkled = new CBitmap(id+9);	// peak led
+	CBitmap* backg = new CBitmap(VSTGUI::CResourceDescription(id+1));	// background
+	CBitmap* vustd = new CBitmap(VSTGUI::CResourceDescription(id+2));	// std needle
+	CBitmap* vured = new CBitmap(VSTGUI::CResourceDescription(id+3));	// red needle
+	CBitmap* mode1 = new CBitmap(VSTGUI::CResourceDescription(104));	// headroom
+	CBitmap* mode2 = new CBitmap(VSTGUI::CResourceDescription(105));	// mode
+	CBitmap* mode3 = new CBitmap(VSTGUI::CResourceDescription(106));	// hold
+	CBitmap* dummy = new CBitmap(VSTGUI::CResourceDescription(107));	// GUI switch
+	CBitmap* strip = new CBitmap(VSTGUI::CResourceDescription(id+8));	// tape strip
+	CBitmap* pkled = new CBitmap(VSTGUI::CResourceDescription(id+9));	// peak led
 
 	// frame -----------------------------------------------
 
 	CRect rc(0, 0, backg->getWidth(), backg->getHeight());
-	CFrame* frm = new CFrame(rc, ptr, this);
+	CFrame* frm = new CFrame(rc, this);
 	frm->setBackground(backg);
 
 	rect.right  = (short)backg->getWidth();
@@ -450,12 +453,14 @@ bool SignalNoiseVUMeterGUI::open(void *ptr)
 
 	// name ------------------------------------------------
 
-	CColor clr = {0};
+	//CColor clr = {0};
+    VSTGUI::CColor clr; // black transparent
 	if(xl)	rc(20, 195, 20 + SN02_TAPE_Wx, 195 + SN02_TAPE_Hx);
 	else	rc(20, 153, 20 + SN02_TAPE_Ws, 153 + SN02_TAPE_Hs);
 	_name = new SignalNoiseUserLabel(rc, this, IDC_NAME);
 	_name->loadFontCustom(IDR_FONT_NAME, xl ? 23 : 16, 0);
-	_name->setTextEditConvert(limitStringLength);
+    // TODO
+//	_name->setTextEditConvert(limitStringLength);
 	_name->setBackground(strip);
 	_name->setFontColor(clr);
 	frm->addView(_name);
@@ -526,8 +531,9 @@ void SignalNoiseVUMeterGUI::close()
 {
 	_open = 0;
 
-	delete frame; // deletes all attached views
-	frame = 0;
+	//delete frame; // deletes all attached views
+    frame = nullptr; // don't delete manually
+//	frame = 0;
 	_vucL = 0;
 	_vucR = 0;
 	_room = 0;
@@ -555,30 +561,38 @@ void SignalNoiseVUMeterGUI::setParameter(VstInt32 at, float v)
 }
 
 //------------------------------------------------------------------------------------
-
-void SignalNoiseVUMeterGUI::valueChanged(CControl* ctrl)
+void SignalNoiseVUMeterGUI::valueChanged(VSTGUI::CControl* ctrl)
 {
-	if(_open == 0)
-		return;
+    if (!_open || !ctrl)
+        return;
 
-	char* txt = 0;
-	long tag = ctrl->getTag();
-	switch(tag)
-	{
-	case SNE_ROOM:
-	case SNE_MODE:
-	case SNE_HOLD:
-	case SNE_XTND:
-		effect->setParameterAutomated(tag, ctrl->getValue());
-		ctrl->setDirty();
-		break;
-	case IDC_NAME:
-		txt = ((SignalNoiseVUMeter*)effect)->getInstName();
-		_name->getText(txt);
-		_name->setDrawBackground(txt && strlen(txt));
-		break;
-	}
+    const int32_t tag = ctrl->getTag();
+
+    switch(tag)
+    {
+        case SNE_ROOM:
+        case SNE_MODE:
+        case SNE_HOLD:
+        case SNE_XTND:
+            effect->setParameterAutomated(tag, ctrl->getValue());
+            ctrl->setDirty();
+            break;
+
+        case IDC_NAME:
+        {
+            // Get plugin instance name
+            VSTGUI::UTF8String ustr = _name->getText(); // getText() returns UTF8String
+
+            // Optionally convert to std::string
+            std::string nameStr(ustr.data(), ustr.length());
+
+            // Set background drawing only if name is not empty
+            _name->setDrawBackground(!nameStr.empty());
+            break;
+        }
+    }
 }
+
 
 //------------------------------------------------------------------------------------
 
@@ -620,7 +634,7 @@ void SignalNoiseVUMeterGUI::setupMeterUseHold(bool on)
 		return;
 	
 	long id = effect->getParameter(SNE_XTND) > 0.5 ? 200 : 100;
-	CBitmap* map = new CBitmap(id+3);
+	CBitmap* map = new CBitmap(VSTGUI::CResourceDescription(id+3));
 
 	_vucL->setPeakBitmap(on ? map : 0);
 	_vucR->setPeakBitmap(on ? map : 0);

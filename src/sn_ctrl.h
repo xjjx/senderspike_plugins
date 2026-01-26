@@ -13,15 +13,53 @@
 #define _SN_CTRL_H
 
 
-#include <audioeffectx.h>
-#include <audioeffect.h>
-
+#include <aeffect.h>
+#include <aeffectx.h>
 
 //------------------------------------------------------------------------------------
+
+// Avoid VSTGUI redefinition of VstKeyCode
+#define VSTGUI_NO_VSTKEYCODE
 
 #include <sn_core.h>
 #include <vstgui.h>
 #include <aeffguieditor.h>
+#include "vstgui/lib/controls/icontrollistener.h"
+#include "vstgui/lib/controls/cswitch.h"
+
+// force_vstgui_rtti.cpp
+#include "vstgui/lib/viewlayouter/gridlayouter.h"
+
+namespace {
+    // Create a dummy function that uses GridLayouter
+    void* forceGridLayouterRTTI() {
+        // Create a local object (this is enough to emit RTTI)
+        VSTGUI::GridLayouter gl(VSTGUI::GridLayoutProperties{});
+        return &gl;
+    }
+
+    // Make sure the function is referenced so the compiler doesn't optimize it out
+    volatile void* force_gridlayouter_ref = forceGridLayouterRTTI();
+}
+
+// Bring VSTGUI types into scope
+using VSTGUI::IControlListener;
+using VSTGUI::CBaseObject;
+using VSTGUI::CTextEdit;
+using VSTGUI::CPoint;
+using VSTGUI::CRect;
+using VSTGUI::CCoord;
+using VSTGUI::CBitmap;
+using VSTGUI::CDrawContext;
+using VSTGUI::CHoriTxtAlign;
+using VSTGUI::CControl;
+using VSTGUI::AEffGUIEditor;
+using VSTGUI::CAnimKnob;
+using VSTGUI::CHorizontalSwitch;
+using VSTGUI::COnOffButton;
+using VSTGUI::CFrame;
+using VSTGUI::CColor;
+
 
 //------------------------------------------------------------------------------------
 // GUI helpers
@@ -157,6 +195,7 @@ private:
 	dword	_hms;	// peak hold time in ms
 	dword	_hst;	// peak hold start time
 	bool	_pks;	// is peaking
+	VSTGUI::CBitmap* pBackground;
 public:
 //create & destroy
 	SignalNoisePeakLed(const CRect& rc, CBitmap* map);
@@ -181,6 +220,7 @@ private:
 	bool	_on;	// is on
 	bool	_bk;	// is blinking
 	bool	_bs;	// blinking state
+	VSTGUI::CBitmap* pBackground;
 public:
 //create & destroy
 	SignalNoiseOnOffLed(const CRect& rc, CBitmap* map);
@@ -210,10 +250,11 @@ private:
 	void clrFontCustom();
 	bool setFontCustom(CDrawContext* ctx);
 	void drawStringCustom(CDrawContext* ctx, const char *str, 
-		const CRect &rc, const short opq, const CHoriTxtAlign ha);
+	const CRect &rc, const short opq, const CHoriTxtAlign ha);
+	VSTGUI::CBitmap* pBackground;
 public:
 //create & destroy
-	SignalNoiseUserLabel(const CRect& rc, CControlListener* lst, long tag);
+	SignalNoiseUserLabel(const CRect& rc, IControlListener* lst, long tag);
 	virtual ~SignalNoiseUserLabel();	
 //from SDK
 	virtual void draw(CDrawContext* ctx);
@@ -246,7 +287,7 @@ public:
 	virtual ~SignalNoiseArcSwitch();	
 //from SDK
 	virtual void draw(CDrawContext* ctx);
-//	virtual void mouse(CDrawContext* ctx, CPoint& pos, long btn = -1);
+	virtual void mouse(CDrawContext* ctx, CPoint& pos, long btn = -1);
 //vtable
 	CLASS_METHODS(SignalNoiseArcSwitch, CControl)
 };
@@ -261,7 +302,7 @@ private:
 	float _rng;	// range (pixels)
 public:
 //create & destroy
-	SignalNoiseKnob(const CRect& rc, CControlListener* lst, 
+	SignalNoiseKnob(const CRect& rc, IControlListener* lst, 
 		long tag, long nf, CCoord h, CBitmap* map, CPoint& pt);
 	virtual ~SignalNoiseKnob();	
 //from SDK
@@ -290,7 +331,7 @@ private:
 	float				_abs;	// range (absolute)
 public:
 //create & destroy
-	SignalNoiseKnobP(const CRect& rc, CControlListener* lst, 
+	SignalNoiseKnobP(const CRect& rc, IControlListener* lst, 
 		long tag, long nf, CCoord h, CBitmap* map, CPoint& pt);
 	virtual ~SignalNoiseKnobP();	
 //from SDK

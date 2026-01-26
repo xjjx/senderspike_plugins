@@ -12,9 +12,14 @@ CXXFLAGS = -O2 -fPIC -std=c++17 \
            -IVST_SDK_2.4 \
            -IVST_SDK_2.4/public.sdk/source/vst2.x \
            -IVST_SDK_2.4/pluginterfaces/vst2.x \
-           -Ivstgui
+		   -Ivstgui \
+           -Ivstgui/vstgui \
+		   -Ivstgui/vstgui/plugin-bindings
 
 LDFLAGS = -shared -lpthread
+
+PKG_CFLAGS := $(shell pkg-config --cflags pangocairo xcb xcb-render xcb-shm xcb-xfixes xcb-util xcb-cursor xkbcommon xkbcommon-x11)
+PKG_LIBS := $(shell pkg-config --libs pangocairo xcb xcb-render xcb-shm xcb-xfixes xcb-util xcb-cursor xkbcommon xkbcommon-x11)
 
 # Common sources
 COMMON_SOURCES = src/sn_core.cpp \
@@ -22,12 +27,13 @@ COMMON_SOURCES = src/sn_core.cpp \
                  src/sn_ctrl.cpp \
                  VST_SDK_2.4/public.sdk/source/vst2.x/audioeffect.cpp \
                  VST_SDK_2.4/public.sdk/source/vst2.x/audioeffectx.cpp \
-                 vstgui/vstgui.cpp \
-                 vstgui/aeffguieditor.cpp \
-                 vstgui/vstcontrols.cpp
+                 vstgui/vstgui/plugin-bindings/aeffguieditor.cpp
 
 # Directory for object files
 OBJDIR = build
+
+# VSTGUI static library (only for non-header-only parts)
+VSTGUI_LIB = vstgui/vstgui/build/Debug/libs/libvstgui.a
 
 # Default target: build all plugins
 all: $(PLUGINS:%=%.so)
@@ -39,17 +45,17 @@ all: $(PLUGINS:%=%.so)
 
 	# Compile common sources
 	$(foreach file,$(COMMON_SOURCES), \
-		$(CXX) $(CXXFLAGS) -c $(file) -o $(OBJDIR)/$*/$(notdir $(file:.cpp=.o));)
+		$(CXX) $(CXXFLAGS) $(PKG_CFLAGS) -c $(file) -o $(OBJDIR)/$*/$(notdir $(file:.cpp=.o));)
 
 	# Compile plugin "*g.cpp" sources (GridLayouter header included here)
 	$(foreach file,$(wildcard src/$*/*g.cpp), \
-		$(CXX) $(CXXFLAGS) -c $(file) -o $(OBJDIR)/$*/$(notdir $(file:.cpp=.o));)
+		$(CXX) $(CXXFLAGS) $(PKG_CFLAGS) -c $(file) -o $(OBJDIR)/$*/$(notdir $(file:.cpp=.o));)
 
 	# Compile plugin-specific vst_linux_entry.cpp
 	$(CXX) $(CXXFLAGS) -c src/$*/vst_linux_entry.cpp -o $(OBJDIR)/$*/vst_linux_entry.o
 
 	# Link all objects into .so
-	$(CXX) $(LDFLAGS) -o $@ $(OBJDIR)/$*/*.o
+	$(CXX) $(LDFLAGS) -o $@ $(OBJDIR)/$*/*.o $(VSTGUI_LIB) $(PKG_LIBS)
 
 # Clean everything
 clean:

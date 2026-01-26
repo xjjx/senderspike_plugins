@@ -23,8 +23,6 @@
     ).count())
 #endif
 
-
-
 //------------------------------------------------------------------------------------
 // GUI helpers
 //------------------------------------------------------------------------------------
@@ -79,12 +77,14 @@ void SignalNoiseGR::draw(CDrawContext* ctx)
 		return;
 
 	CPoint pt;
+	const VSTGUI::CRect size = getViewSize ();
 	double yb = _val < 0.0 ? 0.0 : (_val > 20.0 ? 20.0 : _val);
-	pt.v = (size.bottom - size.top) * dword((yb / 20.0) * (_num - 1));
+	pt.x = (size.bottom - size.top) * dword((yb / 20.0) * (_num - 1));
 
-	if(bTransparencyEnabled)
-		_map->drawTransparent(ctx, size, pt);
-	else
+	// TODO
+//	if(kTransparencyEnabled)
+//		_map->drawTransparent(ctx, size, pt);
+//	else
 		_map->draw(ctx, size, pt);
 
 	setDirty(false);
@@ -196,6 +196,7 @@ void SignalNoiseVU::draw(CDrawContext* ctx)
 	//draw -------------------------------------------
 
 	CPoint pt;
+	const VSTGUI::CRect size = getViewSize ();
 	dword ct = GetTickCount();
 
 	if(f > _hfn || ct - _hst >= _hms)
@@ -205,19 +206,21 @@ void SignalNoiseVU::draw(CDrawContext* ctx)
 	}
 	else if(_pkm && _hfn - f > 1) // draw only if needles don't overlap
 	{
-		pt.v = (size.bottom - size.top) * _hfn;
+		pt.y = (size.bottom - size.top) * _hfn;
 
-		if(bTransparencyEnabled)
-			_pkm->drawTransparent(ctx, size, pt);
-		else
+// TODO
+//		if(kTransparencyEnabled)
+//			_pkm->drawTransparent(ctx, size, pt);
+//		else
 			_pkm->draw(ctx, size, pt);
 	}
 
-	pt.v = (size.bottom - size.top) * f;
+	pt.y = (size.bottom - size.top) * f;
 
-	if(bTransparencyEnabled)
-		_map->drawTransparent(ctx, size, pt);
-	else
+	// TODO
+//	if(kTransparencyEnabled)
+//		_map->drawTransparent(ctx, size, pt);
+//	else
 		_map->draw(ctx, size, pt);
 
 	setDirty(false);
@@ -340,27 +343,30 @@ void SignalNoisePeakMeter::draw(CDrawContext* ctx)
 		return;
 
 	CPoint pt;
+	const VSTGUI::CRect size = getViewSize ();
 	CCoord w = size.right - size.left;
 	CCoord h = size.bottom - size.top;
 
 	//draw unlit
-	pt.v = h;
-	if(bTransparencyEnabled)
-		_map->drawTransparent(ctx, size, pt);
-	else
+	pt.y = h;
+	// TODO
+//	if(kTransparencyEnabled)
+//		_map->drawTransparent(ctx, size, pt);
+//	else
 		_map->draw(ctx, size, pt);
 
 	//draw value
-	pt.v = 0;
+	pt.y = 0;
 	double dB = lin2dB(_val);
 	dB = ((dB < -_rng ? -_rng : dB) + _rng) / _rng;
 	CRect rc(size.left, size.top, size.right, size.bottom);
 	CCoord cc = CCoord(w * dB);
 	rc.right = rc.left + cc;
 
-	if(bTransparencyEnabled)
-		_map->drawTransparent(ctx, rc, pt);
-	else
+	// TODO
+//	if(kTransparencyEnabled)
+//		_map->drawTransparent(ctx, rc, pt);
+//	else
 		_map->draw(ctx, rc, pt);
 
 	setDirty(false);
@@ -402,6 +408,7 @@ SignalNoisePeakLed::SignalNoisePeakLed(const CRect& rc, CBitmap* map) : CControl
 	_hms = 300;
 	_hst = GetTickCount();
 	_pks = false;
+	pBackground = nullptr;
 
 	setBackground(map);
 }
@@ -421,19 +428,20 @@ void SignalNoisePeakLed::draw(CDrawContext* ctx)
 		return;
 
 	CPoint pt;
+	const VSTGUI::CRect size = getViewSize ();
 	dword ct = GetTickCount();
 	
 	if(_amp > 1.0)
 	{
 		_hst = ct;
 		_pks = true;
-		pt.v = size.bottom - size.top;
+		pt.y = size.bottom - size.top;
 	}
 	else
 	{
 		if(_pks && ct - _hst < _hms)
 		{
-			pt.v = size.bottom - size.top;
+			pt.y = size.bottom - size.top;
 		}
 		else
 		{
@@ -443,9 +451,10 @@ void SignalNoisePeakLed::draw(CDrawContext* ctx)
 	}
 	_amp = 0;
 
-	if(bTransparencyEnabled)
-		pBackground->drawTransparent(ctx, size, pt);
-	else
+	// TODO
+//	if(kTransparencyEnabled)
+//		pBackground->drawTransparent(ctx, size, pt);
+//	else
 		pBackground->draw(ctx, size, pt);
 
 	setDirty(false);
@@ -481,6 +490,7 @@ SignalNoiseOnOffLed::SignalNoiseOnOffLed(const CRect& rc, CBitmap* map) : CContr
 	_on = false;
 	_bk = false;
 	_bs = false;
+	pBackground = nullptr;
 
 	setBackground(map);
 }
@@ -500,19 +510,21 @@ void SignalNoiseOnOffLed::draw(CDrawContext* ctx)
 		return;
 
 	CPoint pt;
+	const VSTGUI::CRect size = getViewSize ();
 
 	if(_bk)
 	{
-		pt.v = _bs ? size.bottom - size.top : 0;
+		pt.y = _bs ? size.bottom - size.top : 0;
 	}
 	else
 	{
-		pt.v = _on ? size.bottom - size.top : 0;
+		pt.y = _on ? size.bottom - size.top : 0;
 	}
 
-	if(bTransparencyEnabled)
-		pBackground->drawTransparent(ctx, size, pt);
-	else
+	// TODO
+//	if(kTransparencyEnabled)
+//		pBackground->drawTransparent(ctx, size, pt);
+//	else
 		pBackground->draw(ctx, size, pt);
 
 	setDirty(false);
@@ -551,13 +563,14 @@ void SignalNoiseOnOffLed::setBlinkState(bool on)
 // user editable label with custom font & background
 //------------------------------------------------------------------------------------
 
-SignalNoiseUserLabel::SignalNoiseUserLabel(const CRect& rc, CControlListener* lst, long tag) 
+SignalNoiseUserLabel::SignalNoiseUserLabel(const CRect& rc, IControlListener* lst, long tag) 
 	: CTextEdit(rc, lst, tag)
 {
 #if WINDOWS
 	_font = 0;
 #endif // WINDOWS
 	_back = false;
+	pBackground = nullptr;
 }
 
 //------------------------------------------------------------------------------------
@@ -602,7 +615,8 @@ void SignalNoiseUserLabel::drawStringCustom(CDrawContext* ctx,
 	if(!str) return;
 	
 	CRect rect(rc);
-	rect.offset(ctx->offset.h, ctx->offset.v);
+	// TODO
+//	rect.offset(ctx->offset.h, ctx->offset.v);
 
 #if WINDOWS
 	SetBkMode((HDC)ctx->getSystemContext(), opq ? OPAQUE : TRANSPARENT);
@@ -623,6 +637,8 @@ void SignalNoiseUserLabel::drawStringCustom(CDrawContext* ctx,
 
 void SignalNoiseUserLabel::draw(CDrawContext* ctx)
 {
+	const VSTGUI::CRect size = getViewSize ();
+
 	//don't draw while in edit mode
 	if(platformControl)
 	{
@@ -645,21 +661,25 @@ void SignalNoiseUserLabel::draw(CDrawContext* ctx)
 	{
 		if(pBackground)
 		{
-			if(bTransparencyEnabled)
-				pBackground->drawTransparent(ctx, size, backOffset);
-			else
+
+			// TODO
+//			if(kTransparencyEnabled)
+//				pBackground->drawTransparent(ctx, size, backOffset);
+//			else
 				pBackground->draw(ctx, size, backOffset);
 		}
-		else if(!bTransparencyEnabled)
+		else if(!kTransparencyEnabled)
 		{
 			ctx->setFillColor(backColor);
-			ctx->drawRect(size, kDrawFilled);
+			ctx->drawRect(size, VSTGUI::kDrawFilled);
 		}
 	}
 
 	//format text (maintain support for CParamDisplay & CTextEdit)
 	char out[256] = {0};
 
+// TODO
+/*
 	if(editConvert2)
 		editConvert2(text, out, userData);
 	else if(editConvert)
@@ -676,9 +696,11 @@ void SignalNoiseUserLabel::draw(CDrawContext* ctx)
 	}
 	else
 		sprintf(out, "%s", text);
+*/
 
 	//draw text
-	if(text)
+//	if(text)
+	if(true)
 	{
 		CRect oldClip;
 		ctx->getClipRect(oldClip);
@@ -686,21 +708,22 @@ void SignalNoiseUserLabel::draw(CDrawContext* ctx)
 		newClip.bound(oldClip);
 		ctx->setClipRect(newClip);
 
-		if(!setFontCustom(ctx)) {
-			static VSTGUI::CFontDesc font ("Arial", 12);
-			ctx->setFont(&font);
-		}
+//		if(!setFontCustom(ctx))
+//			ctx->setFont(fontID, 0, txtFace);
 	
 		//shadow
 		if(style == kShadowText) 
 		{
 			CRect newSize(size);
-			newSize.offset(1, 1);
+			// TODO
+//			newSize.offset(1, 1);
 			ctx->setFontColor(shadowColor);
-			drawStringCustom(ctx, out, newSize, !bTextTransparencyEnabled, horiTxtAlign);
+// TODO
+			drawStringCustom(ctx, out, newSize, !kTransparencyEnabled, horiTxtAlign);
 		}
 		ctx->setFontColor(fontColor);
-		drawStringCustom(ctx, out, size, !bTextTransparencyEnabled, horiTxtAlign);
+// TODO
+		drawStringCustom(ctx, out, size, !kTransparencyEnabled, horiTxtAlign);
 		ctx->setClipRect(oldClip);
 	}
 	setDirty(false);
@@ -787,14 +810,16 @@ void SignalNoiseArcSwitch::draw(CDrawContext* ctx)
 
 //------------------------------------------------------------------------------------
 
-/*
-void SignalNoiseArcSwitch::mouse(CPoint& pos, long buttons);
+void SignalNoiseArcSwitch::mouse(CDrawContext* ctx, CPoint& pos, long btn)
 {
-	if (!bMouseEnabled)
+	if(!kMouseEnabled)
+		return;
+// 	if(btn == -1)
+//		btn = ctx->getMouseButtons();
+	if(!(btn & VSTGUI::kLButton))
 		return;
 
-	if (!(buttons & kLButton))
-		return;
+	const VSTGUI::CRect size = getViewSize ();
 
 	float x1 = _rad;
 	float y1 = 0;
@@ -818,13 +843,12 @@ void SignalNoiseArcSwitch::mouse(CPoint& pos, long buttons);
 
 	_eff->setParameter(_tag, res * (1.f / float(_num-1)));
 }
-*/
 
 //------------------------------------------------------------------------------------
 // custom knob
 //------------------------------------------------------------------------------------
 
-SignalNoiseKnob::SignalNoiseKnob(const CRect& rc, CControlListener* lst, long tag, 
+SignalNoiseKnob::SignalNoiseKnob(const CRect& rc, IControlListener* lst, long tag, 
 	long nf, CCoord h, CBitmap* map, CPoint& pt) : CAnimKnob(rc, lst, tag, nf, h, map, pt)
 {
 	_rng = 400.f;
@@ -841,48 +865,69 @@ SignalNoiseKnob::~SignalNoiseKnob()
 
 void SignalNoiseKnob::mouse(CDrawContext* ctx, CPoint& hit, long btn)
 {
-	if(!bMouseEnabled)
+	if(!kMouseEnabled)
 		return;
 //	if(btn == -1)
 //		btn = ctx->getMouseButtons();
-	if(!(btn & kLButton))
+	if(!(btn & VSTGUI::kLButton))
 		return;
-	if(listener && btn & (kAlt | kShift | kControl | kApple))
+	if(listener && btn & (VSTGUI::kAlt | VSTGUI::kShift | VSTGUI::kControl | VSTGUI::kApple))
 	{
 		if(listener->controlModifierClicked(this, btn) != 0)
 			return;
 	}
-	if(checkDefaultValue(btn))
-		return;
+
+	// TODO
+//	if(checkDefaultValue(btn))
+//		return;
 
 	//setup
 	CCoord dt;
 	CPoint fp = hit;
 	CPoint pt(-1, -1);
 	float cv = value;
-	float cf = (vmax - vmin) / _rng;
+	// TODO
+//	float cf = (vmax - vmin) / _rng;
+	float cf = 0;
 
+	return;
+/*
 	//edit
 	beginEdit();
 	do
 	{
-//		btn = ctx->getMouseButtons();
-		if(hit != pt)
-		{
-			pt = hit;
-			dt = (fp.v - hit.v) + (hit.h - fp.h);
-			value = cv + dt * cf;
-			bounceValue();
-			
-			if(isDirty() && listener)
-				listener->valueChanged(this);
-		}
-//		getMouseLocation(ctx, hit);
-		doIdleStuff();
-	}
-	while(btn & kLButton);
+	    // btn = ctx->getMouseButtons();  // removed, not in VSTGUI4
 
+	    if (hit != pt)
+	    {
+		pt = hit;
+		dt = (fp.y - hit.y) + (hit.x - fp.x);
+		value = cv + dt * cf;
+		bounceValue();
+
+		if (isDirty() && listener)
+		    listener->valueChanged(this);
+	    }
+
+	    // update hit from current mouse position
+	    if (CFrame* frame = getFrame())
+	    {
+		VSTGUI::CMouseEvent evt;
+		frame->getCurrentMouseEvent(evt);
+		hit = evt.where;
+		hit.offset(-getViewSize().left, -getViewSize().top); // local coordinates
+		btn = evt.buttonState;
+	    }
+	    else
+	    {
+		btn = 0; // no frame, exit loop
+	    }
+
+	    invalid(); // redraw instead of doIdleStuff()
+	}
+	while (btn & VSTGUI::kLButton);
 	endEdit();
+*/
 }
 
 //------------------------------------------------------------------------------------
@@ -896,7 +941,7 @@ void SignalNoiseKnob::setRange(float r)
 // custom precision knob
 //------------------------------------------------------------------------------------
 
-SignalNoiseKnobP::SignalNoiseKnobP(const CRect& rc, CControlListener* lst, long tag, 
+SignalNoiseKnobP::SignalNoiseKnobP(const CRect& rc, IControlListener* lst, long tag, 
 	long nf, CCoord h, CBitmap* map, CPoint& pt) : CAnimKnob(rc, lst, tag, nf, h, map, pt)
 {
 	_rng = 400.f;
@@ -915,19 +960,20 @@ SignalNoiseKnobP::~SignalNoiseKnobP()
 
 void SignalNoiseKnobP::mouse(CDrawContext* ctx, CPoint& hit, long btn)
 {
-	if(!bMouseEnabled)
+	if(!kMouseEnabled)
 		return;
 //	if(btn == -1)
 //		btn = ctx->getMouseButtons();
-	if(!(btn & kLButton))
+	if(!(btn & VSTGUI::kLButton))
 		return;
-	if(listener && btn & (kAlt | kShift | kControl | kApple))
+	if(listener && btn & (VSTGUI::kAlt | VSTGUI::kShift | VSTGUI::kControl | VSTGUI::kApple))
 	{
 		if(listener->controlModifierClicked(this, btn) != 0)
 			return;
 	}
-	if(checkDefaultValue(btn))
-		return;
+	// TODO
+//	if(checkDefaultValue(btn))
+//		return;
 
 	//setup
 	long old;
@@ -936,7 +982,7 @@ void SignalNoiseKnobP::mouse(CDrawContext* ctx, CPoint& hit, long btn)
 	float valA, rngA, relA, absA;
 	float valB, rngB, relB;
 
-	if(btn & kShift)
+	if(btn & VSTGUI::kShift)
 	{
 		rngA = _abs * 10;
 		if(_lnk) rngB = _lnk->getRangeAbsolute() * 10;
@@ -957,6 +1003,9 @@ void SignalNoiseKnobP::mouse(CDrawContext* ctx, CPoint& hit, long btn)
 		valB = _lnk->getValue();
 	}
 
+	// TODO
+	return;
+
 	//edit
 	beginEdit();
 	do
@@ -968,7 +1017,7 @@ void SignalNoiseKnobP::mouse(CDrawContext* ctx, CPoint& hit, long btn)
 			
 			if(btn != old)
 			{
-				if(btn & kShift)
+				if(btn & VSTGUI::kShift)
 				{
 					rngA = _abs * 10;
 					if(_lnk) rngB = _lnk->getRangeAbsolute() * 10;
@@ -991,13 +1040,13 @@ void SignalNoiseKnobP::mouse(CDrawContext* ctx, CPoint& hit, long btn)
 			}
 			else
 			{
-				dt = (fp.v - hit.v) + (hit.h - fp.h);
+				dt = (fp.y - hit.y) + (hit.x - fp.x);
 				value = valA + float(long(dt / absA)) * relA;
 				bounceValue();
 				if(isDirty() && listener)
 					listener->valueChanged(this);
 
-				if(_lnk && btn & kAlt)
+				if(_lnk && btn & VSTGUI::kAlt)
 				{
 					_lnk->setValue(valB - float(long(dt / absA)) * relB);
 					_lnk->bounceValue();
@@ -1007,9 +1056,9 @@ void SignalNoiseKnobP::mouse(CDrawContext* ctx, CPoint& hit, long btn)
 			}
 		}
 //		getMouseLocation(ctx, hit);
-		doIdleStuff();
+//		doIdleStuff();
 	}
-	while(btn & kLButton);
+	while(btn & VSTGUI::kLButton);
 
 	endEdit();
 }
