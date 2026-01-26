@@ -1,0 +1,6 @@
+// bitmaps
+101 PNG "../graphics/sn06g/sn06g_bk.png"		// background
+102 PNG "../graphics/sn01g/sn01g_b1.png"		// large knob
+103 PNG "../graphics/sn06g/sn06g_b1.png"		// screw knob
+104 PNG "../graphics/sn04g/sn04g_pk.png"		// peak led
+105 PNG "../graphics/sn06g/sn06g_vu.png"		// peak meter on

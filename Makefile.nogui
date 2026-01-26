@@ -9,16 +9,16 @@ CXXFLAGS = -g -O2 -fPIC -std=c++17 \
 	-finline-functions \
     -D__cdecl= \
     -DSNFX_NO_SIGNAL_DEFAULT_GUI \
-    -Isources \
-    -Isources/SN01 -Isources/SN03 -Isources/SN04 -Isources/SN05 -Isources/SN06 \
+    -Isrc \
+    -Isrc/SN01 -Isrc/SN03 -Isrc/SN04 -Isrc/SN05 -Isrc/SN06 \
     -IVST_SDK_2.4 \
     -IVST_SDK_2.4/public.sdk/source/vst2.x
 
 LDFLAGS = -shared
 
-# Common sources
-COMMON_SOURCES = sources/sn_core.cpp \
-                 sources/sn_vsti.cpp \
+# Common src
+COMMON_SOURCES = src/sn_core.cpp \
+                 src/sn_vsti.cpp \
                  VST_SDK_2.4/public.sdk/source/vst2.x/audioeffect.cpp \
                  VST_SDK_2.4/public.sdk/source/vst2.x/audioeffectx.cpp
 
@@ -33,16 +33,16 @@ all: $(PLUGINS:%=%.so)
 	@echo "Building $@ ..."
 	mkdir -p $(OBJDIR)/$*
     
-	# Compile common sources
+	# Compile common src
 	$(foreach file,$(COMMON_SOURCES), \
 	    $(CXX) $(CXXFLAGS) -c $(file) -o $(OBJDIR)/$*/$(notdir $(file:.cpp=.o));)
     
-	# Compile plugin "*e.cpp" sources
-	$(foreach file,$(wildcard sources/$*/*e.cpp), \
+	# Compile plugin "*e.cpp" src
+	$(foreach file,$(wildcard src/$*/*e.cpp), \
 	    $(CXX) $(CXXFLAGS) -c $(file) -o $(OBJDIR)/$*/$(notdir $(file:.cpp=.o));)
     
 	# Compile plugin-specific vst_linux_entry.cpp
-	$(CXX) $(CXXFLAGS) -c sources/$*/vst_linux_entry.cpp -o $(OBJDIR)/$*/vst_linux_entry.o
+	$(CXX) $(CXXFLAGS) -c src/$*/vst_linux_entry.cpp -o $(OBJDIR)/$*/vst_linux_entry.o
     
 	# Link all objects into .so
 	$(CXX) $(LDFLAGS) -o $@ $(OBJDIR)/$*/*.o

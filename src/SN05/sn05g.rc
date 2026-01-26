@@ -1,0 +1,7 @@
+// bitmaps
+101 PNG "../graphics/sn05g/sn05g_bk.png"		// background
+102 PNG "../graphics/sn01g/sn01g_b1.png"		// big knob
+103 PNG "../graphics/sn05g/sn05g_b1.png"		// small knob
+104 PNG "../graphics/sn05g/sn05g_gr.png"		// GR meter
+105 PNG "../graphics/sn01g/sn01g_s3.png"		// rocker switch
+106 PNG "../graphics/sn04g/sn04g_ld.png"		// led "button"

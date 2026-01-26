@@ -1,0 +1,107 @@
+//------------------------------------------------------------------------------------
+//
+//	file:		sn_05e.h
+//
+//	purpose:	SN05 limiter effect
+//
+//  authors:	2019 - 2021 Oto Spál
+//				uses c++ adaptation of original code by (c) 2011 M. Holters
+//
+//------------------------------------------------------------------------------------
+
+
+#ifndef _SN_05E_H
+#define _SN_05E_H
+
+
+//------------------------------------------------------------------------------------
+
+#include <sn_core.h>
+#include <sn_vsti.h>
+
+//------------------------------------------------------------------------------------
+// effect
+//------------------------------------------------------------------------------------
+
+enum
+{
+	SNE_GAIN = 0,	// input gain
+	SNE_CEIL,		// ceiling
+	SNE_ATKH,		// attack - Holters' lim
+	SNE_RELH,		// release - Holters' lim
+	SNE_RELS,		// release - brickwall
+	SNE_MODE,		// mode (clip/limit)
+	SNE_HPON,		// high pass on/off
+	SNE_HPFC,		// high pass Fc
+	SNE_CLIP,		// clipper % (0% = true bypass)
+	SNE_SIZE,		// num of params
+};
+
+//------------------------------------------------------------------------------------
+
+static const param_t gParam[] = 
+{
+	{"Gain",		"dB",		0.00f},
+	{"Ceiling",		"dB",		1.00f},
+	{"AT",			"ms",		0.00f},
+	{"R1",			"ms",		1.00f},
+	{"R2",			"ms",		1.00f},
+	{"Mode",		"L/C",		0.00f},
+	{"HP On",		"y/n",		0.00f},
+	{"HP Freq",		"Hz",		0.50f},
+	{"SC",			"%",		0.00f},
+};
+
+//------------------------------------------------------------------------------------
+
+#define SN05_VER		2210
+#define SN05_UID		'SN05'
+#ifdef SN05G
+#define SN05_NAM		"SN05-G Limiter"
+#else
+#define SN05_NAM		"SN05 Limiter"
+#endif
+
+//------------------------------------------------------------------------------------
+
+class SignalNoiseLimiter : public SignalNoiseFX
+{
+private:
+	//Holters' limiter
+	double	_dlL[5];	// delay line L
+	double	_dlR[5];	// delay line R
+	double	_max;		// peak
+	double	_grH;		// gain reduction
+	double	_atH;		// attack coefficient
+	double	_rlH;		// release coefficient
+	//brickwall
+	double	_env;		// envelope feedback
+	double	_atk;		// attack coefficient
+	double	_rls;		// release coefficient
+	//SC filter
+	biquad	_hL1;		// SC HPF 2nd order L
+	biquad	_hR1;		// SC HPF 2nd order R
+	foHPF	_hL2;		// SC HPF 1st order L
+	foHPF	_hR2;		// SC HPF 1st order R
+private:
+	void setupLimiter();
+	void setupClipper();
+	void setupSidechain();
+//callbacks - SN
+	virtual void onSetSampleRate(float fs);
+	virtual void onSetParameter(VstInt32 at, float v);
+public:
+//create & destroy
+	SignalNoiseLimiter(audioMasterCallback cb);
+	virtual ~SignalNoiseLimiter();
+//process - SDK
+	virtual void processReplacing(float** in, float** out, VstInt32 sz);
+	virtual void processDoubleReplacing(double** in, double** out, VstInt32 sz);
+//plugin info - SDK
+	VST_DEFINE_PLUGINFO(SN05_NAM, SN05_VER, kPlugCategEffect);
+};
+
+//------------------------------------------------------------------------------------
+
+
+#endif // _SN_05E_H
