@@ -45,7 +45,7 @@ static const param_t gParam[] =
 //------------------------------------------------------------------------------------
 
 #define SN02_VER		1210
-#define SN02_UID		'SN02'
+#define SN02_UID		VST_FOURCC('S','N','0','2')
 #define SN02_NAM		"SN02-G VU Meter"
 
 //------------------------------------------------------------------------------------
@@ -132,7 +132,7 @@ public:
 	virtual bool open(void* ptr);
 	virtual void close();
 	virtual void setParameter(VstInt32 at, float v);
-	virtual void valueChanged(CDrawContext* ctx, CControl* ctrl);
+	virtual void valueChanged(CControl* ctrl);
 //runtime - custom
 	void trackMeter(double L, double R);
 	void setupMeterLevel(double nl);

@@ -13,6 +13,17 @@
 #include <stdio.h>
 #include <sn_ctrl.h>
 
+#ifdef _WIN32
+#include <windows.h>
+#else
+#include <chrono>
+#define GetTickCount() \
+    (std::chrono::duration_cast<std::chrono::milliseconds>( \
+        std::chrono::steady_clock::now().time_since_epoch() \
+    ).count())
+#endif
+
+
 
 //------------------------------------------------------------------------------------
 // GUI helpers
@@ -642,7 +653,7 @@ void SignalNoiseUserLabel::draw(CDrawContext* ctx)
 		else if(!bTransparencyEnabled)
 		{
 			ctx->setFillColor(backColor);
-			ctx->fillRect(size);
+			ctx->drawRect(size, kDrawFilled);
 		}
 	}
 
@@ -675,8 +686,10 @@ void SignalNoiseUserLabel::draw(CDrawContext* ctx)
 		newClip.bound(oldClip);
 		ctx->setClipRect(newClip);
 
-		if(!setFontCustom(ctx))
-			ctx->setFont(fontID, 0, txtFace);
+		if(!setFontCustom(ctx)) {
+			static VSTGUI::CFontDesc font ("Arial", 12);
+			ctx->setFont(&font);
+		}
 	
 		//shadow
 		if(style == kShadowText) 
@@ -774,13 +787,13 @@ void SignalNoiseArcSwitch::draw(CDrawContext* ctx)
 
 //------------------------------------------------------------------------------------
 
-void SignalNoiseArcSwitch::mouse(CDrawContext* ctx, CPoint& pos, long btn)
+/*
+void SignalNoiseArcSwitch::mouse(CPoint& pos, long buttons);
 {
-	if(!bMouseEnabled)
+	if (!bMouseEnabled)
 		return;
- 	if(btn == -1)
-		btn = ctx->getMouseButtons();
-	if(!(btn & kLButton))
+
+	if (!(buttons & kLButton))
 		return;
 
 	float x1 = _rad;
@@ -805,6 +818,7 @@ void SignalNoiseArcSwitch::mouse(CDrawContext* ctx, CPoint& pos, long btn)
 
 	_eff->setParameter(_tag, res * (1.f / float(_num-1)));
 }
+*/
 
 //------------------------------------------------------------------------------------
 // custom knob
@@ -829,16 +843,16 @@ void SignalNoiseKnob::mouse(CDrawContext* ctx, CPoint& hit, long btn)
 {
 	if(!bMouseEnabled)
 		return;
-	if(btn == -1)
-		btn = ctx->getMouseButtons();
+//	if(btn == -1)
+//		btn = ctx->getMouseButtons();
 	if(!(btn & kLButton))
 		return;
 	if(listener && btn & (kAlt | kShift | kControl | kApple))
 	{
-		if(listener->controlModifierClicked(ctx, this, btn) != 0)
+		if(listener->controlModifierClicked(this, btn) != 0)
 			return;
 	}
-	if(checkDefaultValue(ctx, btn))
+	if(checkDefaultValue(btn))
 		return;
 
 	//setup
@@ -852,7 +866,7 @@ void SignalNoiseKnob::mouse(CDrawContext* ctx, CPoint& hit, long btn)
 	beginEdit();
 	do
 	{
-		btn = ctx->getMouseButtons();
+//		btn = ctx->getMouseButtons();
 		if(hit != pt)
 		{
 			pt = hit;
@@ -861,9 +875,9 @@ void SignalNoiseKnob::mouse(CDrawContext* ctx, CPoint& hit, long btn)
 			bounceValue();
 			
 			if(isDirty() && listener)
-				listener->valueChanged(ctx, this);
+				listener->valueChanged(this);
 		}
-		getMouseLocation(ctx, hit);
+//		getMouseLocation(ctx, hit);
 		doIdleStuff();
 	}
 	while(btn & kLButton);
@@ -903,16 +917,16 @@ void SignalNoiseKnobP::mouse(CDrawContext* ctx, CPoint& hit, long btn)
 {
 	if(!bMouseEnabled)
 		return;
-	if(btn == -1)
-		btn = ctx->getMouseButtons();
+//	if(btn == -1)
+//		btn = ctx->getMouseButtons();
 	if(!(btn & kLButton))
 		return;
 	if(listener && btn & (kAlt | kShift | kControl | kApple))
 	{
-		if(listener->controlModifierClicked(ctx, this, btn) != 0)
+		if(listener->controlModifierClicked(this, btn) != 0)
 			return;
 	}
-	if(checkDefaultValue(ctx, btn))
+	if(checkDefaultValue(btn))
 		return;
 
 	//setup
@@ -947,7 +961,7 @@ void SignalNoiseKnobP::mouse(CDrawContext* ctx, CPoint& hit, long btn)
 	beginEdit();
 	do
 	{
-		btn = ctx->getMouseButtons();
+//		btn = ctx->getMouseButtons();
 		if(hit != pt)
 		{
 			pt = hit;
@@ -981,18 +995,18 @@ void SignalNoiseKnobP::mouse(CDrawContext* ctx, CPoint& hit, long btn)
 				value = valA + float(long(dt / absA)) * relA;
 				bounceValue();
 				if(isDirty() && listener)
-					listener->valueChanged(ctx, this);
+					listener->valueChanged(this);
 
 				if(_lnk && btn & kAlt)
 				{
 					_lnk->setValue(valB - float(long(dt / absA)) * relB);
 					_lnk->bounceValue();
 					if(_lnk->isDirty() && listener)
-						listener->valueChanged(ctx, _lnk);
+						listener->valueChanged(_lnk);
 				}
 			}
 		}
-		getMouseLocation(ctx, hit);
+//		getMouseLocation(ctx, hit);
 		doIdleStuff();
 	}
 	while(btn & kLButton);

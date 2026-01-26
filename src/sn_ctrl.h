@@ -13,10 +13,15 @@
 #define _SN_CTRL_H
 
 
+#include <audioeffectx.h>
+#include <audioeffect.h>
+
+
 //------------------------------------------------------------------------------------
 
 #include <sn_core.h>
 #include <vstgui.h>
+#include <aeffguieditor.h>
 
 //------------------------------------------------------------------------------------
 // GUI helpers
@@ -241,7 +246,7 @@ public:
 	virtual ~SignalNoiseArcSwitch();	
 //from SDK
 	virtual void draw(CDrawContext* ctx);
-	virtual void mouse(CDrawContext* ctx, CPoint& pos, long btn = -1);
+//	virtual void mouse(CDrawContext* ctx, CPoint& pos, long btn = -1);
 //vtable
 	CLASS_METHODS(SignalNoiseArcSwitch, CControl)
 };

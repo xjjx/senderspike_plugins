@@ -1,0 +1,57 @@
+# List of plugins
+PLUGINS = SN02
+
+# Compiler and flags
+CXX = g++
+CXXFLAGS = -O2 -fPIC -std=c++17 \
+           -funroll-loops -finline-functions \
+           -frtti -fexceptions \
+           -D__cdecl= \
+           -Isrc \
+           -Isrc/SN01 -Isrc/SN02 -Isrc/SN03 -Isrc/SN04 -Isrc/SN05 -Isrc/SN06 \
+           -IVST_SDK_2.4 \
+           -IVST_SDK_2.4/public.sdk/source/vst2.x \
+           -IVST_SDK_2.4/pluginterfaces/vst2.x \
+           -Ivstgui
+
+LDFLAGS = -shared -lpthread
+
+# Common sources
+COMMON_SOURCES = src/sn_core.cpp \
+                 src/sn_vsti.cpp \
+                 src/sn_ctrl.cpp \
+                 VST_SDK_2.4/public.sdk/source/vst2.x/audioeffect.cpp \
+                 VST_SDK_2.4/public.sdk/source/vst2.x/audioeffectx.cpp \
+                 vstgui/vstgui.cpp \
+                 vstgui/aeffguieditor.cpp \
+                 vstgui/vstcontrols.cpp
+
+# Directory for object files
+OBJDIR = build
+
+# Default target: build all plugins
+all: $(PLUGINS:%=%.so)
+
+# Rule to build a plugin
+%.so:
+	@echo "Building $@ ..."
+	mkdir -p $(OBJDIR)/$*
+
+	# Compile common sources
+	$(foreach file,$(COMMON_SOURCES), \
+		$(CXX) $(CXXFLAGS) -c $(file) -o $(OBJDIR)/$*/$(notdir $(file:.cpp=.o));)
+
+	# Compile plugin "*g.cpp" sources (GridLayouter header included here)
+	$(foreach file,$(wildcard src/$*/*g.cpp), \
+		$(CXX) $(CXXFLAGS) -c $(file) -o $(OBJDIR)/$*/$(notdir $(file:.cpp=.o));)
+
+	# Compile plugin-specific vst_linux_entry.cpp
+	$(CXX) $(CXXFLAGS) -c src/$*/vst_linux_entry.cpp -o $(OBJDIR)/$*/vst_linux_entry.o
+
+	# Link all objects into .so
+	$(CXX) $(LDFLAGS) -o $@ $(OBJDIR)/$*/*.o
+
+# Clean everything
+clean:
+	rm -rf $(OBJDIR) $(PLUGINS:%=%.so)
+

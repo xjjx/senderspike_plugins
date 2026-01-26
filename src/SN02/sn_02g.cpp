@@ -556,7 +556,7 @@ void SignalNoiseVUMeterGUI::setParameter(VstInt32 at, float v)
 
 //------------------------------------------------------------------------------------
 
-void SignalNoiseVUMeterGUI::valueChanged(CDrawContext* ctx, CControl* ctrl)
+void SignalNoiseVUMeterGUI::valueChanged(CControl* ctrl)
 {
 	if(_open == 0)
 		return;
