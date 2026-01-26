@@ -21,7 +21,7 @@ jobs:
       run: git clone https://github.com/R-Tur/VST_SDK_2.4.git
 
     - name: Build NoGUI Plugins
-      run: make -f Makefile.nogui
+      run: make -f Makefile.nogui -j$(nproc)
 
     - name: Upload Linux artifacts
       uses: actions/upload-artifact@v4
