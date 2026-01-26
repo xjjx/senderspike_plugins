@@ -88,7 +88,7 @@ static const param_t gParam[] =
 //------------------------------------------------------------------------------------
 
 #define SN04_VER		1210
-#define SN04_UID		'SN04'
+#define SN04_UID		VST_FOURCC('S','N','0','4')
 #ifdef SN04G
 #define SN04_NAM		"SN04-G Channel EQ"
 #else

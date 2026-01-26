@@ -14,6 +14,9 @@
 #ifndef _SN_VSTI_H
 #define _SN_VSTI_H
 
+#define VST_FOURCC(a,b,c,d) \
+    ((VstInt32)(a)        | ((VstInt32)(b) << 8) | \
+     ((VstInt32)(c) << 16)| ((VstInt32)(d) << 24))
 
 //------------------------------------------------------------------------------------
 

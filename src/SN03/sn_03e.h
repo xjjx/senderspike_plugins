@@ -72,7 +72,7 @@ static const param_t gParam[] =
 //------------------------------------------------------------------------------------
 
 #define SN03_VER		1310
-#define SN03_UID		'SN03'
+#define SN03_UID		VST_FOURCC('S','N','0','3')
 #ifdef SN03G
 #define SN03_NAM		"SN03-G Tape Recorder"
 #else

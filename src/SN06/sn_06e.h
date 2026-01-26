@@ -42,7 +42,7 @@ static const param_t gParam[] =
 //------------------------------------------------------------------------------------
 
 #define SN06_VER		1210
-#define SN06_UID		'SN06'
+#define SN06_UID		VST_FOURCC('S','N','0','6')
 #ifdef SN06G
 #define SN06_NAM		"SN06-G OpAmp"
 #else

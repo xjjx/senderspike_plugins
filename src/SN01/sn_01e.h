@@ -60,7 +60,7 @@ static const param_t gParam[] =
 //------------------------------------------------------------------------------------
 
 #define SN01_VER		1210
-#define SN01_UID		'SN01'
+#define SN01_UID		VST_FOURCC('S','N','0','1')
 #ifdef SN01G
 #define SN01_NAM		"SN01-G Compressor"
 #else

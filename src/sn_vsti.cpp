@@ -191,7 +191,7 @@ VstInt32 SignalNoiseFX::canDo(char* txt)
 
 bool SignalNoiseFX::isPlaying()
 {
-	VstTimeInfo* vst = getTimeInfo(NULL);
+	VstTimeInfo* vst = getTimeInfo(0);
 	if(vst && vst->flags & kVstTransportPlaying)
 		return true;
 	_idle = true;

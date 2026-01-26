@@ -55,7 +55,7 @@ static const param_t gParam[] =
 //------------------------------------------------------------------------------------
 
 #define SN05_VER		2210
-#define SN05_UID		'SN05'
+#define SN05_UID		VST_FOURCC('S','N','0','5')
 #ifdef SN05G
 #define SN05_NAM		"SN05-G Limiter"
 #else
