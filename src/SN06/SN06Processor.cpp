@@ -10,6 +10,7 @@
 //------------------------------------------------------------------------------------
 
 #include "SN06Processor.h"
+#include "SN06Editor.h"
 
 // ----------------------
 // Constructor
@@ -151,6 +152,12 @@ void SN06Processor::setStateInformation(const void* data, int sizeInBytes)
     std::unique_ptr<juce::XmlElement> xml(getXmlFromBinary(data, sizeInBytes));
     if (xml)
         parameters.replaceState(juce::ValueTree::fromXml(*xml));
+}
+
+// Editor
+juce::AudioProcessorEditor* SN06Processor::createEditor()
+{
+    return new SN06Editor (*this);
 }
 
 // ----------------------

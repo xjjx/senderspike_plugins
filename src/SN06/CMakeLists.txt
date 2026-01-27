@@ -12,6 +12,13 @@ juce_add_plugin(SN06
     IS_MIDI_EFFECT FALSE
 )
 
+juce_add_binary_data(SN06_BinaryData
+    SOURCES
+        ../graphics/sn06g/sn06g_bk.png
+)
+
+target_link_libraries(SN06 PRIVATE SN06_BinaryData)
+
 # ----------------------
 # Add plugin source files
 # ----------------------
@@ -19,6 +26,8 @@ target_sources(SN06
     PRIVATE
 	SN06Processor.cpp
 	SN06Processor.h
+	SN06Editor.cpp
+	SN06Editor.h
         ../shared/sn_core.cpp
         ../shared/sn_core.h
 )

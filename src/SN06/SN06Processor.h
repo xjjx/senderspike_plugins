@@ -35,8 +35,8 @@ public:
 	void processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer&) override;
 	void processBlock(juce::AudioBuffer<double>& buffer, juce::MidiBuffer&) override;
 
-	juce::AudioProcessorEditor* createEditor() override { return nullptr; }
-	bool hasEditor() const override { return false; }
+	juce::AudioProcessorEditor* createEditor() override;
+	bool hasEditor() const override { return true; }
 
 	const juce::String getName() const override { return "SN06"; }
 	bool acceptsMidi() const override { return false; }
