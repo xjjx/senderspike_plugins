@@ -1,8 +1,15 @@
 #include <cstdio>
+#include <cstdlib>
+#include <cmath>
 #include <dlfcn.h>
 
-#include "aeffect.h"
+#define VST_2_3_EXTENSIONS 1
+#define VST_2_4_EXTENSIONS 1
 
+#include "aeffect.h"
+#include "aeffectx.h"
+
+// -------------------- Host callback --------------------
 static VstIntPtr VSTCALLBACK hostCallback(
     AEffect* effect,
     VstInt32 opcode,
@@ -20,6 +27,7 @@ static VstIntPtr VSTCALLBACK hostCallback(
     }
 }
 
+// -------------------- Main host --------------------
 int main(int argc, char** argv)
 {
     if (argc != 2)
@@ -37,8 +45,7 @@ int main(int argc, char** argv)
 
     typedef AEffect* (*VSTMainFn)(audioMasterCallback);
 
-    VSTMainFn mainFn = nullptr;
-    mainFn = (VSTMainFn)dlsym(handle, "VSTPluginMain");
+    VSTMainFn mainFn = (VSTMainFn)dlsym(handle, "VSTPluginMain");
     if (!mainFn)
         mainFn = (VSTMainFn)dlsym(handle, "VSTMain");
 
@@ -66,15 +73,64 @@ int main(int argc, char** argv)
     }
 
     std::printf("Plugin loaded OK\n");
-    std::printf("Inputs: %d Outputs: %d\n",
-        effect->numInputs,
-        effect->numOutputs);
+    std::printf("Inputs: %d Outputs: %d\n", effect->numInputs, effect->numOutputs);
 
     if (effect->dispatcher)
         effect->dispatcher(effect, effOpen, 0, 0, nullptr, 0);
 
+    // ===================== Simple audio test =====================
+    const int blockSize = 64;
+    const int numBlocks = 10;
+
+    float inL[blockSize] = {0};
+    float inR[blockSize] = {0};
+    float outL[blockSize] = {0};
+    float outR[blockSize] = {0};
+
+    float* inputs[2] = { inL, inR };
+    float* outputs[2] = { outL, outR };
+
+    // Fill input with a test sine wave
+    for (int i = 0; i < blockSize; ++i)
+    {
+        inL[i] = std::sin(2.0 * M_PI * 440.0 * i / 44100.0f);
+        inR[i] = std::sin(2.0 * M_PI * 440.0 * i / 44100.0f);
+    }
+
+    // ------------------- Initialize plugin -------------------
     if (effect->dispatcher)
+    {
+        effect->dispatcher(effect, effSetSampleRate, 0, 0, nullptr, 44100.0f);
+        effect->dispatcher(effect, effSetBlockSize, 0, blockSize, nullptr, 0);
+	effect->dispatcher(effect, effMainsChanged, 0, 1, nullptr, 0); 
+	effect->dispatcher(effect, effStartProcess, 0, 0, nullptr, 0);
+    }
+
+    // ------------------- Process audio blocks -------------------
+    for (int b = 0; b < numBlocks; ++b)
+    {
+        if (effect->processReplacing)
+            effect->processReplacing(effect, inputs, outputs, blockSize);
+
+        // Print first 8 samples of output
+        std::printf("Block %d output L:", b);
+        for (int i = 0; i < 8 && i < blockSize; ++i)
+            std::printf(" %f", outL[i]);
+        std::printf("\n");
+
+        std::printf("Block %d output R:", b);
+        for (int i = 0; i < 8 && i < blockSize; ++i)
+            std::printf(" %f", outR[i]);
+        std::printf("\n");
+    }
+
+    // ------------------- Finish -------------------
+    if (effect->dispatcher)
+    {
+	effect->dispatcher(effect, effStopProcess, 0, 0, nullptr, 0);
+	effect->dispatcher(effect, effMainsChanged, 0, 0, nullptr, 0);
         effect->dispatcher(effect, effClose, 0, 0, nullptr, 0);
+    }
 
     dlclose(handle);
     return 0;
