@@ -17,6 +17,7 @@ set(JUCE_VST3SDK_PATH "${CMAKE_SOURCE_DIR}/vst3sdk")  # path to your VST3 SDK
 # ----------------------
 # JUCE
 # ----------------------
+add_compile_definitions(JUCE_DISPLAY_SPLASH_SCREEN=0)
 add_subdirectory(juce)
 
 # Point JUCE to the VST2 SDK
