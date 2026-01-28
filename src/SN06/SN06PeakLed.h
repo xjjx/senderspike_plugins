@@ -1,37 +1,58 @@
-#include "BinaryData.h"
+#pragma once
+
+#include <juce_gui_basics/juce_gui_basics.h>
 
 class SN06PeakLed : public juce::Component
 {
 public:
-    SN06PeakLed()
-    {
-        ledImage = juce::ImageCache::getFromMemory(
-            BinaryData::sn04g_pk_png, BinaryData::sn04g_pk_pngSize);
-    }
+	SN06PeakLed()
+	{
+		setSize(12, 12); // default size
+	}
 
-    void setLevel(float newLevel)
-    {
-        peakLevel = newLevel;
-        repaint();
-    }
+	void setOn(bool shouldBeOn)
+	{
+		on = shouldBeOn;
+		repaint();
+	}
 
-    void paint(juce::Graphics& g) override
-    {
-        if (!ledImage.isValid())
-            return;
+	void setLevel(float newLevel)
+	{
+		on = newLevel > 0.01f;
+		repaint();
+	}
 
-        // LED frames are stacked vertically
-        int frameHeight = ledImage.getHeight() / 2;
-        int yOffset = (peakLevel > 0.9f) ? 0 : frameHeight;
+	void paint (juce::Graphics& g) override
+	{
+		auto b = getLocalBounds().toFloat();
+		float r = b.getWidth() * 0.5f;
 
-        juce::Image frame = ledImage.getClippedImage(juce::Rectangle<int>(0, yOffset, ledImage.getWidth(), frameHeight));
+		if (on)
+		{
+			juce::ColourGradient glow(
+				juce::Colours::red.withAlpha(0.9f),
+				b.getCentreX(), b.getCentreY(),
+				juce::Colours::transparentBlack,
+				b.getCentreX() + r, b.getCentreY(),
+				true
+			);
+			g.setGradientFill(glow);
+		}
+		else
+		{
+			juce::ColourGradient glow(
+				juce::Colours::black.withBrightness(0.3f),
+				b.getCentreX(), b.getCentreY(),
+				juce::Colours::black,
+				b.getCentreX() + r, b.getCentreY(),
+				true
+			);
+			g.setGradientFill(glow);
+		}
 
-        // Draw the frame scaled to component bounds
-        g.drawImage(frame, getLocalBounds().toFloat());
-    }
+		g.fillEllipse(b);
+	}
 
 private:
-    juce::Image ledImage;
-    float peakLevel = 0.0f;
+	bool on = false;
 };
-

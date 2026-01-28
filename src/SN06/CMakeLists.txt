@@ -16,7 +16,6 @@ juce_add_binary_data(SN06_BinaryData
     SOURCES
         ../graphics/sn06g/sn06g_bk.png
         ../graphics/sn06g/sn06g_vu.png
-        ../graphics/sn04g/sn04g_pk.png
 )
 
 target_link_libraries(SN06 PRIVATE SN06_BinaryData)
