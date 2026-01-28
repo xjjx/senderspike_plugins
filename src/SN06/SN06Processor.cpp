@@ -76,7 +76,7 @@ void SN06Processor::processImpl(Sample** in, Sample** out, int numSamples)
 	{
 		// Input
 		L = *in[0]++;
-		R = (in[1] != nullptr) ? *in[1]++ : 0.0;
+		R = (!_mono && in[1] != nullptr) ? *in[1]++ : 0.0;
 
 		// Trim
 		L *= trim;
@@ -84,9 +84,6 @@ void SN06Processor::processImpl(Sample** in, Sample** out, int numSamples)
 
 		iL = L;
 		iR = R;
-
-		if (_mono)
-		    R = 0.0;
 
 		// Previous nonlinear state
 		eL = _erfL;
