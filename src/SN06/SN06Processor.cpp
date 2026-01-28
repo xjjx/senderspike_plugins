@@ -106,21 +106,26 @@ void SN06Processor::processImpl(Sample** in, Sample** out, int numSamples)
 		if (out[1] != nullptr)
 			*out[1]++ = static_cast<Sample>(R);
 
-#ifdef SN06G
-		if (_mono)
+        float inAbs, outAbs;
+		if(_mono)
 		{
-			((SignalNoiseOpampGUI*)editor)
-			->trackMeters(std::fabs(iL), std::fabs(L));
+            inAbs  = std::abs(iL);
+            outAbs = std::abs(L);
 		}
 		else
 		{
-			((SignalNoiseOpampGUI*)editor)
-			->trackMeters(
-				(std::fabs(iL) + std::fabs(iR)) * 0.5,
-				(std::fabs(L)  + std::fabs(R))  * 0.5);
+            inAbs  = (std::abs(iL) + std::abs(iR)) * 0.5;
+            outAbs = (std::abs(L) + std::abs(L)) * 0.5;
 		}
-#endif
+
+        inputLevel.store(std::max(inputLevel.load(), inAbs));
+        outputLevel.store(std::max(outputLevel.load(), outAbs));
+        peakLevel.store(std::max(peakLevel.load(), outAbs));
 	}
+
+    inputLevel.store(inputLevel.load() * 0.95f);
+    outputLevel.store(outputLevel.load() * 0.95f);
+    peakLevel.store(peakLevel.load() * 0.90f);
 }
 
 void SN06Processor::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer&)

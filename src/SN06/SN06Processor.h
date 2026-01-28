@@ -12,6 +12,7 @@
 
 #include <juce_audio_processors/juce_audio_processors.h>
 #include <cmath>
+#include <atomic>
 #include "sn_core.h"
 
 enum
@@ -37,6 +38,7 @@ public:
 
 	juce::AudioProcessorEditor* createEditor() override;
 	bool hasEditor() const override { return true; }
+    juce::AudioProcessorValueTreeState& getParameters() { return parameters; }
 
 	const juce::String getName() const override { return "SN06"; }
 	bool acceptsMidi() const override { return false; }
@@ -53,6 +55,10 @@ public:
 	void getStateInformation(juce::MemoryBlock&) override;
 	void setStateInformation(const void*, int) override;
 
+    float getInputLevel()  const noexcept { return inputLevel.load(); }
+    float getOutputLevel() const noexcept { return outputLevel.load(); }
+    float getPeakLevel()   const noexcept { return peakLevel.load(); }
+
 private:
     // ================= DSP STATE =================
     double _norm;
@@ -62,6 +68,11 @@ private:
 
     foHPF _hpfL;
     foHPF _hpfR;
+
+    // ================= METERS =================
+    std::atomic<float> inputLevel  { 0.0f };
+    std::atomic<float> outputLevel { 0.0f };
+    std::atomic<float> peakLevel   { 0.0f };
 
     // ================= PARAMETERS =================
     juce::AudioProcessorValueTreeState parameters;
