@@ -59,10 +59,10 @@ void SN06Processor::processImpl(Sample** in, Sample** out, int numSamples)
 	const float trimParam   = *parameters.getRawParameterValue("trim");
 	const float volumeParam = *parameters.getRawParameterValue("volume");
 
-	// Parameter mapping (unchanged)
+	// Parameter mapping
 	const double trim  = dB2lin(trimParam   * 40.0 - 20.0);
 	const double volu  = dB2lin(volumeParam * 64.0 - 48.0);
-	const double drive = dB2lin(gainParam   * 32.0 - 8.0); // <-- RESTORED DRIVE
+	const double drive = dB2lin(gainParam   * 32.0 - 8.0);
 
 	// Crossfade coefficients (NO gain here)
 	const double fact = gainParam * 0.55;
@@ -75,12 +75,15 @@ void SN06Processor::processImpl(Sample** in, Sample** out, int numSamples)
 	for (int n = 0; n < numSamples; ++n)
 	{
 		// Input
-		iL = L = *in[0]++;
-		iR = R = (in[1] != nullptr) ? *in[1]++ : 0.0;
+		L = *in[0]++;
+		R = (in[1] != nullptr) ? *in[1]++ : 0.0;
 
 		// Trim
 		L *= trim;
 		R *= trim;
+
+		iL = L;
+		iR = R;
 
 		if (_mono)
 		    R = 0.0;
