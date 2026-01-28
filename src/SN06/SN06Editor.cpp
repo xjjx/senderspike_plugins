@@ -71,7 +71,7 @@ void SN06Editor::timerCallback()
 {
     inputMeter .setLevel(processor.getInputLevel());
     outputMeter.setLevel(processor.getOutputLevel());
-    peakLed.setLevel(processor.getPeakLevel());
+    peakLed.setLevel(processor.getOutputLevel());
 
     repaint();
 }

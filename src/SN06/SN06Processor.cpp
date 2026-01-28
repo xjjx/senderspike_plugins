@@ -118,14 +118,9 @@ void SN06Processor::processImpl(Sample** in, Sample** out, int numSamples)
 			outAbs = (std::abs(L) + std::abs(L)) * 0.5;
 		}
 
-		inputLevel.store(std::max(inputLevel.load(), inAbs));
-		outputLevel.store(std::max(outputLevel.load(), outAbs));
-		peakLevel.store(std::max(peakLevel.load(), outAbs));
+		inputLevel.store(inAbs);
+		outputLevel.store(outAbs);
 	}
-
-	inputLevel.store(inputLevel.load() * 0.95f);
-	outputLevel.store(outputLevel.load() * 0.95f);
-	peakLevel.store(peakLevel.load() * 0.90f);
 }
 
 void SN06Processor::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer&)

@@ -10,16 +10,9 @@ public:
 		setSize(12, 12); // default size
 	}
 
-	void setOn(bool shouldBeOn)
-	{
-		on = shouldBeOn;
-		repaint();
-	}
-
 	void setLevel(float newLevel)
 	{
-		on = newLevel > 0.01f;
-		repaint();
+		level = std::max(level * 0.90f, newLevel);
 	}
 
 	void paint (juce::Graphics& g) override
@@ -27,7 +20,7 @@ public:
 		auto b = getLocalBounds().toFloat();
 		float r = b.getWidth() * 0.5f;
 
-		if (on)
+		if (level > 1.0f)
 		{
 			juce::ColourGradient glow(
 				juce::Colours::red.withAlpha(0.9f),
@@ -54,5 +47,5 @@ public:
 	}
 
 private:
-	bool on = false;
+	float level = 0.0f;
 };

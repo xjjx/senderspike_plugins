@@ -55,9 +55,8 @@ public:
 	void getStateInformation(juce::MemoryBlock&) override;
 	void setStateInformation(const void*, int) override;
 
-    float getInputLevel()  const noexcept { return inputLevel.load(); }
-    float getOutputLevel() const noexcept { return outputLevel.load(); }
-    float getPeakLevel()   const noexcept { return peakLevel.load(); }
+	float getInputLevel()  const noexcept { return inputLevel.load(); }
+	float getOutputLevel() const noexcept { return outputLevel.load(); }
 
 private:
     // ================= DSP STATE =================
@@ -72,7 +71,6 @@ private:
     // ================= METERS =================
     std::atomic<float> inputLevel  { 0.0f };
     std::atomic<float> outputLevel { 0.0f };
-    std::atomic<float> peakLevel   { 0.0f };
 
     // ================= PARAMETERS =================
     juce::AudioProcessorValueTreeState parameters;

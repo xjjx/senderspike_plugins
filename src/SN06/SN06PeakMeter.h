@@ -18,10 +18,15 @@ public:
 
 	void setLevel(float val)
 	{
-		float dB = juce::Decibels::gainToDecibels(val, -range);
+//		DBG("new val meter =" + juce::String(val, 4) + " level = " + juce::String(level, 4));
+
+		// decay
+		val = std::max(level * 0.95f, val);
 
 		// clamp 0..1
-		level = juce::jlimit(0.0f, 1.0f, (dB + range) / range);
+		level = juce::jlimit(0.0f, 1.0f, val);
+//		DBG("new max val meter =" + juce::String(val, 4));
+
 	}
 
 	void setRange(float dB) { range = dB; }
@@ -30,6 +35,9 @@ public:
 	{
 		if (!ledImage.isValid())
 			return;
+
+		float dB = juce::Decibels::gainToDecibels(level, -range);
+		float dBlevel = juce::jlimit(0.0f, 1.0f, (dB + range) / range);
 
 		int imgW = ledImage.getWidth();
 		int imgH = ledImage.getHeight() / 2;
@@ -47,7 +55,7 @@ public:
 			false);				// disable alpha
 
 		// draw lit portion (top half) based on level
-		int fillWidth = static_cast<int>(imgW * level);
+		int fillWidth = static_cast<int>(imgW * dBlevel);
 		if (fillWidth <= 0)
 			return;
 
