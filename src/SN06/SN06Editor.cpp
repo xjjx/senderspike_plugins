@@ -30,8 +30,8 @@ SN06Editor::SN06Editor(SN06Processor& p)
 		BinaryData::sn06g_b1_pngSize
 	);
 
-	jassert(!gainImage.isNull());
-	jassert(!trimImage.isNull());
+	jassert(!knobLargeImage.isNull());
+	jassert(!knobScrewImage.isNull());
 
 	largeLNF.setImage(knobLargeImage);
 	screwLNF.setImage(knobScrewImage);
@@ -44,37 +44,9 @@ SN06Editor::SN06Editor(SN06Processor& p)
 	addAndMakeVisible(gainKnob);
 	addAndMakeVisible(volumeKnob);
 
-	// Knobs labels
-	// Volume text label setup
-	volumeLabel.setText("0.00", juce::dontSendNotification);
-	volumeLabel.setJustificationType(juce::Justification::centred);
-	volumeLabel.setColour(juce::Label::textColourId, juce::Colours::lightgrey);
-	volumeLabel.setFont(juce::Font(10.0f));
-	volumeLabel.setEditable(true, true, false);
-
-	addAndMakeVisible(volumeLabel);
-
-	volumeKnob.onValueChange = [this] {
-		float val = volumeKnob.getValue();
-		float displayVal = val * 64 - 48;
-		volumeLabel.setText(
-			juce::String(displayVal, 2),
-			juce::dontSendNotification
-		);
-	};
-
-	volumeLabel.onTextChange = [this] {
-		float val = volumeLabel.getText().getFloatValue();
-		float normalized = (val + 48.0f) / 64.0f;
-		normalized = juce::jlimit(0.0f, 1.0f, normalized);
-
-		// Update parameter directly
-		processor.getParameters().getParameter("volume")
-			->setValueNotifyingHost(normalized);
-
-		// update knob to match
-		volumeKnob.setValue(normalized);
-	};
+	setupKnobLabel(volumeKnob, volumeLabel, "volume", 64.0f, 48.0f);
+	setupKnobLabel(gainKnob, gainLabel, "gain", 32.0f, 8.0f);
+	setupKnobLabel(trimKnob, trimLabel, "trim", 40.0f, 20.0f);
 
 	// Attachments (THIS replaces all manual setValue calls)
 	auto& params = processor.getParameters();
@@ -101,6 +73,44 @@ SN06Editor::~SN06Editor()
 }
 
 //---------------------------------------------------------
+void SN06Editor::setupKnobLabel(SN06KnobPrecise& knob, juce::Label& label,
+	const char* paramID, float scale, float offset)
+{
+	label.setText("0.00", juce::dontSendNotification);
+	label.setJustificationType(juce::Justification::centred);
+	label.setColour(juce::Label::textColourId, juce::Colours::lightgrey);
+	label.setFont(juce::Font(10.0f));
+	label.setEditable(true, true, false);
+	addAndMakeVisible(label);
+
+	// Update label when knob moves
+	knob.onValueChange = [this, &knob, &label, scale, offset] {
+		float val = knob.getValue();
+		float displayVal = val * scale - offset;
+		label.setText(juce::String(displayVal, 2), juce::dontSendNotification);
+	};
+
+	// Update knob & parameter when label changes
+	label.onTextChange = [this, &knob, &label, paramID, scale, offset] {
+		float val = label.getText().getFloatValue();
+		float normalized = (val + offset) / scale;
+		normalized = juce::jlimit(0.0f, 1.0f, normalized);
+
+		// Update parameter directly
+		processor.getParameters().getParameter(paramID)
+			->setValueNotifyingHost(normalized);
+
+		// Update knob to match
+		knob.setValue(normalized);
+	};
+
+	// Initialize label with current parameter value
+	float val = processor.getParameters().getParameter(paramID)->getValue();
+	float displayVal = val * scale - offset;
+	label.setText(juce::String(displayVal, 2), juce::dontSendNotification);
+}
+
+//---------------------------------------------------------
 void SN06Editor::paint(juce::Graphics& g)
 {
 	// Fill background with black if image fails
@@ -123,6 +133,8 @@ void SN06Editor::resized()
 	volumeKnob.setBounds(80, 230, 80, 80);
 
 	volumeLabel.setBounds(30, 314, 30, 14);
+	gainLabel.setBounds(30, 184, 30, 14);
+	trimLabel.setBounds(44, 74, 30, 12);
 
 	inputMeter.setBounds (112, 42, 100, 5);
 	outputMeter.setBounds (112, 52, 100, 5);

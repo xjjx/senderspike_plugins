@@ -31,6 +31,8 @@ private:
 	SN06KnobPrecise volumeKnob;
 
 	juce::Label volumeLabel;
+	juce::Label gainLabel;
+	juce::Label trimLabel;
 
 	std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> gainAttachment;
 	std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> trimAttachment;
@@ -39,6 +41,9 @@ private:
 	SN06PeakMeter inputMeter;
 	SN06PeakMeter outputMeter;
 	SN06PeakLed peakLed;
+
+	void setupKnobLabel(SN06KnobPrecise& knob, juce::Label& label,
+		const char* paramID, float scale, float offset);
 
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SN06Editor)
 };
