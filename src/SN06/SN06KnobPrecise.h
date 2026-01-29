@@ -5,24 +5,24 @@
 class SN06KnobPrecise : public juce::Slider
 {
 public:
-    explicit SN06KnobPrecise (double defaultValue);
+	explicit SN06KnobPrecise (double defaultValue);
 
-    // legacy-compatible API
-    void setRangePixels (float pixels);
-    void setRangeAbsolute (float absolute);
-    float getRangeAbsolute() const;
+	// legacy-compatible API
+	void setRangePixels (float pixels);
+	void setRangeAbsolute (float absolute);
+	float getRangeAbsolute() const;
 
-    void setLinkInversed (SN06KnobPrecise* other);
+	void setLinkInversed (SN06KnobPrecise* other);
 
-    void mouseDown (const juce::MouseEvent&) override;
+	void mouseDown (const juce::MouseEvent&) override;
 
 private:
-    void handleLinkedKnob();
+	void handleLinkedKnob();
 
-    SN06KnobPrecise* linked = nullptr;
+	SN06KnobPrecise* linked = nullptr;
 
-    float rangePixels = 400.0f;
-    float rangeAbs    = 1.0f;
+	float rangePixels = 400.0f;
+	float rangeAbs	  = 1.0f;
 
-    double lastValue = 0.0;
+	double lastValue = 0.0;
 };

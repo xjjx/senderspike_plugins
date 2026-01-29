@@ -4,7 +4,7 @@
 //
 //	purpose:	SN06 op-amp effect
 //
-//  authors:	2020 Oto Spál
+//	authors:	2020 Oto Spál
 //
 //------------------------------------------------------------------------------------
 
@@ -38,7 +38,7 @@ public:
 
 	juce::AudioProcessorEditor* createEditor() override;
 	bool hasEditor() const override { return true; }
-    juce::AudioProcessorValueTreeState& getParameters() { return parameters; }
+	juce::AudioProcessorValueTreeState& getParameters() { return parameters; }
 
 	const juce::String getName() const override { return "SN06"; }
 	bool acceptsMidi() const override { return false; }
@@ -59,22 +59,22 @@ public:
 	float getOutputLevel() const noexcept { return outputLevel.load(); }
 
 private:
-    // ================= DSP STATE =================
-    double _norm;
-    double _erfL;
-    double _erfR;
-    bool   _mono = false;
+	// ================= DSP STATE =================
+	double _norm;
+	double _erfL;
+	double _erfR;
+	bool   _mono = false;
 
-    foHPF _hpfL;
-    foHPF _hpfR;
+	foHPF _hpfL;
+	foHPF _hpfR;
 
-    // ================= METERS =================
-    std::atomic<float> inputLevel  { 0.0f };
-    std::atomic<float> outputLevel { 0.0f };
+	// ================= METERS =================
+	std::atomic<float> inputLevel  { 0.0f };
+	std::atomic<float> outputLevel { 0.0f };
 
-    // ================= PARAMETERS =================
-    juce::AudioProcessorValueTreeState parameters;
+	// ================= PARAMETERS =================
+	juce::AudioProcessorValueTreeState parameters;
 
-    template <typename Sample>
-    void processImpl(Sample** in, Sample** out, int numSamples);
+	template <typename Sample>
+	void processImpl(Sample** in, Sample** out, int numSamples);
 };

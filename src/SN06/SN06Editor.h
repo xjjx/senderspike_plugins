@@ -9,34 +9,34 @@
 class SN06Processor;
 
 class SN06Editor : public juce::AudioProcessorEditor,
-                   private juce::Timer
+				   private juce::Timer
 {
 public:
-    explicit SN06Editor (SN06Processor&);
-    ~SN06Editor() override;
+	explicit SN06Editor (SN06Processor&);
+	~SN06Editor() override;
 
-    void paint (juce::Graphics&) override;
-    void resized() override;
+	void paint (juce::Graphics&) override;
+	void resized() override;
 
 private:
-    SN06Processor& processor;
-    void timerCallback() override;
+	SN06Processor& processor;
+	void timerCallback() override;
 
-    juce::Image background;
+	juce::Image background;
 
-    SN06KnobLookAndFeel largeLNF;
-    SN06KnobLookAndFeel screwLNF;
-    SN06KnobPrecise trimKnob;
-    SN06KnobPrecise gainKnob;
-    SN06KnobPrecise volumeKnob;
+	SN06KnobLookAndFeel largeLNF;
+	SN06KnobLookAndFeel screwLNF;
+	SN06KnobPrecise trimKnob;
+	SN06KnobPrecise gainKnob;
+	SN06KnobPrecise volumeKnob;
 
-    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> gainAttachment;
-    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> trimAttachment;
-    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> volumeAttachment;
+	std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> gainAttachment;
+	std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> trimAttachment;
+	std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> volumeAttachment;
 
-    SN06PeakMeter inputMeter;
-    SN06PeakMeter outputMeter;
-    SN06PeakLed peakLed;
+	SN06PeakMeter inputMeter;
+	SN06PeakMeter outputMeter;
+	SN06PeakLed peakLed;
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SN06Editor)
+	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SN06Editor)
 };
