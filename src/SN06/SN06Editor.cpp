@@ -4,7 +4,11 @@
 #include "BinaryData.h"
 
 SN06Editor::SN06Editor(SN06Processor& p)
-    : AudioProcessorEditor(&p), processor(p)
+    : AudioProcessorEditor(&p),
+      processor(p),
+      trimKnob(0.5),
+      gainKnob(0.5),
+      volumeKnob(0.5)
 {
     // Load background image
     background = juce::ImageCache::getFromMemory(
@@ -15,13 +19,30 @@ SN06Editor::SN06Editor(SN06Processor& p)
     // Set initial size based on background
     setSize(background.getWidth(), background.getHeight());
 
-    // Knob styles
-    for (auto* knob : { &gainKnob, &trimKnob, &volumeKnob })
-    {
-        knob->setSliderStyle(juce::Slider::RotaryVerticalDrag);
-        knob->setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
-        addAndMakeVisible(*knob);
-    }
+    // Knobs
+    juce::Image knobLargeImage = juce::ImageCache::getFromMemory(
+        BinaryData::sn01g_b1_png,
+        BinaryData::sn01g_b1_pngSize
+    );
+
+    juce::Image knobScrewImage = juce::ImageCache::getFromMemory(
+        BinaryData::sn06g_b1_png,
+        BinaryData::sn06g_b1_pngSize
+    );
+
+    jassert(!gainImage.isNull());
+    jassert(!trimImage.isNull());
+
+    largeLNF.setImage(knobLargeImage);
+    screwLNF.setImage(knobScrewImage);
+
+    trimKnob.setLookAndFeel(&screwLNF);
+    gainKnob.setLookAndFeel(&largeLNF);
+    volumeKnob.setLookAndFeel(&largeLNF);
+
+    addAndMakeVisible(trimKnob);
+    addAndMakeVisible(gainKnob);
+    addAndMakeVisible(volumeKnob);
 
     // Attachments (THIS replaces all manual setValue calls)
     auto& params = processor.getParameters();
@@ -38,6 +59,13 @@ SN06Editor::SN06Editor(SN06Processor& p)
     addAndMakeVisible(peakLed);
 
     startTimerHz(30); // GUI refresh rate
+}
+
+SN06Editor::~SN06Editor()
+{
+    trimKnob.setLookAndFeel(nullptr);
+    gainKnob.setLookAndFeel(nullptr);
+    volumeKnob.setLookAndFeel(nullptr);
 }
 
 //---------------------------------------------------------
@@ -58,8 +86,8 @@ void SN06Editor::resized()
 //    float scaleY = (float)getHeight() / background.getHeight();
 
     // Temporary positions (we’ll match original layout later)
+    trimKnob.setBounds(43, 35, 34, 34);
     gainKnob.setBounds(80, 100, 80, 80);
-    trimKnob.setBounds (36, 28, 48, 48);
     volumeKnob.setBounds(80, 230, 80, 80);
 
     inputMeter.setBounds (112, 42, 100, 5);

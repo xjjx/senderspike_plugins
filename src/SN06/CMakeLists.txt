@@ -17,6 +17,8 @@ juce_add_binary_data(SN06_BinaryData
     SOURCES
         ../graphics/sn06g/sn06g_bk.png
         ../graphics/sn06g/sn06g_vu.png
+        ../graphics/sn06g/sn06g_b1.png
+        ../graphics/sn01g/sn01g_b1.png
 )
 
 target_link_libraries(SN06 PRIVATE SN06_BinaryData)
@@ -30,6 +32,10 @@ target_sources(SN06
 	SN06Processor.h
 	SN06Editor.cpp
 	SN06Editor.h
+	SN06KnobPrecise.cpp
+	SN06KnobPrecise.h
+	SN06KnobLookAndFeel.cpp
+	SN06KnobLookAndFeel.h
         ../shared/sn_core.cpp
         ../shared/sn_core.h
 )

@@ -3,6 +3,8 @@
 #include <juce_gui_basics/juce_gui_basics.h>
 #include <SN06PeakMeter.h>
 #include <SN06PeakLed.h>
+#include "SN06KnobLookAndFeel.h"
+#include "SN06KnobPrecise.h"
 
 class SN06Processor;
 
@@ -11,7 +13,7 @@ class SN06Editor : public juce::AudioProcessorEditor,
 {
 public:
     explicit SN06Editor (SN06Processor&);
-    ~SN06Editor() override = default;
+    ~SN06Editor() override;
 
     void paint (juce::Graphics&) override;
     void resized() override;
@@ -22,9 +24,11 @@ private:
 
     juce::Image background;
 
-    juce::Slider gainKnob;
-    juce::Slider trimKnob;
-    juce::Slider volumeKnob;
+    SN06KnobLookAndFeel largeLNF;
+    SN06KnobLookAndFeel screwLNF;
+    SN06KnobPrecise trimKnob;
+    SN06KnobPrecise gainKnob;
+    SN06KnobPrecise volumeKnob;
 
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> gainAttachment;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> trimAttachment;
