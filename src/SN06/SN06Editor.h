@@ -30,6 +30,8 @@ private:
 	SN06KnobPrecise gainKnob;
 	SN06KnobPrecise volumeKnob;
 
+	juce::Label volumeLabel;
+
 	std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> gainAttachment;
 	std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> trimAttachment;
 	std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> volumeAttachment;

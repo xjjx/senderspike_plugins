@@ -44,6 +44,38 @@ SN06Editor::SN06Editor(SN06Processor& p)
 	addAndMakeVisible(gainKnob);
 	addAndMakeVisible(volumeKnob);
 
+	// Knobs labels
+	// Volume text label setup
+	volumeLabel.setText("0.00", juce::dontSendNotification);
+	volumeLabel.setJustificationType(juce::Justification::centred);
+	volumeLabel.setColour(juce::Label::textColourId, juce::Colours::lightgrey);
+	volumeLabel.setFont(juce::Font(10.0f));
+	volumeLabel.setEditable(true, true, false);
+
+	addAndMakeVisible(volumeLabel);
+
+	volumeKnob.onValueChange = [this] {
+		float val = volumeKnob.getValue();
+		float displayVal = val * 64 - 48;
+		volumeLabel.setText(
+			juce::String(displayVal, 2),
+			juce::dontSendNotification
+		);
+	};
+
+	volumeLabel.onTextChange = [this] {
+		float val = volumeLabel.getText().getFloatValue();
+		float normalized = (val + 48.0f) / 64.0f;
+		normalized = juce::jlimit(0.0f, 1.0f, normalized);
+
+		// Update parameter directly
+		processor.getParameters().getParameter("volume")
+			->setValueNotifyingHost(normalized);
+
+		// update knob to match
+		volumeKnob.setValue(normalized);
+	};
+
 	// Attachments (THIS replaces all manual setValue calls)
 	auto& params = processor.getParameters();
 
@@ -89,6 +121,8 @@ void SN06Editor::resized()
 	trimKnob.setBounds(43, 35, 34, 34);
 	gainKnob.setBounds(80, 100, 80, 80);
 	volumeKnob.setBounds(80, 230, 80, 80);
+
+	volumeLabel.setBounds(30, 314, 30, 14);
 
 	inputMeter.setBounds (112, 42, 100, 5);
 	outputMeter.setBounds (112, 52, 100, 5);
