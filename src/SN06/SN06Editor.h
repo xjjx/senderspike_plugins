@@ -2,8 +2,9 @@
 
 #include <juce_gui_basics/juce_gui_basics.h>
 #include "ParameterLabel.h"
-#include <SNPeakMeter.h>
-#include <SNPeakLed.h>
+#include "SNPeakMeter.h"
+#include "SNPeakLed.h"
+#include "ParameterInfo.h"
 #include "SNKnobLookAndFeel.h"
 #include "SNKnobPrecise.h"
 

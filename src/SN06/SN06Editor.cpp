@@ -32,9 +32,9 @@ SN06Editor::SN06Editor(SN06Processor& p)
 
 	auto& params = processor.getParameters();
 
-	gainLabel = std::make_unique<ParameterLabel>(params, parameterInfos[SNE_GAIN]);
-	trimLabel = std::make_unique<ParameterLabel>(params, parameterInfos[SNE_TRIM]);
-	volumeLabel = std::make_unique<ParameterLabel>(params, parameterInfos[SNE_VOLU]);
+	gainLabel = std::make_unique<ParameterLabel>(params, parameterInfos[SNE_GAIN].paramID);
+	trimLabel = std::make_unique<ParameterLabel>(params, parameterInfos[SNE_TRIM].paramID);
+	volumeLabel = std::make_unique<ParameterLabel>(params, parameterInfos[SNE_VOLU].paramID);
 
 	gainKnob   = setupKnobAndLabel(parameterInfos[SNE_GAIN], &largeLNF, *gainLabel);
 	trimKnob   = setupKnobAndLabel(parameterInfos[SNE_TRIM], &screwLNF, *trimLabel);
@@ -65,13 +65,13 @@ std::unique_ptr<SNKnobPrecise> SN06Editor::setupKnobAndLabel(
 {
 	auto& params = processor.getParameters();
 
-	auto knob = std::make_unique<SNKnobPrecise>(info);
+	auto knob = std::make_unique<SNKnobPrecise>(info.defaultDb);
 	knob->setLookAndFeel(lnF);
 
 	addAndMakeVisible(*knob);
 	addAndMakeVisible(label.getLabel());
 
-	knob->attachToParameter(params);
+	knob->attachToParameter(params, info.paramID);
 
     return knob;
 }
@@ -94,7 +94,7 @@ void SN06Editor::resized()
 //	  float scaleY = (float)getHeight() / background.getHeight();
 
 	// Temporary positions (we’ll match original layout later)
-	trimKnob->setBounds(43, 35, 34, 34);
+	trimKnob->setBounds(45, 37, 30, 30);
 	gainKnob->setBounds(80, 100, 80, 80);
 	volumeKnob->setBounds(80, 230, 80, 80);
 

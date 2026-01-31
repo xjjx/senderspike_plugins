@@ -2,13 +2,12 @@
 
 #include <juce_audio_processors/juce_audio_processors.h>
 #include <juce_gui_basics/juce_gui_basics.h>
-#include "ParameterInfo.h"
 
 class ParameterLabel : public juce::Component,
                        public juce::AudioProcessorValueTreeState::Listener
 {
 public:
-	ParameterLabel(juce::AudioProcessorValueTreeState&, const ParameterInfo&);
+	ParameterLabel(juce::AudioProcessorValueTreeState&, const juce::String&);
 	~ParameterLabel() = default;
 
 	void updateFromParameter();
@@ -16,12 +15,12 @@ public:
 
 
 private:
+	juce::AudioProcessorValueTreeState& params;
+	juce::String paramId;
+
     juce::Label label;
 	void configureLabel();
 	void setupCallbacks();
-
-	juce::AudioProcessorValueTreeState& params;
-	const ParameterInfo& info;
 
 	// Listener callback from AudioProcessorValueTreeState
 	void parameterChanged(const juce::String& paramID, float newValue) override;

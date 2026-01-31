@@ -1,15 +1,12 @@
 #include "SNKnobPrecise.h"
 
-SNKnobPrecise::SNKnobPrecise (const ParameterInfo& i)
-	: info (i)
+SNKnobPrecise::SNKnobPrecise (float defaultDb)
 {
-	double defaultValue = dbToNormalized(info.defaultDb);
-
 	setSliderStyle (juce::Slider::RotaryHorizontalVerticalDrag);
 	setTextBoxStyle (juce::Slider::NoTextBox, false, 0, 0);
 
 	setVelocityBasedMode (true);
-	setDoubleClickReturnValue (true, defaultValue);
+	setDoubleClickReturnValue (true, defaultDb);
 
 	setVelocityModeParameters(
 		0.3,    // sensitivity, smaller = more precise
@@ -33,21 +30,14 @@ void SNKnobPrecise::mouseDown (const juce::MouseEvent& e)
 }
 
 //==================================================
-double SNKnobPrecise::snapDb(double db)
-{
-	double step = juce::ModifierKeys::getCurrentModifiers().isShiftDown() ? 0.1 : 1.0;
-	return std::round(db / step) * step;
-}
-
-//==================================================
 double SNKnobPrecise::snapValue(double attemptedValue, DragMode dragMode)
 {
-	double db = normalizedToDb(attemptedValue);
+	double db = attemptedValue;
 	if (dragMode != Slider::notDragging) {
 		bool shift = juce::ModifierKeys::getCurrentModifiers().isShiftDown();
 		double step = shift ? 0.1 : 1.0;
 		db = std::round(db / step) * step;
 	}
 
-	return dbToNormalized(db);
+	return db;
 }

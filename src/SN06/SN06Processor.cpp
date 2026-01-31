@@ -28,21 +28,18 @@ SN06Processor::SN06Processor()
 	_norm = 1e-15;
 
 	// Now add parameters using ParameterInfos
-
-	float step = 0.1f;
 	for (auto& info : parameterInfos)
 	{
-		float normalizedDefault = (info.defaultDb - info.minDb) / (info.maxDb - info.minDb);
+		// Define the range in dB instead of normalized
+		juce::NormalisableRange<float> range(info.minDb, info.maxDb);
 
-		juce::NormalisableRange<float> range(0.0f, 1.0f);
-		range.interval = step / (info.maxDb - info.minDb);
-
+		// Create parameter with default in dB
 		parameters.createAndAddParameter(
 			std::make_unique<juce::AudioParameterFloat>(
-				info.paramID,
-				info.paramID,
-				range,
-				normalizedDefault
+				info.paramID,		  // parameter ID
+				info.paramID,		  // name shown in host
+				range,				  // now in dB
+				info.defaultDb		  // default in dB
 			)
 		);
 	}
@@ -72,20 +69,20 @@ template <typename Sample>
 void SN06Processor::processImpl(Sample** in, Sample** out, int numSamples)
 {
 	// Read parameters once per block
-	const float gainParam   = *parameters.getRawParameterValue("gain");
-	const float trimParam   = *parameters.getRawParameterValue("trim");
+	const float gainParam	= *parameters.getRawParameterValue("gain");
+	const float trimParam	= *parameters.getRawParameterValue("trim");
 	const float volumeParam = *parameters.getRawParameterValue("volume");
 
 	const auto& gainInfo   = parameterInfos[SNE_GAIN]; // gain
-	const auto& trimInfo   = parameterInfos[SNE_TRIM]; // trim
-	const auto& volumeInfo = parameterInfos[SNE_VOLU]; // volume
+//	const auto& trimInfo   = parameterInfos[SNE_TRIM]; // trim
+//	const auto& volumeInfo = parameterInfos[SNE_VOLU]; // volume
 
-	const double drive = dB2lin(gainInfo.normalizedToDb(gainParam));
-	const double trim  = dB2lin(trimInfo.normalizedToDb(trimParam));
-	const double volu  = dB2lin(volumeInfo.normalizedToDb(volumeParam));
+	const double drive = dB2lin(gainParam);
+	const double trim  = dB2lin(trimParam);
+	const double volu  = dB2lin(volumeParam);
 
 	// Crossfade coefficients
-	double fact = gainParam * 0.55;
+	double fact = gainInfo.dbToNormalized(gainParam) * 0.55;
 	double invf = 1.0 - fact;
 	fact *= drive;
 	invf *= drive;

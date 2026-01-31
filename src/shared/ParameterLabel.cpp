@@ -2,9 +2,8 @@
 
 ParameterLabel::ParameterLabel(
    juce::AudioProcessorValueTreeState& state,
-   const ParameterInfo& pInfo)
-	: params(state),
-	  info(pInfo)
+   const juce::String& pid)
+	: params(state), paramId(pid)
 {
 	configureLabel();
 	updateFromParameter();
@@ -17,40 +16,36 @@ void ParameterLabel::configureLabel()
 	label.setColour(juce::Label::textColourId, juce::Colours::lightgrey);
 	label.setFont(juce::Font(10.0f));
 	label.setEditable(true, true, false);
-//	addAndMakeVisible(label);
 }
 
 void ParameterLabel::setupCallbacks()
 {
 	label.onTextChange = [this]()
 	{
-		float db = label.getText().getFloatValue();
-		float norm = info.dbToNormalized(db);
+		auto* p = params.getParameter(paramId);
+		if (!p)
+			return;
 
-		if (auto* p = params.getParameter(info.paramID))
-			p->setValueNotifyingHost(juce::jlimit(0.0f, 1.0f, norm));
+		float db = label.getText().getFloatValue();
+		float norm = p->getNormalisableRange().convertTo0to1(db);
+		p->setValueNotifyingHost(norm);
 	};
 
 	// Listen for parameter changes
-	params.addParameterListener(info.paramID, this);
+	params.addParameterListener(paramId, this);
 }
 
 void ParameterLabel::updateFromParameter()
 {
-	if (auto* v = params.getRawParameterValue(info.paramID))
+	if (auto* v = params.getRawParameterValue(paramId))
 	{
-		float norm = *v;
-		float db = info.normalizedToDb(norm);
-
+		float db = *v;
 		label.setText(juce::String(db, 2), juce::dontSendNotification);
 	}
 }
 
 void ParameterLabel::parameterChanged(const juce::String& paramID, float newValue)
 {
-	if (paramID == juce::String(info.paramID))
-	{
-		float display = info.normalizedToDb(newValue);
-		label.setText(juce::String(display, 2), juce::dontSendNotification);
-	}
+	if (paramID == paramId)
+		label.setText(juce::String(newValue, 2), juce::dontSendNotification);
 }

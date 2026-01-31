@@ -2,27 +2,20 @@
 
 #include <juce_audio_processors/juce_audio_processors.h>
 #include <juce_gui_basics/juce_gui_basics.h>
-#include "ParameterInfo.h"
 
 class SNKnobPrecise : public juce::Slider
 {
 public:
-	explicit SNKnobPrecise (const ParameterInfo& i);
+	explicit SNKnobPrecise (float defaultDb);
 	void mouseDown (const juce::MouseEvent&) override;
 
-	float normalizedToDb (float norm) { return info.normalizedToDb(norm); };
-	float dbToNormalized (float db) { return info.dbToNormalized(db); };
-
-	double snapDb(double db);
-
-	void attachToParameter(juce::AudioProcessorValueTreeState& params) {
+	void attachToParameter(juce::AudioProcessorValueTreeState& params, const juce::String& paramId) {
 		attachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
-			params, info.paramID, *this
+			params, paramId, *this
 		);
 	}
 
 private:
-	ParameterInfo info;
 	std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> attachment;
 	double snapValue(double attemptedValue, DragMode) override;
 };
