@@ -1,86 +1,53 @@
 #include "SN06KnobPrecise.h"
 
-SN06KnobPrecise::SN06KnobPrecise (double defaultValue)
+SN06KnobPrecise::SN06KnobPrecise (const ParameterInfo& i)
+	: info (i)
 {
+	double defaultValue = dbToNormalized(info.defaultDb);
+
 	setSliderStyle (juce::Slider::RotaryHorizontalVerticalDrag);
 	setTextBoxStyle (juce::Slider::NoTextBox, false, 0, 0);
 
+	setVelocityBasedMode (true);
 	setDoubleClickReturnValue (true, defaultValue);
 
-	// === JUCE-native behaviour (DO NOT bypass) ===
-	setVelocityBasedMode (true);
-
-	setVelocityModeParameters (
-		0.9,   // sensitivity
-		1,	   // threshold
-		0.08,  // offset
-		false
+	setVelocityModeParameters(
+		0.3,    // sensitivity, smaller = more precise
+		0.3,    // threshold, allow slow drags to work
+		0.05,   // offset, small base movement
+		true    // skipAccelerationForSmallChanges
 	);
-
-	setMouseDragSensitivity ((int) rangePixels);
-
-	lastValue = defaultValue;
-
-	// Linked inverse knob logic (JUCE-safe)
-	onValueChange = [this]
-	{
-		handleLinkedKnob();
-		lastValue = getValue();
-	};
-}
-
-//==================================================
-void SN06KnobPrecise::setRangePixels (float pixels)
-{
-	rangePixels = pixels;
-	setMouseDragSensitivity ((int) rangePixels);
-}
-
-void SN06KnobPrecise::setRangeAbsolute (float absolute)
-{
-	rangeAbs = absolute;
-}
-
-float SN06KnobPrecise::getRangeAbsolute() const
-{
-	return rangeAbs;
-}
-
-void SN06KnobPrecise::setLinkInversed (SN06KnobPrecise* other)
-{
-	linked = other;
 }
 
 //==================================================
 void SN06KnobPrecise::mouseDown (const juce::MouseEvent& e)
 {
-	// Ctrl / Cmd = reset (legacy behavior)
+	// Ctrl + Click = reset
 	if (e.mods.isCtrlDown() || e.mods.isCommandDown())
 	{
-		setValue (getDoubleClickReturnValue(),
-				  juce::sendNotificationSync);
+		setValue (getDoubleClickReturnValue(), juce::sendNotificationSync);
 		return;
 	}
 
-	lastValue = getValue();
 	juce::Slider::mouseDown (e);
 }
 
 //==================================================
-void SN06KnobPrecise::handleLinkedKnob()
+double SN06KnobPrecise::snapDb(double db)
 {
-	if (linked == nullptr)
-		return;
+	double step = juce::ModifierKeys::getCurrentModifiers().isShiftDown() ? 0.1 : 1.0;
+	return std::round(db / step) * step;
+}
 
-	// Alt = inverse linked knob
-	if (! juce::ModifierKeys::getCurrentModifiers().isAltDown())
-		return;
+//==================================================
+double SN06KnobPrecise::snapValue(double attemptedValue, DragMode dragMode)
+{
+	double db = normalizedToDb(attemptedValue);
+	if (dragMode != Slider::notDragging) {
+		bool shift = juce::ModifierKeys::getCurrentModifiers().isShiftDown();
+		double step = shift ? 0.1 : 1.0;
+		db = std::round(db / step) * step;
+	}
 
-	const double delta = getValue() - lastValue;
-
-	linked->setValue (
-		juce::jlimit (linked->getMinimum(),
-					  linked->getMaximum(),
-					  linked->getValue() - delta),
-		juce::sendNotificationSync);
+	return dbToNormalized(db);
 }

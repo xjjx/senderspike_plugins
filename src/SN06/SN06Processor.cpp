@@ -21,16 +21,33 @@ SN06Processor::SN06Processor()
 		  .withInput  ("Input",  juce::AudioChannelSet::stereo(), true)
 		  .withOutput ("Output", juce::AudioChannelSet::stereo(), true)
   ),
-  parameters(*this, nullptr, "PARAMETERS",
-	{
-		std::make_unique<juce::AudioParameterFloat>("gain", "Gain", 0.0f, 1.0f, 0.25f),
-		std::make_unique<juce::AudioParameterFloat>("trim", "Trim", 0.0f, 1.0f, 0.50f),
-		std::make_unique<juce::AudioParameterFloat>("volume", "Volume", 0.0f, 1.0f, 0.75f)
-	})
+  parameters(*this, nullptr) // minimal constructor
 {
 	_erfL = 0.0;
 	_erfR = 0.0;
 	_norm = 1e-15;
+
+	// Now add parameters using ParameterInfos
+
+	float step = 0.1f;
+	for (auto& info : parameterInfos)
+	{
+		float normalizedDefault = (info.defaultDb - info.minDb) / (info.maxDb - info.minDb);
+
+		juce::NormalisableRange<float> range(0.0f, 1.0f);
+		range.interval = step / (info.maxDb - info.minDb);
+
+		parameters.createAndAddParameter(
+			std::make_unique<juce::AudioParameterFloat>(
+				info.paramID,
+				info.paramID,
+				range,
+				normalizedDefault
+			)
+		);
+	}
+
+	parameters.state = juce::ValueTree("PARAMETERS"); // finalize
 }
 
 bool SN06Processor::isBusesLayoutSupported(const BusesLayout& layouts) const
@@ -55,14 +72,17 @@ template <typename Sample>
 void SN06Processor::processImpl(Sample** in, Sample** out, int numSamples)
 {
 	// Read parameters once per block
-	const float gainParam	= *parameters.getRawParameterValue("gain");
-	const float trimParam	= *parameters.getRawParameterValue("trim");
+	const float gainParam   = *parameters.getRawParameterValue("gain");
+	const float trimParam   = *parameters.getRawParameterValue("trim");
 	const float volumeParam = *parameters.getRawParameterValue("volume");
 
-	// Parameter mapping
-	const double trim  = dB2lin(trimParam	* 40.0 - 20.0);
-	const double volu  = dB2lin(volumeParam * 64.0 - 48.0);
-	const double drive = dB2lin(gainParam	* 32.0 - 8.0);
+	const auto& gainInfo   = parameterInfos[SNE_GAIN]; // gain
+	const auto& trimInfo   = parameterInfos[SNE_TRIM]; // trim
+	const auto& volumeInfo = parameterInfos[SNE_VOLU]; // volume
+
+	const double drive = dB2lin(gainInfo.normalizedToDb(gainParam));
+	const double trim  = dB2lin(trimInfo.normalizedToDb(trimParam));
+	const double volu  = dB2lin(volumeInfo.normalizedToDb(volumeParam));
 
 	// Crossfade coefficients (NO gain here)
 	const double fact = gainParam * 0.55;
@@ -82,6 +102,7 @@ void SN06Processor::processImpl(Sample** in, Sample** out, int numSamples)
 		L *= trim;
 		R *= trim;
 
+		// Copy for input meter
 		iL = L;
 		iR = R;
 

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <juce_gui_basics/juce_gui_basics.h>
+#include "ParameterLabel.h"
 #include <SN06PeakMeter.h>
 #include <SN06PeakLed.h>
 #include "SN06KnobLookAndFeel.h"
@@ -26,24 +27,24 @@ private:
 
 	SN06KnobLookAndFeel largeLNF;
 	SN06KnobLookAndFeel screwLNF;
-	SN06KnobPrecise trimKnob;
-	SN06KnobPrecise gainKnob;
-	SN06KnobPrecise volumeKnob;
 
-	juce::Label volumeLabel;
-	juce::Label gainLabel;
-	juce::Label trimLabel;
+	std::unique_ptr<SN06KnobPrecise> gainKnob;
+	std::unique_ptr<SN06KnobPrecise> trimKnob;
+	std::unique_ptr<SN06KnobPrecise> volumeKnob;
 
-	std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> gainAttachment;
-	std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> trimAttachment;
-	std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> volumeAttachment;
+	std::unique_ptr<ParameterLabel> gainLabel;
+	std::unique_ptr<ParameterLabel> trimLabel;
+	std::unique_ptr<ParameterLabel> volumeLabel;
 
 	SN06PeakMeter inputMeter;
 	SN06PeakMeter outputMeter;
 	SN06PeakLed peakLed;
 
-	void setupKnobLabel(SN06KnobPrecise& knob, juce::Label& label,
-		const char* paramID, float scale, float offset);
+	std::unique_ptr<SN06KnobPrecise> setupKnobAndLabel(
+		const ParameterInfo& info,
+		juce::LookAndFeel* lnF,
+		ParameterLabel& label
+	);
 
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SN06Editor)
 };

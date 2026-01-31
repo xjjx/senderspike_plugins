@@ -1,28 +1,28 @@
 #pragma once
 
+#include <juce_audio_processors/juce_audio_processors.h>
 #include <juce_gui_basics/juce_gui_basics.h>
+#include "ParameterInfo.h"
 
 class SN06KnobPrecise : public juce::Slider
 {
 public:
-	explicit SN06KnobPrecise (double defaultValue);
-
-	// legacy-compatible API
-	void setRangePixels (float pixels);
-	void setRangeAbsolute (float absolute);
-	float getRangeAbsolute() const;
-
-	void setLinkInversed (SN06KnobPrecise* other);
-
+	explicit SN06KnobPrecise (const ParameterInfo& i);
 	void mouseDown (const juce::MouseEvent&) override;
 
+	float normalizedToDb (float norm) { return info.normalizedToDb(norm); };
+	float dbToNormalized (float db) { return info.dbToNormalized(db); };
+
+	double snapDb(double db);
+
+	void attachToParameter(juce::AudioProcessorValueTreeState& params) {
+		attachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
+			params, info.paramID, *this
+		);
+	}
+
 private:
-	void handleLinkedKnob();
-
-	SN06KnobPrecise* linked = nullptr;
-
-	float rangePixels = 400.0f;
-	float rangeAbs	  = 1.0f;
-
-	double lastValue = 0.0;
+	ParameterInfo info;
+	std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> attachment;
+	double snapValue(double attemptedValue, DragMode) override;
 };

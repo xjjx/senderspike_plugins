@@ -13,14 +13,21 @@
 #include <juce_audio_processors/juce_audio_processors.h>
 #include <cmath>
 #include <atomic>
+#include "ParameterInfo.h"
 #include "sn_core.h"
 
 enum
 {
 	SNE_GAIN = 0,	// drive
-	SNE_TRIM,		// input volume
-	SNE_VOLU,		// output volume
-	SNE_SIZE,		// num of params
+	SNE_TRIM,	// input volume
+	SNE_VOLU,	// output volume
+	SNE_SIZE,	// num of params
+};
+
+static const std::vector<ParameterInfo> parameterInfos = {
+	{ -8.0f, 24.0f, 0.0f, "gain" },
+	{ -20.0f, 20.0f, 0.0f, "trim" },
+	{ -48.0f, 16.0f, 0.0f, "volume" }
 };
 
 class SN06Processor : public juce::AudioProcessor
