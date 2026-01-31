@@ -36,10 +36,11 @@ SN06Processor::SN06Processor()
 		// Create parameter with default in dB
 		parameters.createAndAddParameter(
 			std::make_unique<juce::AudioParameterFloat>(
-				info.paramID,		  // parameter ID
-				info.paramID,		  // name shown in host
-				range,				  // now in dB
-				info.defaultDb		  // default in dB
+				info.paramID,	// parameter ID
+				info.paramID,	// name shown in host
+				range,			// now in dB
+				info.defaultDb,	// default in dB
+				info.unit		// unit	
 			)
 		);
 	}

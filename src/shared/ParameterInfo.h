@@ -9,6 +9,7 @@ struct ParameterInfo
 	float maxDb;
 	float defaultDb;
 	std::string paramID;
+	std::string unit;
 
 	float rangeDb() const noexcept {
 		return maxDb - minDb;

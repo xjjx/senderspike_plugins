@@ -25,9 +25,9 @@ enum
 };
 
 static const std::vector<ParameterInfo> parameterInfos = {
-	{ -8.0f, 24.0f, 0.0f, "gain" },
-	{ -20.0f, 20.0f, 0.0f, "trim" },
-	{ -48.0f, 16.0f, 0.0f, "volume" }
+	{ -8.0f, 24.0f, 0.0f, "gain", "dB" },
+	{ -20.0f, 20.0f, 0.0f, "trim", "dB" },
+	{ -48.0f, 16.0f, 0.0f, "volume", "dB" }
 };
 
 class SN06Processor : public juce::AudioProcessor
