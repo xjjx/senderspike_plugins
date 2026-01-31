@@ -101,11 +101,10 @@ jobs:
         name: linux-vst
         path: linux_build
 
-    # --- In future, add download for Windows artifacts here ---
-    # - uses: actions/download-artifact@v4
-    #   with:
-    #     name: windows-vst
-    #     path: windows_build
+    - uses: actions/download-artifact@v4
+      with:
+        name: windows-vst
+        path: windows_build
 
     - name: Create ZIP with commit hash
       run: |
