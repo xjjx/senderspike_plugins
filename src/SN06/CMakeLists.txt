@@ -16,7 +16,6 @@ juce_add_plugin(SN06
 juce_add_binary_data(SN06_BinaryData
     SOURCES
         ../graphics/sn06g/sn06g_bk.png
-        ../graphics/sn06g/sn06g_vu.png
         ../graphics/sn06g/sn06g_b1.png
         ../graphics/sn01g/sn01g_b1.png
 )
@@ -30,10 +29,6 @@ target_sources(SN06
     PRIVATE
         SN06Processor.cpp
         SN06Editor.cpp
-        ../shared/SNKnobPrecise.cpp
-        ../shared/SNKnobLookAndFeel.cpp
-        ../shared/ParameterLabel.cpp
-        ../shared/sn_core.cpp
 )
 
 # ----------------------
@@ -42,7 +37,6 @@ target_sources(SN06
 target_include_directories(SN06
     PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}
-        ${CMAKE_CURRENT_SOURCE_DIR}/../shared
 )
 
 # ----------------------
@@ -52,7 +46,7 @@ target_compile_definitions(SN06
     PRIVATE
         JUCE_WEB_BROWSER=0
         JUCE_USE_CURL=0
-	JUCE_VST3_CAN_REPLACE_VST2=0
+        JUCE_VST3_CAN_REPLACE_VST2=0
 )
 
 # ----------------------
@@ -60,6 +54,7 @@ target_compile_definitions(SN06
 # ----------------------
 target_link_libraries(SN06
     PRIVATE
+        SN
         juce::juce_audio_utils
         juce::juce_audio_processors
         juce::juce_core

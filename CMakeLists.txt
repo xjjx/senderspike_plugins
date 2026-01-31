@@ -37,4 +37,5 @@ endif()
 # ----------------------
 # Add plugins
 # ----------------------
+add_subdirectory(src/shared)
 add_subdirectory(src/SN06)
