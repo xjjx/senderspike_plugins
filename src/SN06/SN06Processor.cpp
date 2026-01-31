@@ -84,9 +84,11 @@ void SN06Processor::processImpl(Sample** in, Sample** out, int numSamples)
 	const double trim  = dB2lin(trimInfo.normalizedToDb(trimParam));
 	const double volu  = dB2lin(volumeInfo.normalizedToDb(volumeParam));
 
-	// Crossfade coefficients (NO gain here)
-	const double fact = gainParam * 0.55;
-	const double invf = 1.0 - fact;
+	// Crossfade coefficients
+	double fact = gainParam * 0.55;
+	double invf = 1.0 - fact;
+	fact *= drive;
+	invf *= drive;
 
 	double L, R, eL, eR, iL, iR;
 
@@ -111,8 +113,8 @@ void SN06Processor::processImpl(Sample** in, Sample** out, int numSamples)
 		eR = _erfR;
 
 		// Nonlinear stage
-		_erfL = std::erf((L * drive) + _norm);
-		_erfR = std::erf((R * drive) + _norm);
+		_erfL = std::erf(L + _norm);
+		_erfR = std::erf(R + _norm);
 
 		// Memory crossfade
 		L = eL * fact + L * invf;
