@@ -46,6 +46,10 @@ SN06Editor::SN06Editor(SN06Processor& p)
 
 	// Set initial size based on background
 	setSize(background.getWidth(), background.getHeight());
+	setResizable(true, true);
+	getConstrainer()->setFixedAspectRatio(
+		(float)background.getWidth() / (float)background.getHeight()
+	);
 
 	startTimerHz(30); // GUI refresh rate
 }
@@ -89,22 +93,48 @@ void SN06Editor::paint(juce::Graphics& g)
 //---------------------------------------------------------
 void SN06Editor::resized()
 {
-	// Scale knobs relative to editor size
-//	  float scaleX = (float)getWidth() / background.getWidth();
-//	  float scaleY = (float)getHeight() / background.getHeight();
+	// Reference size (original editor background)
+	const float refWidth  = (float)background.getWidth();
+	const float refHeight = (float)background.getHeight();
 
-	// Temporary positions (we’ll match original layout later)
-	trimKnob->setBounds(45, 37, 30, 30);
-	gainKnob->setBounds(80, 100, 80, 80);
-	volumeKnob->setBounds(80, 230, 80, 80);
+	// Current editor size
+	const float w = (float)getWidth();
+	const float h = (float)getHeight();
 
-	volumeLabel->getLabel().setBounds(30, 314, 30, 14);
-	gainLabel->getLabel().setBounds(30, 184, 30, 14);
-	trimLabel->getLabel().setBounds(44, 74, 30, 12);
+	// Single scale factor to preserve aspect ratio
+	const float scale = std::min(w / refWidth, h / refHeight);
 
-	inputMeter.setBounds (112, 42, 100, 5);
-	outputMeter.setBounds (112, 52, 100, 5);
-	peakLed.setBounds (180, 307, 10, 10);
+	// Compute offsets to center the GUI if window is larger than original ratio
+	const float offsetX = (w - refWidth * scale) / 2.0f;
+	const float offsetY = (h - refHeight * scale) / 2.0f;
+
+	// Helper lambda to scale and offset rectangles
+	auto scaledRect = [&](int x, int y, int width, int height)
+	{
+		return juce::Rectangle<int>(
+			static_cast<int>(offsetX + x * scale),
+			static_cast<int>(offsetY + y * scale),
+			static_cast<int>(width * scale),
+			static_cast<int>(height * scale)
+		);
+	};
+
+	// Knobs
+	trimKnob->setBounds(scaledRect(45, 37, 30, 30));
+	gainKnob->setBounds(scaledRect(80, 100, 80, 80));
+	volumeKnob->setBounds(scaledRect(80, 230, 80, 80));
+
+	// Labels
+	trimLabel->getLabel().setBounds(scaledRect(44, 74, 30, 12));
+	gainLabel->getLabel().setBounds(scaledRect(30, 184, 30, 14));
+	volumeLabel->getLabel().setBounds(scaledRect(30, 314, 30, 14));
+
+	// Meters
+	inputMeter.setBounds(scaledRect(112, 42, 100, 5));
+	outputMeter.setBounds(scaledRect(112, 52, 100, 5));
+
+	// Peak LED
+	peakLed.setBounds(scaledRect(180, 307, 10, 10));
 }
 
 void SN06Editor::timerCallback()
