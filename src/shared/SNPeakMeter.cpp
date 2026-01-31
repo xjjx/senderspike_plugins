@@ -15,12 +15,13 @@ void SNPeakMeter::setLevel(float val)
 //		DBG("new val meter =" + juce::String(val, 4) + " level = " + juce::String(level, 4));
 
 	// decay
-	val = std::max(level * 0.95f, val);
+	float decay = juce::Decibels::decibelsToGain(-decayDbPerSecond / fps);
+
+	level = std::max (val, level * decay);
 
 	// clamp 0..1
-	level = juce::jlimit(0.0f, 1.0f, val);
+	level = juce::jlimit(0.0f, 1.0f, level);
 //	DBG("new max val meter =" + juce::String(val, 4));
-
 }
 
 void SNPeakMeter::setRange(float dB)

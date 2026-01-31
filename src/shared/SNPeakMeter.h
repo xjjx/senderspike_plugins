@@ -17,4 +17,6 @@ private:
 	juce::Image ledImage;
 	float level = 0.0f; // linear 0..1
 	float range = 72.0f;
+	float fps = 30.0f; // must be in sync with timer
+	float decayDbPerSecond = 24.0f;
 };
