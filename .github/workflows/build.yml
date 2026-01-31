@@ -78,7 +78,7 @@ jobs:
       run: |
         COMMIT_HASH=$(git rev-parse --short HEAD)
         mkdir SenderSpikePlugins
-        mv linux_build/release SenderSpikePlugins/Linux
+        mv linux_build SenderSpikePlugins/Linux
         # mv windows_build SenderSpikePlugins/Windows  # for future Windows files
         zip -r SenderSpikePlugins-$COMMIT_HASH.zip SenderSpikePlugins/
         echo "ZIP_NAME=SenderSpikePlugins-$COMMIT_HASH.zip" >> $GITHUB_ENV
