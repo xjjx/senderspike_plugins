@@ -58,14 +58,14 @@ SN06Editor::~SN06Editor()
 }
 
 //---------------------------------------------------------
-std::unique_ptr<SN06KnobPrecise> SN06Editor::setupKnobAndLabel(
+std::unique_ptr<SNKnobPrecise> SN06Editor::setupKnobAndLabel(
 	const ParameterInfo& info,
 	juce::LookAndFeel* lnF,
 	ParameterLabel& label)
 {
 	auto& params = processor.getParameters();
 
-	auto knob = std::make_unique<SN06KnobPrecise>(info);
+	auto knob = std::make_unique<SNKnobPrecise>(info);
 	knob->setLookAndFeel(lnF);
 
 	addAndMakeVisible(*knob);

@@ -28,10 +28,10 @@ target_link_libraries(SN06 PRIVATE SN06_BinaryData)
 # ----------------------
 target_sources(SN06
     PRIVATE
-         SN06Processor.cpp
-         SN06Editor.cpp
-         SN06KnobPrecise.cpp
-         SN06KnobLookAndFeel.cpp
+        SN06Processor.cpp
+        SN06Editor.cpp
+        ../shared/SNKnobPrecise.cpp
+        ../shared/SNKnobLookAndFeel.cpp
         ../shared/ParameterLabel.cpp
         ../shared/sn_core.cpp
 )

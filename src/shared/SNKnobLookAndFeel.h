@@ -2,14 +2,14 @@
 
 #include <juce_gui_basics/juce_gui_basics.h>
 
-class SN06KnobLookAndFeel : public juce::LookAndFeel_V4
+class SNKnobLookAndFeel : public juce::LookAndFeel_V4
 {
 public:
 	// Constructor
-	explicit SN06KnobLookAndFeel(const juce::Image& filmstripImage);
+	explicit SNKnobLookAndFeel(const juce::Image& filmstripImage);
 
 	// Optional: default constructor if you want to assign image later
-	SN06KnobLookAndFeel() = default;
+	SNKnobLookAndFeel() = default;
 
 	// Override JUCE rotary slider draw
 	void drawRotarySlider(juce::Graphics& g,

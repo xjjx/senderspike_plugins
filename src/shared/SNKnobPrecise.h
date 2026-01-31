@@ -4,10 +4,10 @@
 #include <juce_gui_basics/juce_gui_basics.h>
 #include "ParameterInfo.h"
 
-class SN06KnobPrecise : public juce::Slider
+class SNKnobPrecise : public juce::Slider
 {
 public:
-	explicit SN06KnobPrecise (const ParameterInfo& i);
+	explicit SNKnobPrecise (const ParameterInfo& i);
 	void mouseDown (const juce::MouseEvent&) override;
 
 	float normalizedToDb (float norm) { return info.normalizedToDb(norm); };

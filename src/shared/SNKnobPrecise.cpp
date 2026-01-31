@@ -1,6 +1,6 @@
-#include "SN06KnobPrecise.h"
+#include "SNKnobPrecise.h"
 
-SN06KnobPrecise::SN06KnobPrecise (const ParameterInfo& i)
+SNKnobPrecise::SNKnobPrecise (const ParameterInfo& i)
 	: info (i)
 {
 	double defaultValue = dbToNormalized(info.defaultDb);
@@ -20,7 +20,7 @@ SN06KnobPrecise::SN06KnobPrecise (const ParameterInfo& i)
 }
 
 //==================================================
-void SN06KnobPrecise::mouseDown (const juce::MouseEvent& e)
+void SNKnobPrecise::mouseDown (const juce::MouseEvent& e)
 {
 	// Ctrl + Click = reset
 	if (e.mods.isCtrlDown() || e.mods.isCommandDown())
@@ -33,14 +33,14 @@ void SN06KnobPrecise::mouseDown (const juce::MouseEvent& e)
 }
 
 //==================================================
-double SN06KnobPrecise::snapDb(double db)
+double SNKnobPrecise::snapDb(double db)
 {
 	double step = juce::ModifierKeys::getCurrentModifiers().isShiftDown() ? 0.1 : 1.0;
 	return std::round(db / step) * step;
 }
 
 //==================================================
-double SN06KnobPrecise::snapValue(double attemptedValue, DragMode dragMode)
+double SNKnobPrecise::snapValue(double attemptedValue, DragMode dragMode)
 {
 	double db = normalizedToDb(attemptedValue);
 	if (dragMode != Slider::notDragging) {

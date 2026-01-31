@@ -4,10 +4,10 @@
 #include "BinaryData.h"
 #include "sn_core.h"
 
-class SN06PeakMeter : public juce::Component
+class SNPeakMeter : public juce::Component
 {
 public:
-	SN06PeakMeter()
+	SNPeakMeter()
 	{
 		// Load bitmap once
 		ledImage = juce::ImageCache::getFromMemory(

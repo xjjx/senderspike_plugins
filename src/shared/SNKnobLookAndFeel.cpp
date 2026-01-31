@@ -1,7 +1,7 @@
-#include "SN06KnobLookAndFeel.h"
+#include "SNKnobLookAndFeel.h"
 
 // Constructor
-SN06KnobLookAndFeel::SN06KnobLookAndFeel(const juce::Image& filmstripImage)
+SNKnobLookAndFeel::SNKnobLookAndFeel(const juce::Image& filmstripImage)
 	: knobStrip(filmstripImage)
 {
 	jassert(!knobStrip.isNull());
@@ -9,7 +9,7 @@ SN06KnobLookAndFeel::SN06KnobLookAndFeel(const juce::Image& filmstripImage)
 }
 
 // Optional setter
-void SN06KnobLookAndFeel::setImage(const juce::Image& filmstripImage)
+void SNKnobLookAndFeel::setImage(const juce::Image& filmstripImage)
 {
 	knobStrip = filmstripImage;
 	jassert(!knobStrip.isNull());
@@ -17,7 +17,7 @@ void SN06KnobLookAndFeel::setImage(const juce::Image& filmstripImage)
 }
 
 // Override JUCE rotary slider draw
-void SN06KnobLookAndFeel::drawRotarySlider(juce::Graphics& g,
+void SNKnobLookAndFeel::drawRotarySlider(juce::Graphics& g,
 	int x, int y, int width, int height,
 	float sliderPos,
 	float rotaryStartAngle,

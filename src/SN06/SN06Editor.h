@@ -2,10 +2,10 @@
 
 #include <juce_gui_basics/juce_gui_basics.h>
 #include "ParameterLabel.h"
-#include <SN06PeakMeter.h>
-#include <SN06PeakLed.h>
-#include "SN06KnobLookAndFeel.h"
-#include "SN06KnobPrecise.h"
+#include <SNPeakMeter.h>
+#include <SNPeakLed.h>
+#include "SNKnobLookAndFeel.h"
+#include "SNKnobPrecise.h"
 
 class SN06Processor;
 
@@ -25,22 +25,22 @@ private:
 
 	juce::Image background;
 
-	SN06KnobLookAndFeel largeLNF;
-	SN06KnobLookAndFeel screwLNF;
+	SNKnobLookAndFeel largeLNF;
+	SNKnobLookAndFeel screwLNF;
 
-	std::unique_ptr<SN06KnobPrecise> gainKnob;
-	std::unique_ptr<SN06KnobPrecise> trimKnob;
-	std::unique_ptr<SN06KnobPrecise> volumeKnob;
+	std::unique_ptr<SNKnobPrecise> gainKnob;
+	std::unique_ptr<SNKnobPrecise> trimKnob;
+	std::unique_ptr<SNKnobPrecise> volumeKnob;
 
 	std::unique_ptr<ParameterLabel> gainLabel;
 	std::unique_ptr<ParameterLabel> trimLabel;
 	std::unique_ptr<ParameterLabel> volumeLabel;
 
-	SN06PeakMeter inputMeter;
-	SN06PeakMeter outputMeter;
-	SN06PeakLed peakLed;
+	SNPeakMeter inputMeter;
+	SNPeakMeter outputMeter;
+	SNPeakLed peakLed;
 
-	std::unique_ptr<SN06KnobPrecise> setupKnobAndLabel(
+	std::unique_ptr<SNKnobPrecise> setupKnobAndLabel(
 		const ParameterInfo& info,
 		juce::LookAndFeel* lnF,
 		ParameterLabel& label
