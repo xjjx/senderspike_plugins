@@ -2,9 +2,9 @@ name: Build Plugins and Tools
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, juce ]
   pull_request:
-    branches: [ main ]
+    branches: [ main, juce ]
 
 permissions:
   contents: write
@@ -20,14 +20,23 @@ jobs:
     - name: Get VST 2.4 SDK
       run: git clone https://github.com/R-Tur/VST_SDK_2.4.git
 
-    - name: Build NoGUI Plugins
-      run: make -f Makefile.nogui -j$(nproc)
+    - name: Build Plugins
+      run: |
+        cmake -B build -S . -DCMAKE_BUILD_TYPE=Release
+        cmake --build build --config Release -- -j$(nproc)
 
-    - name: Upload Linux artifacts
+    - name: Prepare Artifacts
+      run: |
+        mkdir -p release
+        mv build/VST/libSN06-J-OpAmp.so release/
+        mv build/VST3/SN06-J-OpAmp.vst3 release/
+        mv build/LV2/SN06-J-OpAmp.lv2 release/
+
+    - name: Upload Artifacts
       uses: actions/upload-artifact@v4
       with:
         name: linux-vst
-        path: SN*.so
+        path: release/**
 
   release:
     runs-on: ubuntu-latest
@@ -52,7 +61,7 @@ jobs:
       run: |
         COMMIT_HASH=$(git rev-parse --short HEAD)
         mkdir SenderSpikePlugins
-        mv linux_build SenderSpikePlugins/Linux
+        mv linux_build/release SenderSpikePlugins/Linux
         # mv windows_build SenderSpikePlugins/Windows  # for future Windows files
         zip -r SenderSpikePlugins-$COMMIT_HASH.zip SenderSpikePlugins/
         echo "ZIP_NAME=SenderSpikePlugins-$COMMIT_HASH.zip" >> $GITHUB_ENV
