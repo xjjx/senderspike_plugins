@@ -3,7 +3,7 @@ juce_add_plugin(SN06
     PLUGIN_MANUFACTURER_CODE SNFX
     PLUGIN_CODE SN6J
 
-    FORMATS VST3 VST
+    FORMATS LV2 VST3 VST
     PRODUCT_NAME "SN06-J-OpAmp"
     PLUGIN_NAME "SN06-J OpAmp"
 
@@ -11,6 +11,8 @@ juce_add_plugin(SN06
     NEEDS_MIDI_INPUT FALSE
     NEEDS_MIDI_OUTPUT FALSE
     IS_MIDI_EFFECT FALSE
+
+	LV2URI "urn:signalsnoise:sn06"
 )
 
 juce_add_binary_data(SN06_BinaryData
