@@ -52,7 +52,7 @@ jobs:
     - name: Upload Artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: linux-vst
+        name: linux-plugins
         path: release/**
 
   build-windows:
@@ -76,16 +76,23 @@ jobs:
           cmake --build build --config Release --parallel
   
       - name: Prepare Artifacts
+        shell: pwsh
         run: |
-          mkdir release
-          move build\VST\Release\SN06-J-OpAmp.dll release\
-          move build\VST3\Release\SN06-J-OpAmp.vst3 release\
-        shell: cmd
-  
+          New-Item -ItemType Directory -Force release | Out-Null
+          
+          Get-ChildItem build\VST -Filter *.dll -Recurse |
+            Move-Item -Destination release\
+            
+          Get-ChildItem build\VST3 -Filter *.vst3 -Recurse |
+            Move-Item -Destination release\
+
+          Get-ChildItem build\LV2 -Filter *.lv2 -Recurse |
+            Move-Item -Destination release\
+
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: windows-vst
+          name: windows-plugins
           path: release/**
 
   release:
@@ -98,12 +105,12 @@ jobs:
     - name: Download Linux artifacts
       uses: actions/download-artifact@v4
       with:
-        name: linux-vst
+        name: linux-plugins
         path: linux_build
 
     - uses: actions/download-artifact@v4
       with:
-        name: windows-vst
+        name: windows-plugins
         path: windows_build
 
     - name: Create ZIP with commit hash
