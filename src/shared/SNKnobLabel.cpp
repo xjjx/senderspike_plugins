@@ -12,7 +12,7 @@ void SNKnobLabel::attachKnob(SNKnobPrecise& knob)
 {
 	// Set initial value
 	const float db = (float) knob.getValue();
-	setText(juce::String(db, 1), juce::dontSendNotification);
+	setText(juce::String(db, 2), juce::dontSendNotification);
 
 	this->onTextChange = [this, &knob]
 	{
