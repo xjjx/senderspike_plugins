@@ -2,7 +2,7 @@
 //
 //	file:		sn_06e.h
 //
-//	purpose:	SN06 op-amp effect
+//	purpose:	SignalNoiseOpamp op-amp effect
 //
 //	authors:	2020 Oto Spál
 //
@@ -30,11 +30,11 @@ static const std::vector<ParameterInfo> parameterInfos = {
 	{ -48.0f, 16.0f, 0.0f, "volume", "dB" }
 };
 
-class SN06Processor : public juce::AudioProcessor
+class SignalNoiseOpampProcessor : public juce::AudioProcessor
 {
 public:
-	SN06Processor();
-	~SN06Processor() override = default;
+	SignalNoiseOpampProcessor();
+	~SignalNoiseOpampProcessor() override = default;
 
 	// JUCE overrides
 	void prepareToPlay(double sampleRate, int samplesPerBlock) override;
@@ -47,7 +47,7 @@ public:
 	bool hasEditor() const override { return true; }
 	juce::AudioProcessorValueTreeState& getParameters() { return parameters; }
 
-	const juce::String getName() const override { return "SN06"; }
+	const juce::String getName() const override { return "SignalNoiseOpamp"; }
 	bool acceptsMidi() const override { return false; }
 	bool producesMidi() const override { return false; }
 	double getTailLengthSeconds() const override { return 0.0; }

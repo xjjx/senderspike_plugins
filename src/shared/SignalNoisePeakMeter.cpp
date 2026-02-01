@@ -1,7 +1,7 @@
-#include "SNPeakMeter.h"
+#include "SignalNoisePeakMeter.h"
 #include "BinaryData.h"
 
-SNPeakMeter::SNPeakMeter()
+SignalNoisePeakMeter::SignalNoisePeakMeter()
 {
 	// Load bitmap once
 	ledImage = juce::ImageCache::getFromMemory(
@@ -10,7 +10,7 @@ SNPeakMeter::SNPeakMeter()
 	);
 }
 
-void SNPeakMeter::setLevel(float val)
+void SignalNoisePeakMeter::setLevel(float val)
 {
 //		DBG("new val meter =" + juce::String(val, 4) + " level = " + juce::String(level, 4));
 
@@ -24,12 +24,12 @@ void SNPeakMeter::setLevel(float val)
 //	DBG("new max val meter =" + juce::String(val, 4));
 }
 
-void SNPeakMeter::setRange(float dB)
+void SignalNoisePeakMeter::setRange(float dB)
 {
 	range = dB;
 }
 
-void SNPeakMeter::paint(juce::Graphics& g)
+void SignalNoisePeakMeter::paint(juce::Graphics& g)
 {
 	if (!ledImage.isValid())
 		return;

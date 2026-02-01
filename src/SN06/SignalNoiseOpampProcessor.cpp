@@ -2,24 +2,24 @@
 //
 //	file:		sn_06e.cpp
 //
-//	purpose:	SN06 op-amp effect
+//	purpose:	SignalNoiseOpamp op-amp effect
 //				- TODO: switch to invert/keep phase of feedback
 //
 //	authors:	2020 Oto Spál
 //
 //------------------------------------------------------------------------------------
 
-#include "SN06Processor.h"
-#include "SN06Editor.h"
+#include "SignalNoiseOpampProcessor.h"
+#include "SignalNoiseOpampEditor.h"
 
 // ----------------------
 // Constructor
 // ----------------------
-SN06Processor::SN06Processor()
+SignalNoiseOpampProcessor::SignalNoiseOpampProcessor()
 : AudioProcessor(
-	  BusesProperties()
-		  .withInput  ("Input",  juce::AudioChannelSet::stereo(), true)
-		  .withOutput ("Output", juce::AudioChannelSet::stereo(), true)
+	BusesProperties()
+		.withInput  ("Input",  juce::AudioChannelSet::stereo(), true)
+		.withOutput ("Output", juce::AudioChannelSet::stereo(), true)
   ),
   parameters(*this, nullptr) // minimal constructor
 {
@@ -49,7 +49,7 @@ SN06Processor::SN06Processor()
 	parameters.state = juce::ValueTree("PARAMETERS"); // finalize
 }
 
-bool SN06Processor::isBusesLayoutSupported(const BusesLayout& layouts) const
+bool SignalNoiseOpampProcessor::isBusesLayoutSupported(const BusesLayout& layouts) const
 {
 	return layouts.getMainInputChannelSet()  == juce::AudioChannelSet::stereo()
 		&& layouts.getMainOutputChannelSet() == juce::AudioChannelSet::stereo();
@@ -58,7 +58,7 @@ bool SN06Processor::isBusesLayoutSupported(const BusesLayout& layouts) const
 // ----------------------
 // Playback
 // ----------------------
-void SN06Processor::prepareToPlay(double sampleRate, int /*samplesPerBlock*/)
+void SignalNoiseOpampProcessor::prepareToPlay(double sampleRate, int /*samplesPerBlock*/)
 {
 	_hpfL.setup(15.0, sampleRate);
 	_hpfR.setup(15.0, sampleRate);
@@ -68,7 +68,7 @@ void SN06Processor::prepareToPlay(double sampleRate, int /*samplesPerBlock*/)
 // Audio processing
 // ----------------------
 template <typename Sample>
-void SN06Processor::processImpl(Sample** in, Sample** out, int numSamples)
+void SignalNoiseOpampProcessor::processImpl(Sample** in, Sample** out, int numSamples)
 {
 	// Read parameters once per block
 	const float gainParam	= *parameters.getRawParameterValue("gain");
@@ -145,14 +145,14 @@ void SN06Processor::processImpl(Sample** in, Sample** out, int numSamples)
 	}
 }
 
-void SN06Processor::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer&)
+void SignalNoiseOpampProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer&)
 {
 	float* in[2]  = { buffer.getWritePointer(0), buffer.getNumChannels() > 1 ? buffer.getWritePointer(1) : nullptr };
 	float* out[2] = { in[0], in[1] };
 	processImpl(in, out, buffer.getNumSamples());
 }
 
-void SN06Processor::processBlock(juce::AudioBuffer<double>& buffer, juce::MidiBuffer&)
+void SignalNoiseOpampProcessor::processBlock(juce::AudioBuffer<double>& buffer, juce::MidiBuffer&)
 {
 	double* in[2]  = { buffer.getWritePointer(0), buffer.getNumChannels() > 1 ? buffer.getWritePointer(1) : nullptr };
 	double* out[2] = { in[0], in[1] };
@@ -162,14 +162,14 @@ void SN06Processor::processBlock(juce::AudioBuffer<double>& buffer, juce::MidiBu
 // ----------------------
 // State
 // ----------------------
-void SN06Processor::getStateInformation(juce::MemoryBlock& destData)
+void SignalNoiseOpampProcessor::getStateInformation(juce::MemoryBlock& destData)
 {
 	auto state = parameters.copyState();
 	std::unique_ptr<juce::XmlElement> xml(state.createXml());
 	copyXmlToBinary(*xml, destData);
 }
 
-void SN06Processor::setStateInformation(const void* data, int sizeInBytes)
+void SignalNoiseOpampProcessor::setStateInformation(const void* data, int sizeInBytes)
 {
 	std::unique_ptr<juce::XmlElement> xml(getXmlFromBinary(data, sizeInBytes));
 	if (xml)
@@ -177,9 +177,9 @@ void SN06Processor::setStateInformation(const void* data, int sizeInBytes)
 }
 
 // Editor
-juce::AudioProcessorEditor* SN06Processor::createEditor()
+juce::AudioProcessorEditor* SignalNoiseOpampProcessor::createEditor()
 {
-	return new SN06Editor (*this);
+	return new SignalNoiseOpampEditor (*this);
 }
 
 // ----------------------
@@ -187,5 +187,5 @@ juce::AudioProcessorEditor* SN06Processor::createEditor()
 // ----------------------
 juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 {
-	return new SN06Processor();
+	return new SignalNoiseOpampProcessor();
 }

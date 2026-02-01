@@ -3,10 +3,10 @@
 #include <juce_audio_processors/juce_audio_processors.h>
 #include <juce_gui_basics/juce_gui_basics.h>
 
-class SNKnobPrecise : public juce::Slider
+class SignalNoiseKnobPrecise : public juce::Slider
 {
 public:
-	explicit SNKnobPrecise (float defaultDb);
+	explicit SignalNoiseKnobPrecise (float defaultDb);
 	void mouseDown (const juce::MouseEvent&) override;
 
 	void attachToParameter(juce::AudioProcessorValueTreeState& params, const juce::String& paramId) {

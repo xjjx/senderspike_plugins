@@ -2,10 +2,10 @@
 
 #include <juce_gui_basics/juce_gui_basics.h>
 
-class SNPeakLed : public juce::Component
+class SignalNoisePeakLed : public juce::Component
 {
 public:
-	SNPeakLed()
+	SignalNoisePeakLed()
 	{
 		setSize(12, 12); // default size
 	}

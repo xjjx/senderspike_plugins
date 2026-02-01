@@ -1,9 +1,9 @@
 add_library(SN STATIC
     sn_core.cpp
-    SNKnobLookAndFeel.cpp
-    SNKnobPrecise.cpp
-    SNPeakMeter.cpp
-    SNKnobLabel.cpp
+    SignalNoiseKnobLookAndFeel.cpp
+    SignalNoiseKnobPrecise.cpp
+    SignalNoisePeakMeter.cpp
+    SignalNoiseKnobLabel.cpp
 )
 
 juce_add_binary_data(SN_BinaryData

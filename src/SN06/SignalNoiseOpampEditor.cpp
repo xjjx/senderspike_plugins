@@ -1,9 +1,9 @@
 #include <juce_audio_processors/juce_audio_processors.h>
-#include "SN06Editor.h"
-#include "SN06Processor.h"
+#include "SignalNoiseOpampEditor.h"
+#include "SignalNoiseOpampProcessor.h"
 #include "BinaryData.h"
 
-SN06Editor::SN06Editor(SN06Processor& p)
+SignalNoiseOpampEditor::SignalNoiseOpampEditor(SignalNoiseOpampProcessor& p)
 	: AudioProcessorEditor(&p),
 	  processor(p)
 {
@@ -50,7 +50,7 @@ SN06Editor::SN06Editor(SN06Processor& p)
 	startTimerHz(30); // GUI refresh rate
 }
 
-SN06Editor::~SN06Editor()
+SignalNoiseOpampEditor::~SignalNoiseOpampEditor()
 {
 	trimKnob->setLookAndFeel(nullptr);
 	gainKnob->setLookAndFeel(nullptr);
@@ -58,14 +58,14 @@ SN06Editor::~SN06Editor()
 }
 
 //---------------------------------------------------------
-std::unique_ptr<SNKnobPrecise> SN06Editor::setupKnobAndLabel(
+std::unique_ptr<SignalNoiseKnobPrecise> SignalNoiseOpampEditor::setupKnobAndLabel(
 	const ParameterInfo& info,
 	juce::LookAndFeel* lnF,
-	SNKnobLabel& label)
+	SignalNoiseKnobLabel& label)
 {
 	auto& params = processor.getParameters();
 
-	auto knob = std::make_unique<SNKnobPrecise>(info.defaultDb);
+	auto knob = std::make_unique<SignalNoiseKnobPrecise>(info.defaultDb);
 	knob->setLookAndFeel(lnF);
 
 	addAndMakeVisible(*knob);
@@ -84,7 +84,7 @@ std::unique_ptr<SNKnobPrecise> SN06Editor::setupKnobAndLabel(
 }
 
 //---------------------------------------------------------
-void SN06Editor::paint(juce::Graphics& g)
+void SignalNoiseOpampEditor::paint(juce::Graphics& g)
 {
 	// Fill background with black if image fails
 	g.fillAll(juce::Colours::black);
@@ -94,7 +94,7 @@ void SN06Editor::paint(juce::Graphics& g)
 }
 
 //---------------------------------------------------------
-void SN06Editor::resized()
+void SignalNoiseOpampEditor::resized()
 {
 	// Reference size (original editor background)
 	const float refWidth  = (float)background.getWidth();
@@ -140,7 +140,7 @@ void SN06Editor::resized()
 	peakLed.setBounds(scaledRect(180, 307, 10, 10));
 }
 
-void SN06Editor::timerCallback()
+void SignalNoiseOpampEditor::timerCallback()
 {
 	inputMeter .setLevel(processor.getInputLevel());
 	outputMeter.setLevel(processor.getOutputLevel());

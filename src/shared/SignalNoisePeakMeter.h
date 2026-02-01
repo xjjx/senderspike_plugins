@@ -3,10 +3,10 @@
 #include <juce_audio_processors/juce_audio_processors.h>
 #include <juce_gui_basics/juce_gui_basics.h>
 
-class SNPeakMeter : public juce::Component
+class SignalNoisePeakMeter : public juce::Component
 {
 public:
-	SNPeakMeter();
+	SignalNoisePeakMeter();
 
 	void setLevel(float val);
 	void setRange(float dB);

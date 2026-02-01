@@ -1,6 +1,6 @@
-#include "SNKnobLabel.h"
+#include "SignalNoiseKnobLabel.h"
 
-SNKnobLabel::SNKnobLabel()
+SignalNoiseKnobLabel::SignalNoiseKnobLabel()
 {
 	setJustificationType(juce::Justification::centred);
 	setColour(juce::Label::textColourId, juce::Colours::lightgrey);
@@ -8,7 +8,7 @@ SNKnobLabel::SNKnobLabel()
 	setEditable(true, true, false);
 }
 
-void SNKnobLabel::attachKnob(SNKnobPrecise& knob)
+void SignalNoiseKnobLabel::attachKnob(SignalNoiseKnobPrecise& knob)
 {
 	// Set initial value
 	const float db = (float) knob.getValue();

@@ -1,6 +1,6 @@
-#include "SNKnobPrecise.h"
+#include "SignalNoiseKnobPrecise.h"
 
-SNKnobPrecise::SNKnobPrecise (float defaultDb)
+SignalNoiseKnobPrecise::SignalNoiseKnobPrecise (float defaultDb)
 {
 	setSliderStyle (juce::Slider::RotaryHorizontalVerticalDrag);
 	setTextBoxStyle (juce::Slider::NoTextBox, false, 0, 0);
@@ -17,7 +17,7 @@ SNKnobPrecise::SNKnobPrecise (float defaultDb)
 }
 
 //==================================================
-void SNKnobPrecise::mouseDown (const juce::MouseEvent& e)
+void SignalNoiseKnobPrecise::mouseDown (const juce::MouseEvent& e)
 {
 	// Ctrl + Click = reset
 	if (e.mods.isCtrlDown() || e.mods.isCommandDown())
@@ -30,7 +30,7 @@ void SNKnobPrecise::mouseDown (const juce::MouseEvent& e)
 }
 
 //==================================================
-double SNKnobPrecise::snapValue(double attemptedValue, DragMode dragMode)
+double SignalNoiseKnobPrecise::snapValue(double attemptedValue, DragMode dragMode)
 {
 	double db = attemptedValue;
 	if (dragMode != Slider::notDragging) {
