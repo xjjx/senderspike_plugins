@@ -46,10 +46,12 @@ SN06Editor::SN06Editor(SN06Processor& p)
 
 	// Set initial size based on background
 	setSize(background.getWidth(), background.getHeight());
+/*
 	setResizable(true, true);
 	getConstrainer()->setFixedAspectRatio(
 		(float)background.getWidth() / (float)background.getHeight()
 	);
+*/
 
 	startTimerHz(30); // GUI refresh rate
 }
