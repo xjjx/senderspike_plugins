@@ -26,12 +26,13 @@ SN06Processor::SN06Processor()
 	_erfL = 0.0;
 	_erfR = 0.0;
 	_norm = 1e-15;
+	float step = 0.01f;
 
 	// Now add parameters using ParameterInfos
 	for (auto& info : parameterInfos)
 	{
 		// Define the range in dB instead of normalized
-		juce::NormalisableRange<float> range(info.minDb, info.maxDb);
+		juce::NormalisableRange<float> range(info.minDb, info.maxDb, step);
 
 		// Create parameter with default in dB
 		parameters.createAndAddParameter(
