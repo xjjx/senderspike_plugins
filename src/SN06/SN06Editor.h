@@ -1,7 +1,6 @@
 #pragma once
 
 #include <juce_gui_basics/juce_gui_basics.h>
-#include "ParameterLabel.h"
 #include "SNPeakMeter.h"
 #include "SNPeakLed.h"
 #include "ParameterInfo.h"
@@ -33,9 +32,9 @@ private:
 	std::unique_ptr<SNKnobPrecise> trimKnob;
 	std::unique_ptr<SNKnobPrecise> volumeKnob;
 
-	std::unique_ptr<ParameterLabel> gainLabel;
-	std::unique_ptr<ParameterLabel> trimLabel;
-	std::unique_ptr<ParameterLabel> volumeLabel;
+    juce::Label gainLabel;
+    juce::Label trimLabel;
+    juce::Label volumeLabel;
 
 	SNPeakMeter inputMeter;
 	SNPeakMeter outputMeter;
@@ -44,7 +43,7 @@ private:
 	std::unique_ptr<SNKnobPrecise> setupKnobAndLabel(
 		const ParameterInfo& info,
 		juce::LookAndFeel* lnF,
-		ParameterLabel& label
+		juce::Label& label
 	);
 
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SN06Editor)

@@ -30,15 +30,9 @@ SN06Editor::SN06Editor(SN06Processor& p)
 	largeLNF.setImage(knobLargeImage);
 	screwLNF.setImage(knobScrewImage);
 
-	auto& params = processor.getParameters();
-
-	gainLabel = std::make_unique<ParameterLabel>(params, parameterInfos[SNE_GAIN].paramID);
-	trimLabel = std::make_unique<ParameterLabel>(params, parameterInfos[SNE_TRIM].paramID);
-	volumeLabel = std::make_unique<ParameterLabel>(params, parameterInfos[SNE_VOLU].paramID);
-
-	gainKnob   = setupKnobAndLabel(parameterInfos[SNE_GAIN], &largeLNF, *gainLabel);
-	trimKnob   = setupKnobAndLabel(parameterInfos[SNE_TRIM], &screwLNF, *trimLabel);
-	volumeKnob = setupKnobAndLabel(parameterInfos[SNE_VOLU], &largeLNF, *volumeLabel);
+	gainKnob   = setupKnobAndLabel(parameterInfos[SNE_GAIN], &largeLNF, gainLabel);
+	trimKnob   = setupKnobAndLabel(parameterInfos[SNE_TRIM], &screwLNF, trimLabel);
+	volumeKnob = setupKnobAndLabel(parameterInfos[SNE_VOLU], &largeLNF, volumeLabel);
 
 	addAndMakeVisible(inputMeter);
 	addAndMakeVisible(outputMeter);
@@ -67,7 +61,7 @@ SN06Editor::~SN06Editor()
 std::unique_ptr<SNKnobPrecise> SN06Editor::setupKnobAndLabel(
 	const ParameterInfo& info,
 	juce::LookAndFeel* lnF,
-	ParameterLabel& label)
+	juce::Label& label)
 {
 	auto& params = processor.getParameters();
 
@@ -75,9 +69,35 @@ std::unique_ptr<SNKnobPrecise> SN06Editor::setupKnobAndLabel(
 	knob->setLookAndFeel(lnF);
 
 	addAndMakeVisible(*knob);
-	addAndMakeVisible(label.getLabel());
+
+	label.setJustificationType(juce::Justification::centred);
+	label.setColour(juce::Label::textColourId, juce::Colours::lightgrey);
+	label.setFont(juce::Font(10.0f));
+	label.setEditable(true, true, false);
+
+	label.onTextChange = [this, &params, paramID = info.paramID, &label]()
+	{
+		if (auto* p = params.getParameter(paramID))
+		{
+			float db = label.getText().getFloatValue();
+			float norm = p->getNormalisableRange().convertTo0to1(db);
+			p->setValueNotifyingHost(norm);
+		}
+	};
+
+	knob->onValueChange = [&label, knobPtr = knob.get(), &info]
+	{
+		const float db = (float) knobPtr->getValue();
+		label.setText(juce::String(db, 1), juce::dontSendNotification);
+    };
+
+	addAndMakeVisible(label);
 
 	knob->attachToParameter(params, info.paramID);
+
+	// Set default value
+	const float db = (float) knob->getValue();
+	label.setText(juce::String(db, 1), juce::dontSendNotification);
 
     return knob;
 }
@@ -127,9 +147,9 @@ void SN06Editor::resized()
 	volumeKnob->setBounds(scaledRect(80, 230, 80, 80));
 
 	// Labels
-	trimLabel->getLabel().setBounds(scaledRect(44, 74, 30, 12));
-	gainLabel->getLabel().setBounds(scaledRect(30, 184, 30, 14));
-	volumeLabel->getLabel().setBounds(scaledRect(30, 314, 30, 14));
+	trimLabel.setBounds(scaledRect(44, 74, 30, 12));
+	gainLabel.setBounds(scaledRect(30, 184, 30, 14));
+	volumeLabel.setBounds(scaledRect(30, 314, 30, 14));
 
 	// Meters
 	inputMeter.setBounds(scaledRect(112, 42, 100, 5));
