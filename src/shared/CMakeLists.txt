@@ -1,9 +1,9 @@
 add_library(SN STATIC
     sn_core.cpp
-    ParameterLabel.cpp
     SNKnobLookAndFeel.cpp
     SNKnobPrecise.cpp
     SNPeakMeter.cpp
+    SNKnobLabel.cpp
 )
 
 juce_add_binary_data(SN_BinaryData

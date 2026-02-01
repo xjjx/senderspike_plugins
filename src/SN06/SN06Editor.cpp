@@ -61,7 +61,7 @@ SN06Editor::~SN06Editor()
 std::unique_ptr<SNKnobPrecise> SN06Editor::setupKnobAndLabel(
 	const ParameterInfo& info,
 	juce::LookAndFeel* lnF,
-	juce::Label& label)
+	SNKnobLabel& label)
 {
 	auto& params = processor.getParameters();
 
@@ -69,35 +69,16 @@ std::unique_ptr<SNKnobPrecise> SN06Editor::setupKnobAndLabel(
 	knob->setLookAndFeel(lnF);
 
 	addAndMakeVisible(*knob);
-
-	label.setJustificationType(juce::Justification::centred);
-	label.setColour(juce::Label::textColourId, juce::Colours::lightgrey);
-	label.setFont(juce::Font(10.0f));
-	label.setEditable(true, true, false);
-
-	label.onTextChange = [this, &params, paramID = info.paramID, &label]()
-	{
-		if (auto* p = params.getParameter(paramID))
-		{
-			float db = label.getText().getFloatValue();
-			float norm = p->getNormalisableRange().convertTo0to1(db);
-			p->setValueNotifyingHost(norm);
-		}
-	};
-
-	knob->onValueChange = [&label, knobPtr = knob.get(), &info]
-	{
-		const float db = (float) knobPtr->getValue();
-		label.setText(juce::String(db, 1), juce::dontSendNotification);
-    };
-
 	addAndMakeVisible(label);
 
 	knob->attachToParameter(params, info.paramID);
+	label.attachKnob(*knob);
 
-	// Set default value
-	const float db = (float) knob->getValue();
-	label.setText(juce::String(db, 1), juce::dontSendNotification);
+	knob->onValueChange = [&label, knobPtr = knob.get()]
+	{
+		const float db = (float) knobPtr->getValue();
+		label.setText(juce::String(db, 2), juce::dontSendNotification);
+    };
 
     return knob;
 }
