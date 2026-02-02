@@ -10,26 +10,26 @@
 
 
 #include <math.h>
-#include <sn_05e.h>
+#include <atomic>
+#include "SignalNoiseLimiter.h"
+//#include "SignalNoiseLimiterEditor.h"
+
 #ifdef SN05G
 #include <sn_05g.h>
 #endif
 
 
 //------------------------------------------------------------------------------------
-// factory
-//------------------------------------------------------------------------------------
-
-AudioEffect* createEffectInstance(audioMasterCallback cb)
-{
-	return new SignalNoiseLimiter(cb);
-}
-
-//------------------------------------------------------------------------------------
 // class SignalNoiseLimiter
 //------------------------------------------------------------------------------------
 
-SignalNoiseLimiter::SignalNoiseLimiter(audioMasterCallback cb) : SignalNoiseFX(cb, 0, SNE_SIZE)
+SignalNoiseLimiter::SignalNoiseLimiter()
+: AudioProcessor(
+	BusesProperties()
+		.withInput	("Input",  juce::AudioChannelSet::stereo(), true)
+		.withOutput ("Output", juce::AudioChannelSet::stereo(), true)
+  ),
+  parameters (*this, nullptr, "PARAMS", createParameterLayout())
 {
 	for(int i = 0; i < 5; i++)
 	{
@@ -44,40 +44,65 @@ SignalNoiseLimiter::SignalNoiseLimiter(audioMasterCallback cb) : SignalNoiseFX(c
 	_atk = 0;
 	_rls = 0;
 
-	InitParams(gParam, SNE_SIZE);
-	
-	setUniqueID(SN05_UID);
-	setNumInputs(2);
-	setNumOutputs(2);
-	canProcessReplacing(true);
-	canDoubleReplacing(true);
-	programsAreChunks(true);
 
 #ifdef SN05G
 	editor = new SignalNoiseLimiterGUI(this);
 #endif
 }
 
-//------------------------------------------------------------------------------------
-
-SignalNoiseLimiter::~SignalNoiseLimiter()
+juce::AudioProcessorValueTreeState::ParameterLayout
+SignalNoiseLimiter::createParameterLayout()
 {
-	// empty
+	juce::AudioProcessorValueTreeState::ParameterLayout layout;
+
+	for (int i = 0; i < SNE_SIZE; ++i)
+	{
+		const auto& p = gParams[i];
+
+		layout.add (std::make_unique<juce::AudioParameterFloat>(
+			p.id,					   // parameter ID
+			p.name,					   // display name
+			juce::NormalisableRange<float> (0.0f, 1.0f),
+			p.defaultNorm,			   // same as _param[i].val
+			p.unit					   // <-- NEW, preserved
+		));
+	}
+
+	return layout;
+}
+
+bool SignalNoiseLimiter::isBusesLayoutSupported(const BusesLayout& layouts) const
+{
+	return layouts.getMainInputChannelSet()  == juce::AudioChannelSet::stereo()
+		&& layouts.getMainOutputChannelSet() == juce::AudioChannelSet::stereo();
 }
 
 //------------------------------------------------------------------------------------
-
-void SignalNoiseLimiter::onSetSampleRate(float fs)
+void SignalNoiseLimiter::prepareToPlay(double newSampleRate, int /*samplesPerBlock*/)
 {
+	sampleRate = newSampleRate;
+
 	setupLimiter();
 	setupClipper();
 	setupSidechain();
 }
 
 //------------------------------------------------------------------------------------
-
-void SignalNoiseLimiter::onSetParameter(VstInt32 at, float v)
+int SignalNoiseLimiter::paramIdToIndex (const juce::String& id)
 {
+	for (int i = 0; i < SNE_SIZE; ++i)
+		if (id == gParams[i].id)
+			return i;
+
+	return -1;
+}
+
+void SignalNoiseLimiter::parameterChanged (const juce::String& id, float /*newValue*/)
+{
+	const int at = paramIdToIndex (id);
+	if (at < 0)
+		return;
+
 	switch(at)
 	{
 	case SNE_ATKH:
@@ -101,8 +126,8 @@ void SignalNoiseLimiter::onSetParameter(VstInt32 at, float v)
 
 void SignalNoiseLimiter::setupLimiter()
 {
-	double attk = _param[SNE_ATKH].val;
-	double rels = _param[SNE_RELH].val;
+	double attk = getParamNorm(SNE_ATKH);
+	double rels = getParamNorm(SNE_RELH);
 	double t = (1.0 / sampleRate) * -2.2;
 
 	attk = (attk * attk * attk * 249.98) + 0.02;
@@ -115,9 +140,9 @@ void SignalNoiseLimiter::setupLimiter()
 
 void SignalNoiseLimiter::setupClipper()
 {
-	double rels = _param[SNE_RELS].val;
+	double rels = getParamNorm(SNE_RELS);
 
-	if(_param[SNE_MODE].val < 0.5)
+	if(getParamNorm(SNE_MODE) < 0.5)
 		rels = (rels * rels * rels * 499.0) + 1.0;
 	else
 		rels = (rels * rels * rels * 49.9) + 0.1;
@@ -130,7 +155,7 @@ void SignalNoiseLimiter::setupClipper()
 
 void SignalNoiseLimiter::setupSidechain()
 {
-	double fc = _param[SNE_HPFC].val * 1975 + 15;
+	double fc = getParamNorm(SNE_HPFC) * 1975 + 15;
 
 	_hL1.setup_q(HPF, 0, qf18, fc, sampleRate);
 	_hR1.setup_q(HPF, 0, qf18, fc, sampleRate);
@@ -139,34 +164,42 @@ void SignalNoiseLimiter::setupSidechain()
 }
 
 //------------------------------------------------------------------------------------
-
-void SignalNoiseLimiter::processReplacing(float** in, float** out, VstInt32 sz)
+template <typename Sample>
+void SignalNoiseLimiter::processImpl (Sample** in, Sample** out, int numSamples)
 {
-	float* inL = in[0];
-	float* inR = in[1];
-	float* outL = out[0];
-	float* outR = out[1];
+	const bool mono = (getTotalNumInputChannels() == 1);
 
-	bool mode, hpon;
-	double L, R, fL, fR, dB, gr, ec;
-	double trsh, gain, ceil, wet, dry, grh;
+	Sample* inL  = in[0];
+	Sample* inR  = (mono ? nullptr : in[1]);
+	Sample* outL = out[0];
+	Sample* outR = (mono ? nullptr : out[1]);
 
-	gain = dB2lin(_param[SNE_GAIN].val * 24.0);
-	trsh = (1 - _param[SNE_CEIL].val) * -24.0;
-	ceil = dB2lin(trsh);
-	mode = _param[SNE_MODE].val < 0.5;
-	hpon = _param[SNE_HPON].val > 0.5;
-	wet  = _param[SNE_CLIP].val;
-	dry  = 1 - wet;
+	// ----------------------
+	// Read parameters once
+	// ----------------------
+	const float gainParam = getParamNorm(SNE_GAIN);
+	const float modeParam = getParamNorm(SNE_MODE);
+	const float ceilParam = getParamNorm(SNE_CEIL);
+	const float hponParam = getParamNorm(SNE_HPON);
+	const float clipParam = getParamNorm(SNE_CLIP);
 
-	while(--sz >= 0)
+	const double gain = dB2lin(gainParam * 24.0);
+	const double trsh = (1 - ceilParam) * -24.0;
+	const double ceil = dB2lin(trsh);
+	const bool mode = modeParam < 0.5;
+	const bool hpon = hponParam > 0.5;
+	const double wet  = clipParam;
+	const double dry  = 1 - wet;
+
+	for (int n = 0; n < numSamples; ++n)
 	{
-		grh = 0;
+		double gr, ec, fL, fR;
+		double grh = 0;
 
-		L = *inL++ * gain;
-		R = *inR++ * gain;
+		Sample L = *inL++ * gain;
+		Sample R = *inR++ * gain;
 
-		if(_mono) R = 0;
+		if(mono) R = 0;
 
 		//Holters' limiter 
 		if(mode)
@@ -227,118 +260,7 @@ void SignalNoiseLimiter::processReplacing(float** in, float** out, VstInt32 sz)
 		fL = fabs(L);
 		fR = fabs(R);
 		gr = lin2dB(getmax(fL, fR) + DC_OFFSET);
-		dB = gr - trsh;
-
-		if(dB < 0.0) dB = 0.0;
-
-		dB += DC_OFFSET;
-		if(dB > _env)
-			_env = dB + _atk * (_env - dB);
-		else
-			_env = dB + _rls * (_env - dB);
-		dB = _env - DC_OFFSET;
-			
-		gr = dB2lin(-dB);
-				
-		(*outL++) = float(L * gr);
-		(*outR++) = float(R * gr);
-
-#ifdef SN05G
-		((SignalNoiseLimiterGUI*)editor)->trackMeter(grh, dB);
-#endif
-	}
-}
-
-//------------------------------------------------------------------------------------
-
-void SignalNoiseLimiter::processDoubleReplacing(double** in, double** out, VstInt32 sz)
-{
-	double* inL = in[0];
-	double* inR = in[1];
-	double* outL = out[0];
-	double* outR = out[1];
-
-	bool mode, hpon;
-	double L, R, fL, fR, dB, gr, ec;
-	double trsh, gain, ceil, wet, dry, grh;
-
-	gain = dB2lin(_param[SNE_GAIN].val * 24.0);
-	trsh = (1 - _param[SNE_CEIL].val) * -24.0;
-	ceil = dB2lin(trsh);
-	mode = _param[SNE_MODE].val < 0.5;
-	hpon = _param[SNE_HPON].val > 0.5;
-	wet  = _param[SNE_CLIP].val;
-	dry  = 1 - wet;
-
-	while(--sz >= 0)
-	{
-		grh = 0;
-
-		L = *inL++ * gain;
-		R = *inR++ * gain;
-
-		if(_mono) R = 0;
-
-		//Holters' limiter 
-		if(mode)
-		{
-			//SC filter
-			if(hpon)
-			{
-				fL = _hL1.run(_hL2.run(L));
-				fR = _hR1.run(_hR2.run(R));
-			}
-			else
-			{
-				fL = L;
-				fR = R;
-			}
-
-			//limiter
-			fL = fabs(fL);
-			fR = fabs(fR);
-			gr = getmax(fL, fR) + DC_OFFSET;
-			ec = gr > _max ? _atH : _rlH;
-			_max = (1 - ec) * _max + ec * gr;
-
-			ec = ceil / _max;
-			gr = 1 > ec ? ec : 1;
-			ec = gr < _grH ? _atH : _rlH;
-			_grH = (1 - ec) * _grH + ec * gr;
-		
-			fL = _grH * _dlL[4];
-			fR = _grH * _dlR[4];
-
-			_dlL[4] = _dlL[3];
-			_dlL[3] = _dlL[2];
-			_dlL[2] = _dlL[1];
-			_dlL[1] = _dlL[0];
-			_dlL[0] = L;
-
-			_dlR[4] = _dlR[3];
-			_dlR[3] = _dlR[2];
-			_dlR[2] = _dlR[1];
-			_dlR[1] = _dlR[0];
-			_dlR[0] = R;
-
-			L = fL;
-			R = fR;
-
-			grh = -lin2dB(_grH);
-		}
-
-		//soft clipper
-		if(wet)
-		{
-			L = erf(L) * wet + L * dry;
-			R = erf(R) * wet + R * dry;
-		}
-
-		//brickwall (hard clip)
-		fL = fabs(L);
-		fR = fabs(R);
-		gr = lin2dB(getmax(fL, fR) + DC_OFFSET);
-		dB = gr - trsh;
+		double dB = gr - trsh;
 
 		if(dB < 0.0) dB = 0.0;
 
@@ -354,11 +276,53 @@ void SignalNoiseLimiter::processDoubleReplacing(double** in, double** out, VstIn
 		(*outL++) = L * gr;
 		(*outR++) = R * gr;
 
-#ifdef SN05G
-		((SignalNoiseLimiterGUI*)editor)->trackMeter(grh, dB);
-#endif
+		gainReduction.store(grh);
+// TODO: store dB
 	}
 }
 
-//------------------------------------------------------------------------------------
+void SignalNoiseLimiter::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer&)
+{
+	float* in[2]  = { buffer.getWritePointer(0), buffer.getNumChannels() > 1 ? buffer.getWritePointer(1) : nullptr };
+	float* out[2] = { in[0], in[1] };
+	processImpl(in, out, buffer.getNumSamples());
+}
 
+void SignalNoiseLimiter::processBlock(juce::AudioBuffer<double>& buffer, juce::MidiBuffer&)
+{
+	double* in[2]  = { buffer.getWritePointer(0), buffer.getNumChannels() > 1 ? buffer.getWritePointer(1) : nullptr };
+	double* out[2] = { in[0], in[1] };
+	processImpl(in, out, buffer.getNumSamples());
+}
+
+// ----------------------
+// State
+// ----------------------
+void SignalNoiseLimiter::getStateInformation(juce::MemoryBlock& destData)
+{
+	auto state = parameters.copyState();
+	std::unique_ptr<juce::XmlElement> xml(state.createXml());
+	copyXmlToBinary(*xml, destData);
+}
+
+void SignalNoiseLimiter::setStateInformation(const void* data, int sizeInBytes)
+{
+	std::unique_ptr<juce::XmlElement> xml(getXmlFromBinary(data, sizeInBytes));
+	if (xml)
+		parameters.replaceState(juce::ValueTree::fromXml(*xml));
+}
+
+// Editor
+juce::AudioProcessorEditor* SignalNoiseLimiter::createEditor()
+{
+//	return new SignalNoiseOpampEditor (*this);
+	return nullptr;
+}
+
+// ----------------------
+// JUCE Plugin entry point
+// ----------------------
+juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()
+{
+	return new SignalNoiseLimiter();
+}

@@ -10,14 +10,13 @@
 //------------------------------------------------------------------------------------
 
 
-#ifndef _SN_05E_H
-#define _SN_05E_H
+#pragma once
 
 
 //------------------------------------------------------------------------------------
 
+#include <juce_audio_processors/juce_audio_processors.h>
 #include <sn_core.h>
-#include <sn_vsti.h>
 
 //------------------------------------------------------------------------------------
 // effect
@@ -39,23 +38,30 @@ enum
 
 //------------------------------------------------------------------------------------
 
-static const param_t gParam[] = 
+struct ParamDesc
 {
-	{"Gain",		"dB",		0.00f},
-	{"Ceiling",		"dB",		1.00f},
-	{"AT",			"ms",		0.00f},
-	{"R1",			"ms",		1.00f},
-	{"R2",			"ms",		1.00f},
-	{"Mode",		"L/C",		0.00f},
-	{"HP On",		"y/n",		0.00f},
-	{"HP Freq",		"Hz",		0.50f},
-	{"SC",			"%",		0.00f},
+	const char* id;			  // JUCE parameter ID
+	const char* name;		  // display name
+	const char* unit;		  // "dB", "Hz", "n/y", etc.
+	float defaultNorm;		  // normalized [0..1]
+};
+
+static const ParamDesc gParams[] =
+{
+    { "gain",   "Gain",      "dB",  0.00f }, // SNE_GAIN      input gain
+    { "ceil",   "Ceiling",   "dB",  1.00f }, // SNE_CEIL      ceiling
+    { "atkh",   "AT",        "ms",  0.00f }, // SNE_ATKH      attack - Holters' limiter
+    { "relh",   "R1",        "ms",  1.00f }, // SNE_RELH      release - Holters' limiter
+    { "rels",   "R2",        "ms",  1.00f }, // SNE_RELS      release - brickwall
+    { "mode",   "Mode",      "L/C", 0.00f }, // SNE_MODE      mode (clip/limit)
+    { "hpon",   "HP On",     "y/n", 0.00f }, // SNE_HPON      high pass on/off
+    { "hpfc",   "HP Freq",   "Hz",  0.50f }, // SNE_HPFC      high pass cutoff
+    { "clip",   "SC",        "%",   0.00f }, // SNE_CLIP      clipper % (0% = true bypass)
 };
 
 //------------------------------------------------------------------------------------
 
 #define SN05_VER		2210
-#define SN05_UID		VST_FOURCC('S','N','0','5')
 #ifdef SN05G
 #define SN05_NAM		"SN05-G Limiter"
 #else
@@ -64,9 +70,13 @@ static const param_t gParam[] =
 
 //------------------------------------------------------------------------------------
 
-class SignalNoiseLimiter : public SignalNoiseFX
+class SignalNoiseLimiter : public juce::AudioProcessor,
+                           public juce::AudioProcessorValueTreeState::Listener
 {
 private:
+	double sampleRate = 44100.0;
+    juce::AudioProcessorValueTreeState parameters;
+
 	//Holters' limiter
 	double	_dlL[5];	// delay line L
 	double	_dlR[5];	// delay line R
@@ -87,21 +97,54 @@ private:
 	void setupLimiter();
 	void setupClipper();
 	void setupSidechain();
-//callbacks - SN
-	virtual void onSetSampleRate(float fs);
-	virtual void onSetParameter(VstInt32 at, float v);
+
+	template <typename Sample>
+	void processImpl(Sample** in, Sample** out, int numSamples);
+
+	static juce::AudioProcessorValueTreeState::ParameterLayout
+	createParameterLayout();
+
+	int paramIdToIndex (const juce::String& id);
+
+	inline float getParamNorm (int idx) const noexcept
+	{
+		return *parameters.getRawParameterValue (gParams[idx].id);
+	}
+
+	// ================= METERS =================
+	std::atomic<float> gainReduction  { 0.0f };
+
 public:
-//create & destroy
-	SignalNoiseLimiter(audioMasterCallback cb);
-	virtual ~SignalNoiseLimiter();
-//process - SDK
-	virtual void processReplacing(float** in, float** out, VstInt32 sz);
-	virtual void processDoubleReplacing(double** in, double** out, VstInt32 sz);
-//plugin info - SDK
-	VST_DEFINE_PLUGINFO(SN05_NAM, SN05_VER, kPlugCategEffect);
+	SignalNoiseLimiter();
+	~SignalNoiseLimiter() override = default;
+
+	// JUCE overrides
+	void prepareToPlay(double newSampleRate, int samplesPerBlock) override;
+	void releaseResources() override {}
+
+	void processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer&) override;
+	void processBlock(juce::AudioBuffer<double>& buffer, juce::MidiBuffer&) override;
+
+	juce::AudioProcessorEditor* createEditor() override;
+	bool hasEditor() const override { return false; }
+	juce::AudioProcessorValueTreeState& getParameters() { return parameters; }
+
+	const juce::String getName() const override { return "SignalNoiseEqualizer"; }
+	bool acceptsMidi() const override { return false; }
+	bool producesMidi() const override { return false; }
+	double getTailLengthSeconds() const override { return 0.0; }
+
+	int getNumPrograms() override { return 1; }
+	int getCurrentProgram() override { return 0; }
+	void setCurrentProgram(int) override {}
+	const juce::String getProgramName(int) override { return {}; }
+	void changeProgramName(int, const juce::String&) override {}
+	bool isBusesLayoutSupported(const juce::AudioProcessor::BusesLayout& layouts) const override;
+	void parameterChanged(const juce::String& parameterID, float newValue) override;
+
+	void getStateInformation(juce::MemoryBlock&) override;
+	void setStateInformation(const void*, int) override;
+
+//	float getInputLevel()  const noexcept { return inputLevel.load(); }
+//	float getOutputLevel() const noexcept { return outputLevel.load(); }
 };
-
-//------------------------------------------------------------------------------------
-
-
-#endif // _SN_05E_H
