@@ -136,7 +136,7 @@ private:
 	void setupAnalog();
 
 	template <typename Sample>
-	void processImpl(Sample** in, Sample** out, int numSamples);
+	void processImpl(juce::AudioBuffer<Sample>& buffer);
 
 	static juce::AudioProcessorValueTreeState::ParameterLayout
 	createParameterLayout();

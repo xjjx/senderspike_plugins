@@ -456,14 +456,16 @@ void SignalNoiseEqualizer::setupAnalog()
 //------------------------------------------------------------------------------------
 
 template <typename Sample>
-void SignalNoiseEqualizer::processImpl (Sample** in, Sample** out, int numSamples)
+void SignalNoiseEqualizer::processImpl(juce::AudioBuffer<Sample>& buffer)
 {
-	const bool mono = (getTotalNumInputChannels() == 1);
+	const int numSamples  = buffer.getNumSamples();
+	const int numChannels = buffer.getNumChannels();
+	const bool mono       = (numChannels == 1);
 
-	Sample* inL  = in[0];
-	Sample* inR  = (mono ? nullptr : in[1]);
-	Sample* outL = out[0];
-	Sample* outR = (mono ? nullptr : out[1]);
+	Sample* inL  = buffer.getWritePointer(0);
+	Sample* inR  = mono ? nullptr : buffer.getWritePointer(1);
+	Sample* outL = inL;
+	Sample* outR = inR;
 
 	// ----------------------
 	// Read parameters once
@@ -600,16 +602,12 @@ void SignalNoiseEqualizer::processImpl (Sample** in, Sample** out, int numSample
 
 void SignalNoiseEqualizer::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer&)
 {
-	float* in[2]  = { buffer.getWritePointer(0), buffer.getNumChannels() > 1 ? buffer.getWritePointer(1) : nullptr };
-	float* out[2] = { in[0], in[1] };
-	processImpl(in, out, buffer.getNumSamples());
+	processImpl<float>(buffer);
 }
 
 void SignalNoiseEqualizer::processBlock(juce::AudioBuffer<double>& buffer, juce::MidiBuffer&)
 {
-	double* in[2]  = { buffer.getWritePointer(0), buffer.getNumChannels() > 1 ? buffer.getWritePointer(1) : nullptr };
-	double* out[2] = { in[0], in[1] };
-	processImpl(in, out, buffer.getNumSamples());
+	processImpl<double>(buffer);
 }
 
 // ----------------------
