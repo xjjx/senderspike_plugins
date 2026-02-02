@@ -10,27 +10,20 @@
 
 
 #include <math.h>
-#include <stdlib.h>
-#include <sn_01e.h>
-#ifdef SN01G
-#include <sn_01g.h>
-#endif
-
-
-//------------------------------------------------------------------------------------
-// factory
-//------------------------------------------------------------------------------------
-
-AudioEffect* createEffectInstance(audioMasterCallback cb)
-{
-	return new SignalNoiseCompressor(cb);
-}
+#include "SignalNoiseCompressor.h"
+//#include "SignalNoiseCompressorEditor.h"
 
 //------------------------------------------------------------------------------------
 // class SignalNoiseCompressor
 //------------------------------------------------------------------------------------
 
-SignalNoiseCompressor::SignalNoiseCompressor(audioMasterCallback cb) : SignalNoiseFX(cb, 0, SNE_SIZE)
+SignalNoiseCompressor::SignalNoiseCompressor()
+: AudioProcessor(
+	BusesProperties()
+		.withInput	("Input",  juce::AudioChannelSet::stereo(), true)
+		.withOutput ("Output", juce::AudioChannelSet::stereo(), true)
+  ),
+  parameters (*this, nullptr, "PARAMS", createParameterLayout())
 {
 	_TdB = DC_OFFSET;
 	_atk = 0;
@@ -39,30 +32,41 @@ SignalNoiseCompressor::SignalNoiseCompressor(audioMasterCallback cb) : SignalNoi
 	_fbR = DC_OFFSET;
 	_rnd.seed();
 
-	InitParams(gParam, SNE_SIZE);
-
-	setUniqueID(SN01_UID);
-	setNumInputs(2);
-	setNumOutputs(2);
-	canProcessReplacing(true);
-	canDoubleReplacing(true);
-	programsAreChunks(true);
-
 #ifdef SN01G
 	editor = new SignalNoiseCompressorGUI(this);
 #endif
 }
 
-//------------------------------------------------------------------------------------
-
-SignalNoiseCompressor::~SignalNoiseCompressor()
+juce::AudioProcessorValueTreeState::ParameterLayout
+SignalNoiseCompressor::createParameterLayout()
 {
-	// empty
+	juce::AudioProcessorValueTreeState::ParameterLayout layout;
+
+	for (int i = 0; i < SNE_SIZE; ++i)
+	{
+		const auto& p = gParams[i];
+
+		layout.add (std::make_unique<juce::AudioParameterFloat>(
+			p.id,					   // parameter ID
+			p.name,					   // display name
+			juce::NormalisableRange<float> (0.0f, 1.0f),
+			p.defaultNorm,			   // same as _param[i].val
+			p.unit					   // <-- NEW, preserved
+		));
+	}
+
+	return layout;
+}
+
+bool SignalNoiseCompressor::isBusesLayoutSupported(const BusesLayout& layouts) const
+{
+	return layouts.getMainInputChannelSet()  == juce::AudioChannelSet::stereo()
+		&& layouts.getMainOutputChannelSet() == juce::AudioChannelSet::stereo();
 }
 
 //------------------------------------------------------------------------------------
 
-void SignalNoiseCompressor::onSetSampleRate(float fs)
+void SignalNoiseCompressor::prepareToPlay(double newSampleRate, int /*samplesPerBlock*/)
 {
 	setupEnvelope();
 	setupSidechain();
@@ -72,9 +76,21 @@ void SignalNoiseCompressor::onSetSampleRate(float fs)
 }
 
 //------------------------------------------------------------------------------------
-
-void SignalNoiseCompressor::onSetParameter(VstInt32 at, float v)
+int SignalNoiseCompressor::paramIdToIndex (const juce::String& id)
 {
+	for (int i = 0; i < SNE_SIZE; ++i)
+		if (id == gParams[i].id)
+			return i;
+
+	return -1;
+}
+
+void SignalNoiseCompressor::parameterChanged (const juce::String& id, float /*newValue*/)
+{
+	const int at = paramIdToIndex (id);
+	if (at < 0)
+		return;
+
 	switch(at)
 	{
 	case SNE_ATTK: 
@@ -100,8 +116,8 @@ static int GetSwitch(const float& v)
 
 void SignalNoiseCompressor::setupEnvelope()
 {
-	double attk = _param[SNE_ATTK].val;
-	double rels = _param[SNE_RELS].val;
+	double attk = getParamNorm(SNE_ATTK);
+	double rels = getParamNorm(SNE_RELS);
 	attk = (attk * attk * attk * 29.97) + 0.03;
 	rels = (rels * rels * rels * 1950.0) + 50.0;
 	_atk = exp(-1000.0 / (attk * sampleRate));
@@ -112,7 +128,7 @@ void SignalNoiseCompressor::setupEnvelope()
 
 void SignalNoiseCompressor::setupSidechain()
 {
-	switch(GetSwitch(_param[SNE_MODE].val))
+	switch(GetSwitch(getParamNorm(SNE_MODE)))
 	{
 	case 1:
 		_lsL.setup_q(LSF, -14.0, 0.49, 40.0, sampleRate);
@@ -131,34 +147,44 @@ void SignalNoiseCompressor::setupSidechain()
 
 //------------------------------------------------------------------------------------
 
-void SignalNoiseCompressor::processReplacing(float** in, float** out, VstInt32 sz)
+template <typename Sample>
+void SignalNoiseCompressor::processImpl (Sample** in, Sample** out, int numSamples)
 {
-	float* inL = in[0];
-	float* inR = in[1];
-	float* outL = out[0];
-	float* outR = out[1];
+	const bool mono = (getTotalNumInputChannels() == 1);
 
-	int mode, push, fbck;
-	double trsh, func, gain, knee, dry, wet;
-	double L, R, fL, fR, rL, rR, kB, dB, y0, gr, kh;
+	Sample* inL  = in[0];
+	Sample* inR  = (mono ? nullptr : in[1]);
+	Sample* outL = out[0];
+	Sample* outR = (mono ? nullptr : out[1]);
 
-	gain	= dB2lin(_param[SNE_GAIN].val * 24.0);
-	fbck	= _param[SNE_FBCK].val > 0.5 ? 1 : 0;
-	mode	= GetSwitch(_param[SNE_MODE].val);
-	push	= GetSwitch(_param[SNE_PUSH].val);
-	func	= sqrt(_param[SNE_FUNC].val);
-	trsh	= _param[SNE_TRSH].val * -40.0 - (9.0 * push);
-	knee	= _param[SNE_KNEE].val * _param[SNE_KWDT].val * 24.0;
-	dry		= _param[SNE_COMP].val;
-	wet		= (1.0 - dry) * gain;
-	kh		= knee / 2.0;
+	const float gainParam  = getParamNorm(SNE_GAIN);
+	const float fbckParam  = getParamNorm(SNE_FBCK);
+	const float ratioParam = getParamNorm(SNE_FUNC);
+	const float trshParam  = getParamNorm(SNE_TRSH);
+	const float kneeParam  = getParamNorm(SNE_KNEE);
+	const float kwdtParam  = getParamNorm(SNE_KWDT);
+	const float compParam  = getParamNorm(SNE_COMP);
+	const float modeParam  = getParamNorm(SNE_MODE);
+	const float pushParam  = getParamNorm(SNE_PUSH);
 
-	while(--sz >= 0)
+	const double gain = dB2lin(gainParam * 24.0);
+	const int fbck = fbckParam > 0.5 ? 1 : 0;
+	const int mode = GetSwitch(modeParam);
+	const int push = GetSwitch(pushParam);
+	const double func = sqrt(ratioParam);
+	const double trsh = trshParam * -40.0 - (9.0 * push);
+	const double knee = kneeParam * kwdtParam * 24.0;
+	const float dry	= compParam;
+	const double wet = (1.0 - dry) * gain;
+	const double kh	= knee / 2.0;
+
+	for (int n = 0; n < numSamples; ++n)
 	{
-		L = *inL++;
-		R = *inR++;
+		double L = *inL++;
+		double R = mono ? L : *inR++;
 
 		//SC -> FF/FB + filter
+		double fL, fR;
 		if(fbck)
 		{
 			fL = _fbL;
@@ -176,14 +202,14 @@ void SignalNoiseCompressor::processReplacing(float** in, float** out, VstInt32 s
 		}
 
 		//rectifier -> thresh + push
-		rL = fabs(fL);
-		rR = fabs(fR);
-		kB = lin2dB(getmax(rL, rR) + DC_OFFSET);
-		dB = kB - trsh;
+		double rL = std::abs(fL);
+		double rR = std::abs(fR);
+		double kB = lin2dB(getmax(rL, rR) + DC_OFFSET);
+		double dB = kB - trsh;
 		if(push) dB += _rnd.pink() * 2.0 * push;
 
 		//ratio + knee
-		y0 = 0;		
+		double y0 = 0;		
 		if(dB <= -kh)
 			y0 = kB;
 		else if((dB > -kh) && (dB < kh))
@@ -201,14 +227,15 @@ void SignalNoiseCompressor::processReplacing(float** in, float** out, VstInt32 s
 		dB = _TdB - DC_OFFSET;
 
 		//gain
-		gr = dB2lin(-dB);
+		double gr = dB2lin(-dB);
 
 		_fbL = L * gr;
 		_fbR = R * gr;
 
 		//output		
-		(*outL++) = float((_fbL * wet) + (dry * L));
-		(*outR++) = float((_fbR * wet) + (dry * R));
+		(*outL++) = (Sample)((_fbL * wet) + (dry * L));
+		if (mono)
+			(*outR++) = (Sample)((_fbR * wet) + (dry * R));
 
 #ifdef SN01G
 		((SignalNoiseCompressorGUI*)editor)->trackMeter(dB);
@@ -216,91 +243,48 @@ void SignalNoiseCompressor::processReplacing(float** in, float** out, VstInt32 s
 	}
 }
 
-//------------------------------------------------------------------------------------
-
-void SignalNoiseCompressor::processDoubleReplacing(double** in, double** out, VstInt32 sz)
+void SignalNoiseCompressor::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer&)
 {
-	double* inL = in[0];
-	double* inR = in[1];
-	double* outL = out[0];
-	double* outR = out[1];
-
-	int mode, push, fbck;
-	double trsh, func, gain, knee, dry, wet;
-	double L, R, fL, fR, rL, rR, kB, dB, y0, gr, kh;
-
-	gain	= dB2lin(_param[SNE_GAIN].val * 24.0);
-	fbck	= _param[SNE_FBCK].val > 0.5 ? 1 : 0;
-	mode	= GetSwitch(_param[SNE_MODE].val);
-	push	= GetSwitch(_param[SNE_PUSH].val);
-	func	= sqrt(_param[SNE_FUNC].val);
-	trsh	= _param[SNE_TRSH].val * -40.0 - (9.0 * push);
-	knee	= _param[SNE_KNEE].val * _param[SNE_KWDT].val * 24.0;
-	dry		= _param[SNE_COMP].val;
-	wet		= (1.0 - dry) * gain;
-	kh		= knee / 2.0;
-
-	while(--sz >= 0)
-	{
-		L = *inL++;
-		R = *inR++;
-
-		//SC -> FF/FB + filter
-		if(fbck)
-		{
-			fL = _fbL;
-			fR = _fbR;
-		}
-		else
-		{
-			fL = L;
-			fR = R;
-		}
-		if(mode)
-		{
-			fL = _hsL.run(_lsL.run(fL));
-			fR = _hsR.run(_lsR.run(fR));
-		}
-
-		//rectifier -> thresh + push
-		rL = fabs(fL);
-		rR = fabs(fR);
-		kB = lin2dB(getmax(rL, rR) + DC_OFFSET);
-		dB = kB - trsh;
-		if(push) dB += _rnd.pink() * 2.0 * push;
-
-		//ratio + knee
-		y0 = 0;		
-		if(dB <= -kh)
-			y0 = kB;
-		else if((dB > -kh) && (dB < kh))
-			y0 = kB + func * ((dB + kh) * (dB + kh)) / (2 * knee);
-		else if(dB >= kh)
-			y0 = kB + func * dB;
-		dB = y0 - kB;
-
-		//envelope
-		dB += DC_OFFSET;
-		if(dB > _TdB)
-			_TdB = (_atk * _TdB) + ((1.0 - _atk) * dB);
-		else
-			_TdB = (_rls * _TdB) + ((1.0 - _rls) * dB);
-		dB = _TdB - DC_OFFSET;
-
-		//gain
-		gr = dB2lin(-dB);
-
-		_fbL = L * gr;
-		_fbR = R * gr;
-
-		//output		
-		(*outL++) = ((_fbL * wet) + (dry * L));
-		(*outR++) = ((_fbR * wet) + (dry * R));
-
-#ifdef SN01G
-		((SignalNoiseCompressorGUI*)editor)->trackMeter(dB);
-#endif
-	}
+	float* in[2]  = { buffer.getWritePointer(0), buffer.getNumChannels() > 1 ? buffer.getWritePointer(1) : nullptr };
+	float* out[2] = { in[0], in[1] };
+	processImpl(in, out, buffer.getNumSamples());
 }
 
-//------------------------------------------------------------------------------------
+void SignalNoiseCompressor::processBlock(juce::AudioBuffer<double>& buffer, juce::MidiBuffer&)
+{
+	double* in[2]  = { buffer.getWritePointer(0), buffer.getNumChannels() > 1 ? buffer.getWritePointer(1) : nullptr };
+	double* out[2] = { in[0], in[1] };
+	processImpl(in, out, buffer.getNumSamples());
+}
+
+// ----------------------
+// State
+// ----------------------
+void SignalNoiseCompressor::getStateInformation(juce::MemoryBlock& destData)
+{
+	auto state = parameters.copyState();
+	std::unique_ptr<juce::XmlElement> xml(state.createXml());
+	copyXmlToBinary(*xml, destData);
+}
+
+void SignalNoiseCompressor::setStateInformation(const void* data, int sizeInBytes)
+{
+	std::unique_ptr<juce::XmlElement> xml(getXmlFromBinary(data, sizeInBytes));
+	if (xml)
+		parameters.replaceState(juce::ValueTree::fromXml(*xml));
+}
+
+// Editor
+juce::AudioProcessorEditor* SignalNoiseCompressor::createEditor()
+{
+//	return new SignalNoiseOpampEditor (*this);
+	return nullptr;
+}
+
+// ----------------------
+// JUCE Plugin entry point
+// ----------------------
+juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()
+{
+	return new SignalNoiseCompressor();
+}

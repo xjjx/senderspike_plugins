@@ -13,14 +13,15 @@
 //------------------------------------------------------------------------------------
 
 
-#ifndef _SN_01E_H
-#define _SN_01E_H
+#pragma once
 
 
 //------------------------------------------------------------------------------------
 
+#include <atomic>
+#include <juce_audio_processors/juce_audio_processors.h>
 #include <sn_core.h>
-#include <sn_vsti.h>
+#include "ParameterInfo.h"
 
 //------------------------------------------------------------------------------------
 
@@ -42,25 +43,29 @@ enum
 
 //------------------------------------------------------------------------------------
 
-static const param_t gParam[] = 
+static const ParamDesc gParams[] =
 {
-	{"Thresh",		"dB",		0.5f},
-	{"Ratio",		"num",		0.5f},
-	{"Gain",		"dB",		0.0f},
-	{"Attack",		"ms",		0.375f},
-	{"Release",		"ms",		0.5f},
-	{"Knee dB",		"dB",		0.375f},
-	{"Knee %",		"%",		0.0f},
-	{"SC Mode",		"typ",		0.0f},
-	{"Push",		"typ",		0.0f},
-	{"Wet/Dry",		"%",		0.0f},
-	{"F.Back",		"n/y",		0.0f},
+    { "thrs", "Thresh",   "dB",  0.50f },  // SNE_TRSH  threshold
+    { "ratio","Ratio",    "num", 0.50f },  // SNE_FUNC  ratio
+    { "gain", "Gain",     "dB",  0.00f },  // SNE_GAIN  make-up gain
+
+    { "attk", "Attack",   "ms",  0.375f }, // SNE_ATTK  attack
+    { "rels", "Release",  "ms",  0.50f },  // SNE_RELS  release
+
+    { "kwdt", "Knee dB",  "dB",  0.375f }, // SNE_KWDT  knee width
+    { "knee", "Knee %",   "%",   0.00f },  // SNE_KNEE  knee strength
+
+    { "mode", "SC Mode",  "typ", 0.00f },  // SNE_MODE  sidechain mode
+    { "push", "Push",     "typ", 0.00f },  // SNE_PUSH  thrust
+
+    { "comp", "Wet/Dry",  "%",   0.00f },  // SNE_COMP  dry/wet
+    { "fbck", "F.Back",   "n/y", 0.00f },  // SNE_FBCK  feed-forward / feed-back
 };
 
 //------------------------------------------------------------------------------------
 
 #define SN01_VER		1210
-#define SN01_UID		VST_FOURCC('S','N','0','1')
+
 #ifdef SN01G
 #define SN01_NAM		"SN01-G Compressor"
 #else
@@ -69,9 +74,13 @@ static const param_t gParam[] =
 
 //------------------------------------------------------------------------------------
 
-class SignalNoiseCompressor : public SignalNoiseFX 
+class SignalNoiseCompressor : public juce::AudioProcessor,
+                              public juce::AudioProcessorValueTreeState::Listener
 {
 private:
+	double sampleRate = 44100.0;
+    juce::AudioProcessorValueTreeState parameters;
+
 	double	_TdB;	// envelope filter
 	double	_atk;	// attack coefficient
 	double	_rls;	// release coefficient
@@ -85,21 +94,51 @@ private:
 private:
 	void setupEnvelope();
 	void setupSidechain();
-//callbacks - SN
-	virtual void onSetSampleRate(float fs);
-	virtual void onSetParameter(VstInt32 at, float v);
+
+	template <typename Sample>
+	void processImpl(Sample** in, Sample** out, int numSamples);
+
+	static juce::AudioProcessorValueTreeState::ParameterLayout
+	createParameterLayout();
+
+	int paramIdToIndex (const juce::String& id);
+
+	inline float getParamNorm (int idx) const noexcept
+	{
+		return *parameters.getRawParameterValue (gParams[idx].id);
+	}
+
 public:
-//create & destroy
-	SignalNoiseCompressor(audioMasterCallback cb);
-	virtual ~SignalNoiseCompressor();
-//process - SDK
-	virtual void processReplacing(float** in, float** out, VstInt32 sz);
-	virtual void processDoubleReplacing(double** in, double** out, VstInt32 sz);
-//plugin info - SDK
-	VST_DEFINE_PLUGINFO(SN01_NAM, SN01_VER, kPlugCategEffect);
+	SignalNoiseCompressor();
+	~SignalNoiseCompressor() override = default;
+
+	// JUCE overrides
+	void prepareToPlay(double newSampleRate, int samplesPerBlock) override;
+	void releaseResources() override {}
+
+	void processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer&) override;
+	void processBlock(juce::AudioBuffer<double>& buffer, juce::MidiBuffer&) override;
+
+	juce::AudioProcessorEditor* createEditor() override;
+	bool hasEditor() const override { return false; }
+	juce::AudioProcessorValueTreeState& getParameters() { return parameters; }
+
+	const juce::String getName() const override { return "SignalNoiseEqualizer"; }
+	bool acceptsMidi() const override { return false; }
+	bool producesMidi() const override { return false; }
+	double getTailLengthSeconds() const override { return 0.0; }
+
+	int getNumPrograms() override { return 1; }
+	int getCurrentProgram() override { return 0; }
+	void setCurrentProgram(int) override {}
+	const juce::String getProgramName(int) override { return {}; }
+	void changeProgramName(int, const juce::String&) override {}
+	bool isBusesLayoutSupported(const juce::AudioProcessor::BusesLayout& layouts) const override;
+	void parameterChanged(const juce::String& parameterID, float newValue) override;
+
+	void getStateInformation(juce::MemoryBlock&) override;
+	void setStateInformation(const void*, int) override;
+
+//	float getInputLevel()  const noexcept { return inputLevel.load(); }
+//	float getOutputLevel() const noexcept { return outputLevel.load(); }
 };
-
-//------------------------------------------------------------------------------------
-
-
-#endif // _SN_01E_H
