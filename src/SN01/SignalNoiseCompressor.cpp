@@ -18,12 +18,10 @@
 //------------------------------------------------------------------------------------
 
 SignalNoiseCompressor::SignalNoiseCompressor()
-: AudioProcessor(
-	BusesProperties()
-		.withInput	("Input",  juce::AudioChannelSet::stereo(), true)
-		.withOutput ("Output", juce::AudioChannelSet::stereo(), true)
-  ),
-  parameters (*this, nullptr, "PARAMS", createParameterLayout())
+    : SignalNoiseFX(
+          "SignalNoiseCompressor",
+          createLayout(gParams, SNE_SIZE)
+      )
 {
 	_TdB = DC_OFFSET;
 	_atk = 0;
@@ -35,33 +33,6 @@ SignalNoiseCompressor::SignalNoiseCompressor()
 #ifdef SN01G
 	editor = new SignalNoiseCompressorGUI(this);
 #endif
-}
-
-juce::AudioProcessorValueTreeState::ParameterLayout
-SignalNoiseCompressor::createParameterLayout()
-{
-	juce::AudioProcessorValueTreeState::ParameterLayout layout;
-
-	for (int i = 0; i < SNE_SIZE; ++i)
-	{
-		const auto& p = gParams[i];
-
-		layout.add (std::make_unique<juce::AudioParameterFloat>(
-			p.id,					   // parameter ID
-			p.name,					   // display name
-			juce::NormalisableRange<float> (0.0f, 1.0f),
-			p.defaultNorm,			   // same as _param[i].val
-			p.unit					   // <-- NEW, preserved
-		));
-	}
-
-	return layout;
-}
-
-bool SignalNoiseCompressor::isBusesLayoutSupported(const BusesLayout& layouts) const
-{
-	return layouts.getMainInputChannelSet()  == juce::AudioChannelSet::stereo()
-		&& layouts.getMainOutputChannelSet() == juce::AudioChannelSet::stereo();
 }
 
 //------------------------------------------------------------------------------------

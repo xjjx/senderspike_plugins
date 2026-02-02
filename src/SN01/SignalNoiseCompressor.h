@@ -21,7 +21,7 @@
 #include <atomic>
 #include <juce_audio_processors/juce_audio_processors.h>
 #include <sn_core.h>
-#include "ParameterInfo.h"
+#include "SignalNoiseFX.h"
 
 //------------------------------------------------------------------------------------
 
@@ -66,21 +66,11 @@ static const ParamDesc gParams[] =
 
 #define SN01_VER		1210
 
-#ifdef SN01G
-#define SN01_NAM		"SN01-G Compressor"
-#else
-#define SN01_NAM		"SN01 Compressor"
-#endif
-
 //------------------------------------------------------------------------------------
 
-class SignalNoiseCompressor : public juce::AudioProcessor,
-                              public juce::AudioProcessorValueTreeState::Listener
+class SignalNoiseCompressor : public SignalNoiseFX
 {
 private:
-	double sampleRate = 44100.0;
-    juce::AudioProcessorValueTreeState parameters;
-
 	double	_TdB;	// envelope filter
 	double	_atk;	// attack coefficient
 	double	_rls;	// release coefficient
@@ -98,14 +88,12 @@ private:
 	template <typename Sample>
 	void processImpl(Sample** in, Sample** out, int numSamples);
 
-	static juce::AudioProcessorValueTreeState::ParameterLayout
-	createParameterLayout();
-
 	int paramIdToIndex (const juce::String& id);
 
 	inline float getParamNorm (int idx) const noexcept
 	{
-		return *parameters.getRawParameterValue (gParams[idx].id);
+		auto ptr = getParameters().getRawParameterValue(gParams[idx].id);
+		return ptr->load();
 	}
 
 public:
@@ -113,31 +101,17 @@ public:
 	~SignalNoiseCompressor() override = default;
 
 	// JUCE overrides
+	void processBlock (juce::AudioBuffer<float>&, juce::MidiBuffer&) override;
+	void processBlock (juce::AudioBuffer<double>&, juce::MidiBuffer&) override;
+
 	void prepareToPlay(double newSampleRate, int samplesPerBlock) override;
-	void releaseResources() override {}
-
-	void processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer&) override;
-	void processBlock(juce::AudioBuffer<double>& buffer, juce::MidiBuffer&) override;
-
-	juce::AudioProcessorEditor* createEditor() override;
-	bool hasEditor() const override { return false; }
-	juce::AudioProcessorValueTreeState& getParameters() { return parameters; }
-
-	const juce::String getName() const override { return "SignalNoiseEqualizer"; }
-	bool acceptsMidi() const override { return false; }
-	bool producesMidi() const override { return false; }
-	double getTailLengthSeconds() const override { return 0.0; }
-
-	int getNumPrograms() override { return 1; }
-	int getCurrentProgram() override { return 0; }
-	void setCurrentProgram(int) override {}
-	const juce::String getProgramName(int) override { return {}; }
-	void changeProgramName(int, const juce::String&) override {}
-	bool isBusesLayoutSupported(const juce::AudioProcessor::BusesLayout& layouts) const override;
 	void parameterChanged(const juce::String& parameterID, float newValue) override;
 
-	void getStateInformation(juce::MemoryBlock&) override;
-	void setStateInformation(const void*, int) override;
+	void getStateInformation (juce::MemoryBlock&) override;
+	void setStateInformation (const void*, int) override;
+
+	juce::AudioProcessorEditor* createEditor() override;
+	const juce::String getName() const override { return "SignalNoiseEqualizer"; }
 
 //	float getInputLevel()  const noexcept { return inputLevel.load(); }
 //	float getOutputLevel() const noexcept { return outputLevel.load(); }
