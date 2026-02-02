@@ -86,7 +86,7 @@ private:
 	void setupSidechain();
 
 	template <typename Sample>
-	void processImpl(Sample** in, Sample** out, int numSamples);
+	void processImpl(juce::AudioBuffer<Sample>& buffer);
 
 	int paramIdToIndex (const juce::String& id);
 
