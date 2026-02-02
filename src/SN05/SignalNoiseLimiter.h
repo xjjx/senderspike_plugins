@@ -18,6 +18,7 @@
 #include <atomic>
 #include <juce_audio_processors/juce_audio_processors.h>
 #include <sn_core.h>
+#include "ParameterInfo.h"
 
 //------------------------------------------------------------------------------------
 // effect
@@ -38,15 +39,6 @@ enum
 };
 
 //------------------------------------------------------------------------------------
-
-struct ParamDesc
-{
-	const char* id;			  // JUCE parameter ID
-	const char* name;		  // display name
-	const char* unit;		  // "dB", "Hz", "n/y", etc.
-	float defaultNorm;		  // normalized [0..1]
-};
-
 static const ParamDesc gParams[] =
 {
     { "gain",   "Gain",      "dB",  0.00f }, // SNE_GAIN      input gain

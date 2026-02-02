@@ -27,3 +27,11 @@ struct ParameterInfo
 		return dB2lin(normalizedToDb(norm));
 	}
 };
+
+struct ParamDesc
+{
+	const char* id;			  // JUCE parameter ID
+	const char* name;		  // display name
+	const char* unit;		  // "dB", "Hz", "n/y", etc.
+	float defaultNorm;		  // normalized [0..1]
+};

@@ -16,6 +16,7 @@
 
 #include <juce_audio_processors/juce_audio_processors.h>
 #include <sn_core.h>
+#include "ParameterInfo.h"
 
 //------------------------------------------------------------------------------------
 // effect
@@ -50,14 +51,6 @@ enum
 	SNE_LP_B,		// bypass LPF
 	SNE_HP_B,		// bypass HPF
 	SNE_SIZE,		// num of params
-};
-
-struct ParamDesc
-{
-	const char* id;			  // JUCE parameter ID
-	const char* name;		  // display name
-	const char* unit;		  // "dB", "Hz", "n/y", etc.
-	float defaultNorm;		  // normalized [0..1]
 };
 
 static const ParamDesc gParams[SNE_SIZE] =
