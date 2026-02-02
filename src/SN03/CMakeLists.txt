@@ -29,8 +29,8 @@ juce_add_plugin(SN03
 # ----------------------
 target_sources(SN03
     PRIVATE
-        SignalNoiseLimiter.cpp
-#        SignalNoiseLimiterEditor.cpp
+        SignalNoiseTapedeck.cpp
+#        SignalNoiseTapedeckEditor.cpp
 )
 
 # ----------------------

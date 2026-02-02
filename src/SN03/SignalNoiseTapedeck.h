@@ -9,14 +9,14 @@
 //------------------------------------------------------------------------------------
 
 
-#ifndef _SN_03E_H
-#define _SN_03E_H
+#pragma once
 
 
 //------------------------------------------------------------------------------------
 
+#include <atomic>
+#include <juce_audio_processors/juce_audio_processors.h>
 #include <sn_core.h>
-#include <sn_vsti.h>
 
 //------------------------------------------------------------------------------------
 
@@ -32,11 +32,9 @@ enum
 	SNE_HEAD,		// head bump frequency
 	SNE_BUMP,		// head bump magitude
 	SNE_HISS,		// hiss gain
-#ifdef SN03G
 	SNE_ROOM,		// VU meter headroom
 	SNE_HOLD,		// VU meter peak hold
 	SNE_PATH,		// VU meter path
-#endif
 	SNE_ATTN,		// bump attenuator
 	SNE_NOIS,		// noise on/off
 	SNE_HBON,		// head bump on/off
@@ -46,33 +44,44 @@ enum
 
 //------------------------------------------------------------------------------------
 
-static const param_t gParam[] = 
+struct ParamDesc
 {
-	{"Input",		"dB",	0.50f},
-	{"Output",		"dB",	0.50f},
-	{"EQ Curve",	"Typ",	0.50f},
-	{"EQ RecLo",	"dB",	0.50f},
-	{"EQ RecHi",	"dB",	0.50f},
-	{"EQ RepLo",	"dB",	0.50f},
-	{"EQ RepHi",	"dB",	0.50f},
-	{"HB Freq",		"Hz",	0.00f},
-	{"HB Strn",		"dB",	0.00f},
-	{"Hiss dB",		"dB",	0.50f},
-#ifdef SN03G
-	{"VU Ref",		"dB",	0.625f},
-	{"VU Hold",		"n/y",	0.0f},
-	{"VU Path",		"I/O",	1.0f},
-#endif
-	{"HB Attn",		"dB",	1.00f},
-	{"Hiss On",		"n/y",	1.00f},
-	{"HB On",		"n/y",	1.00f},
-	{"Anarchy",		"n/y",	0.00f},
+	const char* id;			  // JUCE parameter ID
+	const char* name;		  // display name
+	const char* unit;		  // "dB", "Hz", "n/y", etc.
+	float defaultNorm;		  // normalized [0..1]
+};
+
+static const ParamDesc gParams[] =
+{
+	{ "trim",   "Input",     "dB",  0.50f }, // SNE_TRIM   input trim +/-24 dB
+	{ "gain",   "Output",    "dB",  0.50f }, // SNE_GAIN   output gain +/-24 dB
+
+	{ "eqsc",   "EQ Curve",  "Typ", 0.50f }, // SNE_EQSC   EQ curve [NAB, IEC 15, AES]
+
+	{ "rclo",   "EQ RecLo",  "dB",  0.50f }, // SNE_RCLO   rec EQ bass +/-10 dB
+	{ "rchi",   "EQ RecHi",  "dB",  0.50f }, // SNE_RCHI   rec EQ high +/-14 dB
+	{ "rplo",   "EQ RepLo",  "dB",  0.50f }, // SNE_RPLO   rep EQ bass +/-10 dB
+	{ "rphi",   "EQ RepHi",  "dB",  0.50f }, // SNE_RPHI   rep EQ high +/-14 dB
+
+	{ "head",   "HB Freq",   "Hz",  0.00f }, // SNE_HEAD   head bump frequency
+	{ "bump",   "HB Strn",   "dB",  0.00f }, // SNE_BUMP   head bump magnitude
+
+	{ "hiss",   "Hiss dB",   "dB",  0.50f }, // SNE_HISS   hiss gain
+
+	{ "room",   "VU Ref",    "dB",  0.625f }, // SNE_ROOM  VU meter headroom
+	{ "hold",   "VU Hold",   "n/y", 0.00f },  // SNE_HOLD  VU meter peak hold
+	{ "path",   "VU Path",   "I/O", 1.00f },  // SNE_PATH  VU meter path
+
+	{ "attn",   "HB Attn",   "dB",  1.00f }, // SNE_ATTN   bump attenuator
+	{ "nois",   "Hiss On",   "n/y", 1.00f }, // SNE_NOIS   noise on/off
+	{ "hbon",   "HB On",     "n/y", 1.00f }, // SNE_HBON   head bump on/off
+	{ "loon",   "Anarchy",   "n/y", 0.00f }, // SNE_LOON   force LO on
 };
 
 //------------------------------------------------------------------------------------
 
 #define SN03_VER		1310
-#define SN03_UID		VST_FOURCC('S','N','0','3')
 #ifdef SN03G
 #define SN03_NAM		"SN03-G Tape Recorder"
 #else
@@ -81,9 +90,16 @@ static const param_t gParam[] =
 
 //------------------------------------------------------------------------------------
 
-class SignalNoiseTapedeck : public SignalNoiseFX 
+class SignalNoiseTapedeck : public juce::AudioProcessor,
+                            public juce::AudioProcessorValueTreeState::Listener
 {
 private:
+	double sampleRate = 44100.0;
+    juce::AudioProcessorValueTreeState parameters;
+
+//vu meter
+	std::atomic<float> vuLevel  { 0.0f };
+
 //repro head
 	foHPF	_rep0L;		// repro - LF roll-off
 	foHPF	_rep0R;		// repro - LF roll-off
@@ -104,21 +120,52 @@ private:
 private:
 	void setupTapeheads();
 	void setupEqualizer();
-//callbacks - SN
-	virtual void onSetSampleRate(float fs);
-	virtual void onSetParameter(VstInt32 at, float v);
+
+	template <typename Sample>
+	void processImpl(Sample** in, Sample** out, int numSamples);
+
+	static juce::AudioProcessorValueTreeState::ParameterLayout
+	createParameterLayout();
+
+	int paramIdToIndex (const juce::String& id);
+
+	inline float getParamNorm (int idx) const noexcept
+	{
+		return *parameters.getRawParameterValue (gParams[idx].id);
+	}
+
 public:
 //create & destroy
-	SignalNoiseTapedeck(audioMasterCallback cb);
-	virtual ~SignalNoiseTapedeck();
-//process - SDK
-	virtual void processReplacing(float** in, float** out, VstInt32 sz);
-	virtual void processDoubleReplacing(double** in, double** out, VstInt32 sz);
-//plugin info - SDK
-	VST_DEFINE_PLUGINFO(SN03_NAM, SN03_VER, kPlugCategEffect);
+	SignalNoiseTapedeck();
+	~SignalNoiseTapedeck() override = default;
+
+	// JUCE overrides
+	void prepareToPlay(double newSampleRate, int samplesPerBlock) override;
+	void releaseResources() override {}
+
+	void processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer&) override;
+	void processBlock(juce::AudioBuffer<double>& buffer, juce::MidiBuffer&) override;
+
+	juce::AudioProcessorEditor* createEditor() override;
+	bool hasEditor() const override { return false; }
+	juce::AudioProcessorValueTreeState& getParameters() { return parameters; }
+
+	const juce::String getName() const override { return "SignalNoiseEqualizer"; }
+	bool acceptsMidi() const override { return false; }
+	bool producesMidi() const override { return false; }
+	double getTailLengthSeconds() const override { return 0.0; }
+
+	int getNumPrograms() override { return 1; }
+	int getCurrentProgram() override { return 0; }
+	void setCurrentProgram(int) override {}
+	const juce::String getProgramName(int) override { return {}; }
+	void changeProgramName(int, const juce::String&) override {}
+	bool isBusesLayoutSupported(const juce::AudioProcessor::BusesLayout& layouts) const override;
+	void parameterChanged(const juce::String& parameterID, float newValue) override;
+
+	void getStateInformation(juce::MemoryBlock&) override;
+	void setStateInformation(const void*, int) override;
+
+//	float getInputLevel()  const noexcept { return inputLevel.load(); }
+//	float getOutputLevel() const noexcept { return outputLevel.load(); }
 };
-
-//------------------------------------------------------------------------------------
-
-
-#endif // _SN_03E_H
