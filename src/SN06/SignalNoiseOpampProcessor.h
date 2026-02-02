@@ -83,5 +83,5 @@ private:
 	juce::AudioProcessorValueTreeState parameters;
 
 	template <typename Sample>
-	void processImpl(Sample** in, Sample** out, int numSamples);
+	void processImpl(juce::AudioBuffer<Sample>& buffer);
 };

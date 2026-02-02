@@ -68,8 +68,17 @@ void SignalNoiseOpampProcessor::prepareToPlay(double sampleRate, int /*samplesPe
 // Audio processing
 // ----------------------
 template <typename Sample>
-void SignalNoiseOpampProcessor::processImpl(Sample** in, Sample** out, int numSamples)
+void SignalNoiseOpampProcessor::processImpl(juce::AudioBuffer<Sample>& buffer)
 {
+	const int numSamples  = buffer.getNumSamples();
+	const int numChannels = buffer.getNumChannels();
+	const bool mono       = (numChannels == 1);
+
+	Sample* inL  = buffer.getWritePointer(0);
+	Sample* inR  = mono ? nullptr : buffer.getWritePointer(1);
+	Sample* outL = inL;
+	Sample* outR = inR;
+
 	// Read parameters once per block
 	const float gainParam	= *parameters.getRawParameterValue("gain");
 	const float trimParam	= *parameters.getRawParameterValue("trim");
@@ -96,8 +105,8 @@ void SignalNoiseOpampProcessor::processImpl(Sample** in, Sample** out, int numSa
 	for (int n = 0; n < numSamples; ++n)
 	{
 		// Input
-		L = *in[0]++;
-		R = (!_mono && in[1] != nullptr) ? *in[1]++ : 0.0;
+		L = *inL++;
+		R = mono ? L : *inR++;
 
 		// Trim
 		L *= trim;
@@ -124,12 +133,12 @@ void SignalNoiseOpampProcessor::processImpl(Sample** in, Sample** out, int numSa
 		R = _hpfR.run(R) * volu;
 
 		// Write output
-		*out[0]++ = static_cast<Sample>(L);
-		if (out[1] != nullptr)
-			*out[1]++ = static_cast<Sample>(R);
+		(*outL++) = static_cast<Sample>(L);
+		if (mono)
+			(*outR++) = static_cast<Sample>(R);
 
 		float inAbs, outAbs;
-		if(_mono)
+		if(mono)
 		{
 			inAbs  = std::abs(iL);
 			outAbs = std::abs(L);
@@ -147,16 +156,12 @@ void SignalNoiseOpampProcessor::processImpl(Sample** in, Sample** out, int numSa
 
 void SignalNoiseOpampProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer&)
 {
-	float* in[2]  = { buffer.getWritePointer(0), buffer.getNumChannels() > 1 ? buffer.getWritePointer(1) : nullptr };
-	float* out[2] = { in[0], in[1] };
-	processImpl(in, out, buffer.getNumSamples());
+	processImpl<float>(buffer);
 }
 
 void SignalNoiseOpampProcessor::processBlock(juce::AudioBuffer<double>& buffer, juce::MidiBuffer&)
 {
-	double* in[2]  = { buffer.getWritePointer(0), buffer.getNumChannels() > 1 ? buffer.getWritePointer(1) : nullptr };
-	double* out[2] = { in[0], in[1] };
-	processImpl(in, out, buffer.getNumSamples());
+	processImpl<double>(buffer);
 }
 
 // ----------------------
