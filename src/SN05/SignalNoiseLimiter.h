@@ -15,6 +15,7 @@
 
 //------------------------------------------------------------------------------------
 
+#include <atomic>
 #include <juce_audio_processors/juce_audio_processors.h>
 #include <sn_core.h>
 

@@ -10,7 +10,6 @@
 
 
 #include <math.h>
-#include <atomic>
 #include "SignalNoiseLimiter.h"
 //#include "SignalNoiseLimiterEditor.h"
 
