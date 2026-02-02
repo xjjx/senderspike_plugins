@@ -4,19 +4,18 @@
 //
 //	purpose:	SN04 Channel EQ effect
 //
-//  authors:	2019 - 2021 Oto Spál
+//	authors:	2019 - 2021 Oto Spál
 //
 //------------------------------------------------------------------------------------
 
 
-#ifndef _SN_04E_H
-#define _SN_04E_H
+#pragma once
 
 
 //------------------------------------------------------------------------------------
 
+#include <juce_audio_processors/juce_audio_processors.h>
 #include <sn_core.h>
-#include <sn_vsti.h>
 
 //------------------------------------------------------------------------------------
 // effect
@@ -53,42 +52,53 @@ enum
 	SNE_SIZE,		// num of params
 };
 
-//------------------------------------------------------------------------------------
-
-static const param_t gParam[] = 
+struct ParamDesc
 {
-	{"Output",		"dB",		0.50f},
-	{"Phase",		"n/y",		0.00f},
-	{"HF Freq",		"Hz",		0.00f},
-	{"HF Gain",		"dB",		0.50f},
-	{"HF BW",		"oct",		0.50f},
-	{"HF Type",		"typ",		0.00f},
-	{"HF Mode",		"n/y",		0.00f},
-	{"MF Freq",		"Hz",		0.00f},
-	{"MF Gain",		"dB",		0.50f},
-	{"MF BW",		"oct",		0.50f},
-	{"MF Type",		"typ",		0.00f},
-	{"LF Freq",		"Hz",		0.00f},
-	{"LF Gain",		"dB",		0.50f},
-	{"LF BW",		"oct",		0.50f},
-	{"LF Type",		"typ",		0.00f},
-	{"LF Mode",		"n/y",		0.00f},
-	{"Lo-Pass",		"Hz",		0.00f},
-	{"Hi-Pass",		"Hz",		0.00f},
-	{"Lo Slope",	"dB/o",		0.00f},
-	{"Hi Slope",	"dB/o",		0.00f},
-	{"Analog",		"n/y",		0.00f},
-	{"Mute HF",		"n/y",		0.00f},
-	{"Mute MF",		"n/y",		0.00f},
-	{"Mute LF",		"n/y",		0.00f},
-	{"Mute LPF",	"n/y",		0.00f},
-	{"Mute HPF",	"n/y",		0.00f},
+	const char* id;			  // JUCE parameter ID
+	const char* name;		  // display name
+	const char* unit;		  // "dB", "Hz", "n/y", etc.
+	float defaultNorm;		  // normalized [0..1]
+};
+
+static const ParamDesc gParams[SNE_SIZE] =
+{
+	{ "gain",  "Output",   "dB",   0.50f }, // SNE_GAIN
+	{ "iphs",  "Phase",    "n/y",  0.00f }, // SNE_IPHS
+
+	{ "hf_f",  "HF Freq",  "Hz",   0.00f }, // SNE_HF_F
+	{ "hf_g",  "HF Gain",  "dB",   0.50f }, // SNE_HF_G
+	{ "hf_q",  "HF BW",    "oct",  0.50f }, // SNE_HF_Q
+	{ "hf_t",  "HF Type",  "typ",  0.00f }, // SNE_HF_T
+	{ "hf_m",  "HF Mode",  "n/y",  0.00f }, // SNE_HF_M
+
+	{ "mf_f",  "MF Freq",  "Hz",   0.00f }, // SNE_MF_F
+	{ "mf_g",  "MF Gain",  "dB",   0.50f }, // SNE_MF_G
+	{ "mf_q",  "MF BW",    "oct",  0.50f }, // SNE_MF_Q
+	{ "mf_t",  "MF Type",  "typ",  0.00f }, // SNE_MF_T
+
+	{ "lf_f",  "LF Freq",  "Hz",   0.00f }, // SNE_LF_F
+	{ "lf_g",  "LF Gain",  "dB",   0.50f }, // SNE_LF_G
+	{ "lf_q",  "LF BW",    "oct",  0.50f }, // SNE_LF_Q
+	{ "lf_t",  "LF Type",  "typ",  0.00f }, // SNE_LF_T
+	{ "lf_m",  "LF Mode",  "n/y",  0.00f }, // SNE_LF_M
+
+	{ "lpas",  "Lo-Pass",  "Hz",   0.00f }, // SNE_LPAS
+	{ "hpas",  "Hi-Pass",  "Hz",   0.00f }, // SNE_HPAS
+	{ "loct",  "Lo Slope", "dB/o", 0.00f }, // SNE_LOCT
+	{ "hoct",  "Hi Slope", "dB/o", 0.00f }, // SNE_HOCT
+
+	{ "mojo",  "Analog",   "n/y",  0.00f }, // SNE_MOJO
+
+	{ "hf_b",  "Mute HF",  "n/y",  0.00f }, // SNE_HF_B
+	{ "mf_b",  "Mute MF",  "n/y",  0.00f }, // SNE_MF_B
+	{ "lf_b",  "Mute LF",  "n/y",  0.00f }, // SNE_LF_B
+	{ "lp_b",  "Mute LPF", "n/y",  0.00f }, // SNE_LP_B
+	{ "hp_b",  "Mute HPF", "n/y",  0.00f }, // SNE_HP_B
 };
 
 //------------------------------------------------------------------------------------
 
 #define SN04_VER		1210
-#define SN04_UID		VST_FOURCC('S','N','0','4')
 #ifdef SN04G
 #define SN04_NAM		"SN04-G Channel EQ"
 #else
@@ -97,10 +107,14 @@ static const param_t gParam[] =
 
 //------------------------------------------------------------------------------------
 
-class SignalNoiseEqualizer : public SignalNoiseFX 
+class SignalNoiseEqualizer : public juce::AudioProcessor,
+                             public juce::AudioProcessorValueTreeState::Listener
 {
 private:
-//bands		   L        R
+	double sampleRate = 44100.0;
+    juce::AudioProcessorValueTreeState parameters;
+
+//bands		   L		R
 	biquad	_hf_La,  _hf_Ra;
 	foHSF	_hf_Lb,  _hf_Rb;
 	biquad	_mf_Lp,  _mf_Rp;
@@ -116,7 +130,7 @@ private:
 	biquad	_hp12_L, _hp12_R;
 	biquad	_hp24_L, _hp24_R;
 //character
-	foHSF	_hsfL,   _hsfR;
+	foHSF	_hsfL,	 _hsfR;
 //other
 	noise	_mojo;
 	double	_norm;
@@ -127,21 +141,51 @@ private:
 	void setupLP();
 	void setupHP();
 	void setupAnalog();
-//callbacks - SN
-	virtual void onSetSampleRate(float fs);
-	virtual void onSetParameter(VstInt32 at, float v);
+
+	template <typename Sample>
+	void processImpl(Sample** in, Sample** out, int numSamples);
+
+	static juce::AudioProcessorValueTreeState::ParameterLayout
+	createParameterLayout();
+
+	int paramIdToIndex (const juce::String& id);
+
+	inline float getParamNorm (int idx) const noexcept
+	{
+		return *parameters.getRawParameterValue (gParams[idx].id);
+	}
+
 public:
-//create & destroy
-	SignalNoiseEqualizer(audioMasterCallback cb);
-	virtual ~SignalNoiseEqualizer();
-//process - SDK
-	virtual void processReplacing(float** in, float** out, VstInt32 sz);
-	virtual void processDoubleReplacing(double** in, double** out, VstInt32 sz);
-//plugin info - SDK
-	VST_DEFINE_PLUGINFO(SN04_NAM, SN04_VER, kPlugCategEffect);
+	SignalNoiseEqualizer();
+	~SignalNoiseEqualizer() override = default;
+
+	// JUCE overrides
+	void prepareToPlay(double newSampleRate, int samplesPerBlock) override;
+	void releaseResources() override {}
+
+	void processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer&) override;
+	void processBlock(juce::AudioBuffer<double>& buffer, juce::MidiBuffer&) override;
+
+	juce::AudioProcessorEditor* createEditor() override;
+	bool hasEditor() const override { return false; }
+	juce::AudioProcessorValueTreeState& getParameters() { return parameters; }
+
+	const juce::String getName() const override { return "SignalNoiseEqualizer"; }
+	bool acceptsMidi() const override { return false; }
+	bool producesMidi() const override { return false; }
+	double getTailLengthSeconds() const override { return 0.0; }
+
+	int getNumPrograms() override { return 1; }
+	int getCurrentProgram() override { return 0; }
+	void setCurrentProgram(int) override {}
+	const juce::String getProgramName(int) override { return {}; }
+	void changeProgramName(int, const juce::String&) override {}
+	bool isBusesLayoutSupported(const juce::AudioProcessor::BusesLayout& layouts) const override;
+	void parameterChanged(const juce::String& parameterID, float newValue) override;
+
+	void getStateInformation(juce::MemoryBlock&) override;
+	void setStateInformation(const void*, int) override;
+
+//	float getInputLevel()  const noexcept { return inputLevel.load(); }
+//	float getOutputLevel() const noexcept { return outputLevel.load(); }
 };
-
-//------------------------------------------------------------------------------------
-
-
-#endif // _SN_04E_H

@@ -4,61 +4,73 @@
 //
 //	purpose:	SN04 Channel EQ effect
 //
-//  authors:	2019 - 2021 Oto Spál
+//	authors:	2019 - 2021 Oto Spál
 //
 //------------------------------------------------------------------------------------
 
 
 #include <math.h>
-#include <sn_04e.h>
+#include "SignalNoiseEqualizer.h"
+//#include "SignalNoiseEqualizerEditor.h"
+
 #ifdef SN04G
 #include <sn_04g.h>
 #endif
 
 
 //------------------------------------------------------------------------------------
-// factory
-//------------------------------------------------------------------------------------
-
-AudioEffect* createEffectInstance(audioMasterCallback cb)
-{
-	return new SignalNoiseEqualizer(cb);
-}
-
-//------------------------------------------------------------------------------------
 // class SignalNoiseEqualizer
 //------------------------------------------------------------------------------------
 
-SignalNoiseEqualizer::SignalNoiseEqualizer(audioMasterCallback cb) : SignalNoiseFX(cb, 0, SNE_SIZE)
+SignalNoiseEqualizer::SignalNoiseEqualizer()
+: AudioProcessor(
+	BusesProperties()
+		.withInput	("Input",  juce::AudioChannelSet::stereo(), true)
+		.withOutput ("Output", juce::AudioChannelSet::stereo(), true)
+  ),
+  parameters (*this, nullptr, "PARAMS", createParameterLayout())
 {
 	_norm = 1e-15;
 	_mojo.seed();
 
-	InitParams(gParam, SNE_SIZE);
-	
-	setUniqueID(SN04_UID);
-	setNumInputs(2);
-	setNumOutputs(2);
-	canProcessReplacing(true);
-	canDoubleReplacing(true);
-	programsAreChunks(true);
-
-#ifdef SN04G
-	editor = new SignalNoiseEqualizerGUI(this);
-#endif
+	for (int i = 0; i < SNE_SIZE; ++i)
+		parameters.addParameterListener (gParams[i].id, this);
 }
 
-//------------------------------------------------------------------------------------
-
-SignalNoiseEqualizer::~SignalNoiseEqualizer()
+juce::AudioProcessorValueTreeState::ParameterLayout
+SignalNoiseEqualizer::createParameterLayout()
 {
-	// empty
+	juce::AudioProcessorValueTreeState::ParameterLayout layout;
+
+	for (int i = 0; i < SNE_SIZE; ++i)
+	{
+		const auto& p = gParams[i];
+
+		layout.add (std::make_unique<juce::AudioParameterFloat>(
+			p.id,					   // parameter ID
+			p.name,					   // display name
+			juce::NormalisableRange<float> (0.0f, 1.0f),
+			p.defaultNorm,			   // same as _param[i].val
+			p.unit					   // <-- NEW, preserved
+		));
+	}
+
+	return layout;
 }
 
-//------------------------------------------------------------------------------------
-
-void SignalNoiseEqualizer::onSetSampleRate(float fs)
+bool SignalNoiseEqualizer::isBusesLayoutSupported(const BusesLayout& layouts) const
 {
+	return layouts.getMainInputChannelSet()  == juce::AudioChannelSet::stereo()
+		&& layouts.getMainOutputChannelSet() == juce::AudioChannelSet::stereo();
+}
+
+// ----------------------
+// Playback
+// ----------------------
+void SignalNoiseEqualizer::prepareToPlay(double newSampleRate, int /*samplesPerBlock*/)
+{
+	sampleRate = newSampleRate;
+
 	setupHF();
 	setupMF();
 	setupLF();
@@ -68,9 +80,22 @@ void SignalNoiseEqualizer::onSetSampleRate(float fs)
 }
 
 //------------------------------------------------------------------------------------
-
-void SignalNoiseEqualizer::onSetParameter(VstInt32 at, float v)
+int SignalNoiseEqualizer::paramIdToIndex (const juce::String& id)
 {
+	for (int i = 0; i < SNE_SIZE; ++i)
+		if (id == gParams[i].id)
+			return i;
+
+	return -1;
+}
+
+void SignalNoiseEqualizer::parameterChanged (const juce::String& id,
+                                                      float /*newValue*/)
+{
+	const int at = paramIdToIndex (id);
+	if (at < 0)
+		return;
+
 	switch(at)
 	{
 	case SNE_HF_F:
@@ -186,10 +211,10 @@ static double snGetBellBW(float f, float g, double db, double s, double r)
 void SignalNoiseEqualizer::setupHF()
 {
 	double f, v, q;
-	float G = _param[SNE_HF_G].val;
-	float Q = _param[SNE_HF_Q].val;
-	int fi = snGetIndex7(_param[SNE_HF_F].val);
-	biquad_e typ = _param[SNE_HF_M].val > 0.5 ? PKF : HSF;
+	float G = getParamNorm(SNE_HF_G);
+	float Q = getParamNorm(SNE_HF_Q);
+	int fi = snGetIndex7(getParamNorm(SNE_HF_F));
+	biquad_e typ = getParamNorm(SNE_HF_M) > 0.5 ? PKF : HSF;
 
 	if(!fi)
 	{
@@ -205,7 +230,7 @@ void SignalNoiseEqualizer::setupHF()
 
 	if(typ == HSF)
 	{
-		if(_param[SNE_HF_T].val < 0.5)
+		if(getParamNorm(SNE_HF_T) < 0.5)
 		{
 			//API
 			_hf_Lb.setup(v, f, sampleRate);
@@ -227,7 +252,7 @@ void SignalNoiseEqualizer::setupHF()
 	}
 	else
 	{
-		if(_param[SNE_HF_T].val > 0.5)
+		if(getParamNorm(SNE_HF_T) > 0.5)
 			q = snGetBellBW(Q, G, v, gHFs[fi], gHFr[fi]);
 		else
 			q = snGetBellBW(Q, G, 0, gHFs[fi], gHFr[fi]);
@@ -244,9 +269,9 @@ void SignalNoiseEqualizer::setupHF()
 void SignalNoiseEqualizer::setupMF()
 {
 	double f, v, q;
-	float gain = _param[SNE_MF_G].val;
-	float fact = _param[SNE_MF_Q].val;
-	int fi = snGetIndex7(_param[SNE_MF_F].val);
+	float gain = getParamNorm(SNE_MF_G);
+	float fact = getParamNorm(SNE_MF_Q);
+	int fi = snGetIndex7(getParamNorm(SNE_MF_F));
 
 	if(!fi)
 	{
@@ -258,7 +283,7 @@ void SignalNoiseEqualizer::setupMF()
 	f = gMF[fi];
 	v = gain * 36 - 18;
 
-	if(_param[SNE_MF_T].val > 0.5)
+	if(getParamNorm(SNE_MF_T) > 0.5)
 		q = snGetBellBW(fact, gain, v, gMFs[fi], gMFr[fi]);
 	else
 		q = snGetBellBW(fact, gain, 0, gMFs[fi], gMFr[fi]);
@@ -272,10 +297,10 @@ void SignalNoiseEqualizer::setupMF()
 void SignalNoiseEqualizer::setupLF()
 {
 	double f, v, q, n;
-	float Q = _param[SNE_LF_Q].val;
-	float G = _param[SNE_LF_G].val;
-	int fi = snGetIndex7(_param[SNE_LF_F].val);
-	biquad_e typ = _param[SNE_LF_M].val > 0.5 ? PKF : LSF;
+	float Q = getParamNorm(SNE_LF_Q);
+	float G = getParamNorm(SNE_LF_G);
+	int fi = snGetIndex7(getParamNorm(SNE_LF_F));
+	biquad_e typ = getParamNorm(SNE_LF_M) > 0.5 ? PKF : LSF;
 
 	if(!fi)
 	{
@@ -293,7 +318,7 @@ void SignalNoiseEqualizer::setupLF()
 
 	if(typ == LSF)
 	{
-		if(_param[SNE_LF_T].val < 0.5)
+		if(getParamNorm(SNE_LF_T) < 0.5)
 		{
 			//550A
 			_lf_Lc.setup(v, f, sampleRate);
@@ -322,7 +347,7 @@ void SignalNoiseEqualizer::setupLF()
 	}
 	else
 	{
-		if(_param[SNE_LF_T].val > 0.5)
+		if(getParamNorm(SNE_LF_T) > 0.5)
 			q = snGetBellBW(Q, G, v, 4.53, 2.26);
 		else
 			q = snGetBellBW(Q, G, 0, 4.53, 2.26);
@@ -341,8 +366,8 @@ void SignalNoiseEqualizer::setupLF()
 void SignalNoiseEqualizer::setupLP()
 {
 	double fc;
-	int fi = snGetIndex5(_param[SNE_LPAS].val);
-	int ti = snGetIndex4(_param[SNE_LOCT].val);
+	int fi = snGetIndex5(getParamNorm(SNE_LPAS));
+	int ti = snGetIndex4(getParamNorm(SNE_LOCT));
 
 	if(fi)
 	{
@@ -379,8 +404,8 @@ void SignalNoiseEqualizer::setupLP()
 void SignalNoiseEqualizer::setupHP()
 {
 	double fc;
-	int fi = snGetIndex5(_param[SNE_HPAS].val);
-	int ti = snGetIndex4(_param[SNE_HOCT].val);
+	int fi = snGetIndex5(getParamNorm(SNE_HPAS));
+	int ti = snGetIndex4(getParamNorm(SNE_HOCT));
 	
 	if(fi)
 	{
@@ -416,7 +441,7 @@ void SignalNoiseEqualizer::setupHP()
 
 void SignalNoiseEqualizer::setupAnalog()
 {
-	if(_param[SNE_MOJO].val > 0.5)
+	if(getParamNorm(SNE_MOJO) > 0.5)
 	{
 		_hsfL.setup(-2, 15000, sampleRate);
 		_hsfR.setup(-2, 15000, sampleRate);
@@ -430,34 +455,54 @@ void SignalNoiseEqualizer::setupAnalog()
 
 //------------------------------------------------------------------------------------
 
-void SignalNoiseEqualizer::processReplacing(float** in, float** out, VstInt32 sz)
+template <typename Sample>
+void SignalNoiseEqualizer::processImpl (Sample** in, Sample** out, int numSamples)
 {
-	float* inL = in[0];
-	float* inR = in[1];
-	float* outL = out[0];
-	float* outR = out[1];
+	const bool mono = (getTotalNumInputChannels() == 1);
 
-	int li, hi; 
-	double L, R, dB, ph;
-	bool hf, mf, lf, lp, hp, dm;
+	Sample* inL  = in[0];
+	Sample* inR  = (mono ? nullptr : in[1]);
+	Sample* outL = out[0];
+	Sample* outR = (mono ? nullptr : out[1]);
 
-	dB = dB2lin(_param[SNE_GAIN].val * 50 - 25);
-	ph = _param[SNE_IPHS].val > 0.5 ? -1 : 1;
-	hf = _param[SNE_HF_B].val < 0.5;
-	mf = _param[SNE_MF_B].val < 0.5;
-	lf = _param[SNE_LF_B].val < 0.5;
-	hp = _param[SNE_HPAS].val >= 0.2 && _param[SNE_HP_B].val < 0.5;
-	lp = _param[SNE_LPAS].val >= 0.2 && _param[SNE_LP_B].val < 0.5;
-	dm = _param[SNE_MOJO].val > 0.5;
-	hi = snGetIndex4(_param[SNE_HOCT].val);
-	li = snGetIndex4(_param[SNE_LOCT].val);
+	// ----------------------
+	// Read parameters once
+	// ----------------------
+	const float gainParam  = getParamNorm(SNE_GAIN);
+	const float iphsParam  = getParamNorm(SNE_IPHS);
+
+	const float hfParam    = getParamNorm(SNE_HF_F);
+	const float mfParam    = getParamNorm(SNE_MF_F);
+	const float lfParam    = getParamNorm(SNE_LF_F);
+
+	const float hpasParam  = getParamNorm(SNE_HPAS);
+	const float hpParam    = getParamNorm(SNE_HP_B);
+	const float lpasParam  = getParamNorm(SNE_LPAS);
+	const float lpParam    = getParamNorm(SNE_LP_B);
+	const float hoctParam  = getParamNorm(SNE_HOCT);
+	const float loctParam  = getParamNorm(SNE_LOCT);
+
+	const float mojoParam  = getParamNorm(SNE_MOJO);
+
+	const Sample dB = (Sample) dB2lin(gainParam * 50.0f - 25.0f);
+	const Sample ph = iphsParam > 0.5f ? (Sample) -1 : (Sample) 1;
+
+	const bool hf = hfParam < 0.5f;
+	const bool mf = mfParam < 0.5f;
+	const bool lf = lfParam < 0.5f;
+	const bool hp = hpasParam >= 0.2f && hpParam < 0.5f;
+	const bool lp = lpasParam >= 0.2f && lpParam < 0.5f;
+	const bool dm = mojoParam > 0.5f;
+
+	const int hi = snGetIndex4(hoctParam);
+	const int li = snGetIndex4(loctParam);
 
 	_norm = -_norm;
 
-	while(--sz >= 0)
+	for (int n = 0; n < numSamples; ++n)
 	{
-		L = *inL++;
-		R = *inR++;
+		Sample L = *inL++;
+		Sample R = *inR++;
 
 		//"analog"
 		if(dm)
@@ -533,10 +578,11 @@ void SignalNoiseEqualizer::processReplacing(float** in, float** out, VstInt32 sz
 		L *= dB;
 		R *= dB;
 
-		if(_mono)
+		if(mono)
 		{
-			(*outL++) = float(L * ph);
-			(*outR++) = float(L * ph);
+			const Sample m = L * ph;
+			(*outL++) = m;
+			(*outR++) = m;
 #ifdef SN04G
 			((SignalNoiseEqualizerGUI*)editor)->trackPeaks(fabs(L));
 #endif
@@ -552,129 +598,48 @@ void SignalNoiseEqualizer::processReplacing(float** in, float** out, VstInt32 sz
 	}
 }
 
-//------------------------------------------------------------------------------------
-
-void SignalNoiseEqualizer::processDoubleReplacing(double** in, double** out, VstInt32 sz)
+void SignalNoiseEqualizer::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer&)
 {
-	double* inL = in[0];
-	double* inR = in[1];
-	double* outL = out[0];
-	double* outR = out[1];
-
-	int li, hi; 
-	double L, R, dB, ph;
-	bool hf, mf, lf, lp, hp, dm;
-
-	dB = dB2lin(_param[SNE_GAIN].val * 50 - 25);
-	ph = _param[SNE_IPHS].val > 0.5 ? -1 : 1;
-	hf = _param[SNE_HF_B].val < 0.5;
-	mf = _param[SNE_MF_B].val < 0.5;
-	lf = _param[SNE_LF_B].val < 0.5;
-	hp = _param[SNE_HPAS].val >= 0.2 && _param[SNE_HP_B].val < 0.5;
-	lp = _param[SNE_LPAS].val >= 0.2 && _param[SNE_LP_B].val < 0.5;
-	dm = _param[SNE_MOJO].val > 0.5;
-	hi = snGetIndex4(_param[SNE_HOCT].val);
-	li = snGetIndex4(_param[SNE_LOCT].val);
-
-	_norm = -_norm;
-
-	while(--sz >= 0)
-	{
-		L = *inL++;
-		R = *inR++;
-
-		//"analog"
-		if(dm)
-		{
-			L = _hsfL.run(L + _mojo.white() * 0.00001);
-			R = _hsfR.run(R + _mojo.white() * 0.00001);
-		}
-
-		//bands
-		if(lf)
-		{
-			L = _lf_La.run(_lf_Lb.run(_lf_Lc.run(L)));
-			R = _lf_Ra.run(_lf_Rb.run(_lf_Rc.run(R)));
-		}
-		if(mf)
-		{
-			L = _mf_Lp.run(L + _norm);
-			R = _mf_Rp.run(R + _norm);
-		}
-		if(hf)
-		{
-			L = _hf_La.run(_hf_Lb.run(L + _norm) + _norm);
-			R = _hf_Ra.run(_hf_Rb.run(R + _norm) + _norm);
-		}
-
-		//HP/LP
-		if(hp)
-		{
-			switch(hi)
-			{
-			case 0:
-				L = _hp06_L.run(L);
-				R = _hp06_R.run(R);
-				break;
-			case 1:
-				L = _hp12_L.run(L);
-				R = _hp12_R.run(R);
-				break;
-			case 2:
-				L = _hp12_L.run(_hp06_L.run(L));
-				R = _hp12_R.run(_hp06_R.run(R));
-				break;
-			case 3:
-				L = _hp24_L.run(_hp12_L.run(L));
-				R = _hp24_R.run(_hp12_R.run(R));
-				break;
-			}
-		}
-		if(lp)
-		{
-			switch(li)
-			{
-			case 0:
-				L = _lp06_L.run(L + _norm);
-				R = _lp06_R.run(R + _norm);
-				break;
-			case 1:
-				L = _lp12_L.run(L + _norm);
-				R = _lp12_R.run(R + _norm);
-				break;
-			case 2:
-				L = _lp12_L.run(_lp06_L.run(L + _norm) + _norm);
-				R = _lp12_R.run(_lp06_R.run(R + _norm) + _norm);
-				break;
-			case 3:
-				L = _lp24_L.run(_lp12_L.run(L + _norm) + _norm);
-				R = _lp24_R.run(_lp12_R.run(R + _norm) + _norm);
-				break;
-			}
-		}
-
-		//output
-		L *= dB;
-		R *= dB;
-
-		if(_mono)
-		{
-			(*outL++) = L * ph;
-			(*outR++) = L * ph;
-#ifdef SN04G
-			((SignalNoiseEqualizerGUI*)editor)->trackPeaks(fabs(L));
-#endif
-		}
-		else
-		{
-			(*outL++) = L * ph;
-			(*outR++) = R * ph;
-#ifdef SN04G
-			((SignalNoiseEqualizerGUI*)editor)->trackPeaks((fabs(L) + fabs(R)) * 0.5);
-#endif
-		}
-	}
+	float* in[2]  = { buffer.getWritePointer(0), buffer.getNumChannels() > 1 ? buffer.getWritePointer(1) : nullptr };
+	float* out[2] = { in[0], in[1] };
+	processImpl(in, out, buffer.getNumSamples());
 }
 
-//------------------------------------------------------------------------------------
+void SignalNoiseEqualizer::processBlock(juce::AudioBuffer<double>& buffer, juce::MidiBuffer&)
+{
+	double* in[2]  = { buffer.getWritePointer(0), buffer.getNumChannels() > 1 ? buffer.getWritePointer(1) : nullptr };
+	double* out[2] = { in[0], in[1] };
+	processImpl(in, out, buffer.getNumSamples());
+}
 
+// ----------------------
+// State
+// ----------------------
+void SignalNoiseEqualizer::getStateInformation(juce::MemoryBlock& destData)
+{
+	auto state = parameters.copyState();
+	std::unique_ptr<juce::XmlElement> xml(state.createXml());
+	copyXmlToBinary(*xml, destData);
+}
+
+void SignalNoiseEqualizer::setStateInformation(const void* data, int sizeInBytes)
+{
+	std::unique_ptr<juce::XmlElement> xml(getXmlFromBinary(data, sizeInBytes));
+	if (xml)
+		parameters.replaceState(juce::ValueTree::fromXml(*xml));
+}
+
+// Editor
+juce::AudioProcessorEditor* SignalNoiseEqualizer::createEditor()
+{
+//	return new SignalNoiseOpampEditor (*this);
+	return nullptr;
+}
+
+// ----------------------
+// JUCE Plugin entry point
+// ----------------------
+juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()
+{
+	return new SignalNoiseEqualizer();
+}
