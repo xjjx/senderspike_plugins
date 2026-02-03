@@ -30,9 +30,8 @@ SignalNoiseCompressor::SignalNoiseCompressor()
 	_fbR = DC_OFFSET;
 	_rnd.seed();
 
-#ifdef SN01G
-	editor = new SignalNoiseCompressorGUI(this);
-#endif
+	for (int i = 0; i < SNE_SIZE; ++i)
+		parameters.addParameterListener (gParams[i].id, this);
 }
 
 //------------------------------------------------------------------------------------

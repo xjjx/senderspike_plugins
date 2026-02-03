@@ -28,10 +28,9 @@ SignalNoiseTapedeck::SignalNoiseTapedeck()
 	  )
 {
 	_rand.seed();
-		
-#ifdef SN03G
-	editor = new SignalNoiseTapedeckGUI(this);
-#endif
+
+	for (int i = 0; i < SNE_SIZE; ++i)
+		parameters.addParameterListener (gParams[i].id, this);
 }
 
 //------------------------------------------------------------------------------------

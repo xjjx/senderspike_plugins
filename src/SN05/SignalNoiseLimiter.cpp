@@ -41,10 +41,8 @@ SignalNoiseLimiter::SignalNoiseLimiter()
 	_atk = 0;
 	_rls = 0;
 
-
-#ifdef SN05G
-	editor = new SignalNoiseLimiterGUI(this);
-#endif
+	for (int i = 0; i < SNE_SIZE; ++i)
+		parameters.addParameterListener (gParams[i].id, this);
 }
 
 //------------------------------------------------------------------------------------
