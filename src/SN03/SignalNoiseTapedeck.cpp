@@ -22,45 +22,16 @@
 //------------------------------------------------------------------------------------
 
 SignalNoiseTapedeck::SignalNoiseTapedeck()
-: AudioProcessor(
-	BusesProperties()
-		.withInput	("Input",  juce::AudioChannelSet::stereo(), true)
-		.withOutput ("Output", juce::AudioChannelSet::stereo(), true)
-  ),
-  parameters (*this, nullptr, "PARAMS", createParameterLayout())
+    : SignalNoiseFX(
+          "SignalNoiseTapedeck",
+          createLayout(gParams, SNE_SIZE)
+	  )
 {
 	_rand.seed();
 		
 #ifdef SN03G
 	editor = new SignalNoiseTapedeckGUI(this);
 #endif
-}
-
-juce::AudioProcessorValueTreeState::ParameterLayout
-SignalNoiseTapedeck::createParameterLayout()
-{
-	juce::AudioProcessorValueTreeState::ParameterLayout layout;
-
-	for (int i = 0; i < SNE_SIZE; ++i)
-	{
-		const auto& p = gParams[i];
-
-		layout.add (std::make_unique<juce::AudioParameterFloat>(
-			p.id,					   // parameter ID
-			p.name,					   // display name
-			juce::NormalisableRange<float> (0.0f, 1.0f),
-			p.defaultNorm,			   // same as _param[i].val
-			p.unit					   // <-- NEW, preserved
-		));
-	}
-
-	return layout;
-}
-
-bool SignalNoiseTapedeck::isBusesLayoutSupported(const BusesLayout& layouts) const
-{
-	return layouts.getMainInputChannelSet()  == juce::AudioChannelSet::stereo()
-		&& layouts.getMainOutputChannelSet() == juce::AudioChannelSet::stereo();
 }
 
 //------------------------------------------------------------------------------------

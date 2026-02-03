@@ -17,7 +17,7 @@
 #include <atomic>
 #include <juce_audio_processors/juce_audio_processors.h>
 #include <sn_core.h>
-#include "ParameterInfo.h"
+#include "SignalNoiseFX.h"
 
 //------------------------------------------------------------------------------------
 
@@ -83,13 +83,9 @@ static const ParamDesc gParams[] =
 
 //------------------------------------------------------------------------------------
 
-class SignalNoiseTapedeck : public juce::AudioProcessor,
-                            public juce::AudioProcessorValueTreeState::Listener
+class SignalNoiseTapedeck : public SignalNoiseFX
 {
 private:
-	double sampleRate = 44100.0;
-    juce::AudioProcessorValueTreeState parameters;
-
 //vu meter
 	std::atomic<float> vuLevel  { 0.0f };
 
@@ -117,14 +113,12 @@ private:
 	template <typename Sample>
 	void processImpl(juce::AudioBuffer<Sample>& buffer);
 
-	static juce::AudioProcessorValueTreeState::ParameterLayout
-	createParameterLayout();
-
 	int paramIdToIndex (const juce::String& id);
 
 	inline float getParamNorm (int idx) const noexcept
 	{
-		return *parameters.getRawParameterValue (gParams[idx].id);
+		auto ptr = getParameters().getRawParameterValue(gParams[idx].id);
+		return ptr->load();
 	}
 
 public:
@@ -136,24 +130,13 @@ public:
 	void prepareToPlay(double newSampleRate, int samplesPerBlock) override;
 	void releaseResources() override {}
 
-	void processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer&) override;
-	void processBlock(juce::AudioBuffer<double>& buffer, juce::MidiBuffer&) override;
+	void processBlock(juce::AudioBuffer<float>&, juce::MidiBuffer&) override;
+	void processBlock(juce::AudioBuffer<double>&, juce::MidiBuffer&) override;
 
 	juce::AudioProcessorEditor* createEditor() override;
 	bool hasEditor() const override { return false; }
-	juce::AudioProcessorValueTreeState& getParameters() { return parameters; }
 
-	const juce::String getName() const override { return "SignalNoiseEqualizer"; }
-	bool acceptsMidi() const override { return false; }
-	bool producesMidi() const override { return false; }
-	double getTailLengthSeconds() const override { return 0.0; }
-
-	int getNumPrograms() override { return 1; }
-	int getCurrentProgram() override { return 0; }
-	void setCurrentProgram(int) override {}
-	const juce::String getProgramName(int) override { return {}; }
-	void changeProgramName(int, const juce::String&) override {}
-	bool isBusesLayoutSupported(const juce::AudioProcessor::BusesLayout& layouts) const override;
+	const juce::String getName() const override { return "SignalNoiseTapedeck"; }
 	void parameterChanged(const juce::String& parameterID, float newValue) override;
 
 	void getStateInformation(juce::MemoryBlock&) override;
