@@ -60,6 +60,7 @@ public:
 	}
 
 	void setName(juce::String& name) { pluginName = name; }
+	const juce::String getName() const override { return pluginName; }
 
 protected:
 	double sampleRate = 44100.0;

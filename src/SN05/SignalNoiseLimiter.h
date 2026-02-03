@@ -114,8 +114,6 @@ public:
 	juce::AudioProcessorEditor* createEditor() override;
 	bool hasEditor() const override { return false; }
 
-	const juce::String getName() const override { return "SignalNoiseLimiter"; }
-
 	void parameterChanged(const juce::String& parameterID, float newValue) override;
 
 	void getStateInformation(juce::MemoryBlock&) override;

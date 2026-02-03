@@ -111,7 +111,6 @@ public:
 	void setStateInformation (const void*, int) override;
 
 	juce::AudioProcessorEditor* createEditor() override;
-	const juce::String getName() const override { return "SignalNoiseEqualizer"; }
 
 //	float getInputLevel()  const noexcept { return inputLevel.load(); }
 //	float getOutputLevel() const noexcept { return outputLevel.load(); }
