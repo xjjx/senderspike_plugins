@@ -16,7 +16,7 @@
 
 #include <juce_audio_processors/juce_audio_processors.h>
 #include <sn_core.h>
-#include "ParameterInfo.h"
+#include "SignalNoiseFX.h"
 
 //------------------------------------------------------------------------------------
 // effect
@@ -100,13 +100,9 @@ static const ParamDesc gParams[SNE_SIZE] =
 
 //------------------------------------------------------------------------------------
 
-class SignalNoiseEqualizer : public juce::AudioProcessor,
-                             public juce::AudioProcessorValueTreeState::Listener
+class SignalNoiseEqualizer : public SignalNoiseFX
 {
 private:
-	double sampleRate = 44100.0;
-    juce::AudioProcessorValueTreeState parameters;
-
 //bands		   L		R
 	biquad	_hf_La,  _hf_Ra;
 	foHSF	_hf_Lb,  _hf_Rb;
@@ -145,7 +141,8 @@ private:
 
 	inline float getParamNorm (int idx) const noexcept
 	{
-		return *parameters.getRawParameterValue (gParams[idx].id);
+		auto ptr = getParameters().getRawParameterValue(gParams[idx].id);
+		return ptr->load();
 	}
 
 public:
@@ -154,26 +151,15 @@ public:
 
 	// JUCE overrides
 	void prepareToPlay(double newSampleRate, int samplesPerBlock) override;
-	void releaseResources() override {}
 
-	void processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer&) override;
-	void processBlock(juce::AudioBuffer<double>& buffer, juce::MidiBuffer&) override;
+	void processBlock(juce::AudioBuffer<float>&, juce::MidiBuffer&) override;
+	void processBlock(juce::AudioBuffer<double>&, juce::MidiBuffer&) override;
 
 	juce::AudioProcessorEditor* createEditor() override;
 	bool hasEditor() const override { return false; }
-	juce::AudioProcessorValueTreeState& getParameters() { return parameters; }
 
 	const juce::String getName() const override { return "SignalNoiseEqualizer"; }
-	bool acceptsMidi() const override { return false; }
-	bool producesMidi() const override { return false; }
-	double getTailLengthSeconds() const override { return 0.0; }
 
-	int getNumPrograms() override { return 1; }
-	int getCurrentProgram() override { return 0; }
-	void setCurrentProgram(int) override {}
-	const juce::String getProgramName(int) override { return {}; }
-	void changeProgramName(int, const juce::String&) override {}
-	bool isBusesLayoutSupported(const juce::AudioProcessor::BusesLayout& layouts) const override;
 	void parameterChanged(const juce::String& parameterID, float newValue) override;
 
 	void getStateInformation(juce::MemoryBlock&) override;

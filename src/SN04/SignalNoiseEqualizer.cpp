@@ -23,45 +23,16 @@
 //------------------------------------------------------------------------------------
 
 SignalNoiseEqualizer::SignalNoiseEqualizer()
-: AudioProcessor(
-	BusesProperties()
-		.withInput	("Input",  juce::AudioChannelSet::stereo(), true)
-		.withOutput ("Output", juce::AudioChannelSet::stereo(), true)
-  ),
-  parameters (*this, nullptr, "PARAMS", createParameterLayout())
+	: SignalNoiseFX(
+		"SignalNoiseCompressor",
+		createLayout(gParams, SNE_SIZE)
+      )
 {
 	_norm = 1e-15;
 	_mojo.seed();
 
 	for (int i = 0; i < SNE_SIZE; ++i)
 		parameters.addParameterListener (gParams[i].id, this);
-}
-
-juce::AudioProcessorValueTreeState::ParameterLayout
-SignalNoiseEqualizer::createParameterLayout()
-{
-	juce::AudioProcessorValueTreeState::ParameterLayout layout;
-
-	for (int i = 0; i < SNE_SIZE; ++i)
-	{
-		const auto& p = gParams[i];
-
-		layout.add (std::make_unique<juce::AudioParameterFloat>(
-			p.id,					   // parameter ID
-			p.name,					   // display name
-			juce::NormalisableRange<float> (0.0f, 1.0f),
-			p.defaultNorm,			   // same as _param[i].val
-			p.unit					   // <-- NEW, preserved
-		));
-	}
-
-	return layout;
-}
-
-bool SignalNoiseEqualizer::isBusesLayoutSupported(const BusesLayout& layouts) const
-{
-	return layouts.getMainInputChannelSet()  == juce::AudioChannelSet::stereo()
-		&& layouts.getMainOutputChannelSet() == juce::AudioChannelSet::stereo();
 }
 
 // ----------------------
