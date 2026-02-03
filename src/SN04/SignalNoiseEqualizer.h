@@ -160,9 +160,6 @@ public:
 
 	void parameterChanged(const juce::String& parameterID, float newValue) override;
 
-	void getStateInformation(juce::MemoryBlock&) override;
-	void setStateInformation(const void*, int) override;
-
 //	float getInputLevel()  const noexcept { return inputLevel.load(); }
 //	float getOutputLevel() const noexcept { return outputLevel.load(); }
 };

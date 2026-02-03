@@ -62,6 +62,20 @@ public:
 	void setName(juce::String& name) { pluginName = name; }
 	const juce::String getName() const override { return pluginName; }
 
+	void getStateInformation(juce::MemoryBlock& destData) override
+	{
+		auto state = parameters.copyState();
+		std::unique_ptr<juce::XmlElement> xml(state.createXml());
+		copyXmlToBinary(*xml, destData);
+	}
+
+	void setStateInformation(const void* data, int sizeInBytes) override
+	{
+		std::unique_ptr<juce::XmlElement> xml(getXmlFromBinary(data, sizeInBytes));
+		if (xml)
+			parameters.replaceState(juce::ValueTree::fromXml(*xml));
+	}
+
 protected:
 	double sampleRate = 44100.0;
 	juce::AudioProcessorValueTreeState parameters;

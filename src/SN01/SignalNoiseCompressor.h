@@ -107,9 +107,6 @@ public:
 	void prepareToPlay(double newSampleRate, int samplesPerBlock) override;
 	void parameterChanged(const juce::String& parameterID, float newValue) override;
 
-	void getStateInformation (juce::MemoryBlock&) override;
-	void setStateInformation (const void*, int) override;
-
 	juce::AudioProcessorEditor* createEditor() override;
 
 //	float getInputLevel()  const noexcept { return inputLevel.load(); }

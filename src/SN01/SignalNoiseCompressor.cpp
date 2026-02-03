@@ -226,23 +226,6 @@ void SignalNoiseCompressor::processBlock(juce::AudioBuffer<double>& buffer, juce
 	processImpl<double>(buffer);
 }
 
-// ----------------------
-// State
-// ----------------------
-void SignalNoiseCompressor::getStateInformation(juce::MemoryBlock& destData)
-{
-	auto state = parameters.copyState();
-	std::unique_ptr<juce::XmlElement> xml(state.createXml());
-	copyXmlToBinary(*xml, destData);
-}
-
-void SignalNoiseCompressor::setStateInformation(const void* data, int sizeInBytes)
-{
-	std::unique_ptr<juce::XmlElement> xml(getXmlFromBinary(data, sizeInBytes));
-	if (xml)
-		parameters.replaceState(juce::ValueTree::fromXml(*xml));
-}
-
 // Editor
 juce::AudioProcessorEditor* SignalNoiseCompressor::createEditor()
 {
