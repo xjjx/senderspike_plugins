@@ -29,7 +29,7 @@ target_link_libraries(SN06 PRIVATE SN06_BinaryData)
 # ----------------------
 target_sources(SN06
     PRIVATE
-        SignalNoiseOpampProcessor.cpp
+        SignalNoiseOpamp.cpp
         SignalNoiseOpampEditor.cpp
 )
 

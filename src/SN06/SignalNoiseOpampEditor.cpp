@@ -1,9 +1,8 @@
 #include <juce_audio_processors/juce_audio_processors.h>
 #include "SignalNoiseOpampEditor.h"
-#include "SignalNoiseOpampProcessor.h"
 #include "BinaryData.h"
 
-SignalNoiseOpampEditor::SignalNoiseOpampEditor(SignalNoiseOpampProcessor& p)
+SignalNoiseOpampEditor::SignalNoiseOpampEditor(SignalNoiseOpamp& p)
 	: AudioProcessorEditor(&p),
 	  processor(p)
 {

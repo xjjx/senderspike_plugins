@@ -9,13 +9,13 @@
 //
 //------------------------------------------------------------------------------------
 
-#include "SignalNoiseOpampProcessor.h"
+#include "SignalNoiseOpamp.h"
 #include "SignalNoiseOpampEditor.h"
 
 // ----------------------
 // Constructor
 // ----------------------
-SignalNoiseOpampProcessor::SignalNoiseOpampProcessor()
+SignalNoiseOpamp::SignalNoiseOpamp()
 : AudioProcessor(
 	BusesProperties()
 		.withInput	("Input",  juce::AudioChannelSet::stereo(), true)
@@ -29,7 +29,7 @@ SignalNoiseOpampProcessor::SignalNoiseOpampProcessor()
 }
 
 juce::AudioProcessorValueTreeState::ParameterLayout
-SignalNoiseOpampProcessor::createParameterLayout()
+SignalNoiseOpamp::createParameterLayout()
 {
 	juce::AudioProcessorValueTreeState::ParameterLayout layout;
 	float step = 0.01f;
@@ -54,7 +54,7 @@ SignalNoiseOpampProcessor::createParameterLayout()
 	return layout;
 }
 
-bool SignalNoiseOpampProcessor::isBusesLayoutSupported(const BusesLayout& layouts) const
+bool SignalNoiseOpamp::isBusesLayoutSupported(const BusesLayout& layouts) const
 {
 	return layouts.getMainInputChannelSet()  == juce::AudioChannelSet::stereo()
 		&& layouts.getMainOutputChannelSet() == juce::AudioChannelSet::stereo();
@@ -63,7 +63,7 @@ bool SignalNoiseOpampProcessor::isBusesLayoutSupported(const BusesLayout& layout
 // ----------------------
 // Playback
 // ----------------------
-void SignalNoiseOpampProcessor::prepareToPlay(double sampleRate, int /*samplesPerBlock*/)
+void SignalNoiseOpamp::prepareToPlay(double sampleRate, int /*samplesPerBlock*/)
 {
 	_hpfL.setup(15.0, sampleRate);
 	_hpfR.setup(15.0, sampleRate);
@@ -73,7 +73,7 @@ void SignalNoiseOpampProcessor::prepareToPlay(double sampleRate, int /*samplesPe
 // Audio processing
 // ----------------------
 template <typename Sample>
-void SignalNoiseOpampProcessor::processImpl(juce::AudioBuffer<Sample>& buffer)
+void SignalNoiseOpamp::processImpl(juce::AudioBuffer<Sample>& buffer)
 {
 	const int numSamples  = buffer.getNumSamples();
 	const int numChannels = buffer.getNumChannels();
@@ -156,12 +156,12 @@ void SignalNoiseOpampProcessor::processImpl(juce::AudioBuffer<Sample>& buffer)
 	}
 }
 
-void SignalNoiseOpampProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer&)
+void SignalNoiseOpamp::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer&)
 {
 	processImpl<float>(buffer);
 }
 
-void SignalNoiseOpampProcessor::processBlock(juce::AudioBuffer<double>& buffer, juce::MidiBuffer&)
+void SignalNoiseOpamp::processBlock(juce::AudioBuffer<double>& buffer, juce::MidiBuffer&)
 {
 	processImpl<double>(buffer);
 }
@@ -169,14 +169,14 @@ void SignalNoiseOpampProcessor::processBlock(juce::AudioBuffer<double>& buffer, 
 // ----------------------
 // State
 // ----------------------
-void SignalNoiseOpampProcessor::getStateInformation(juce::MemoryBlock& destData)
+void SignalNoiseOpamp::getStateInformation(juce::MemoryBlock& destData)
 {
 	auto state = parameters.copyState();
 	std::unique_ptr<juce::XmlElement> xml(state.createXml());
 	copyXmlToBinary(*xml, destData);
 }
 
-void SignalNoiseOpampProcessor::setStateInformation(const void* data, int sizeInBytes)
+void SignalNoiseOpamp::setStateInformation(const void* data, int sizeInBytes)
 {
 	std::unique_ptr<juce::XmlElement> xml(getXmlFromBinary(data, sizeInBytes));
 	if (xml)
@@ -184,7 +184,7 @@ void SignalNoiseOpampProcessor::setStateInformation(const void* data, int sizeIn
 }
 
 // Editor
-juce::AudioProcessorEditor* SignalNoiseOpampProcessor::createEditor()
+juce::AudioProcessorEditor* SignalNoiseOpamp::createEditor()
 {
 	return new SignalNoiseOpampEditor (*this);
 }
@@ -194,5 +194,5 @@ juce::AudioProcessorEditor* SignalNoiseOpampProcessor::createEditor()
 // ----------------------
 juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 {
-	return new SignalNoiseOpampProcessor();
+	return new SignalNoiseOpamp();
 }

@@ -31,11 +31,11 @@ static const ParamDesc gParams[] =
 	{ ParamType::Decibel, "volume", "Volume", "dB", -48.0f, 16.0f, 0.0f }
 };
 
-class SignalNoiseOpampProcessor : public juce::AudioProcessor
+class SignalNoiseOpamp : public juce::AudioProcessor
 {
 public:
-	SignalNoiseOpampProcessor();
-	~SignalNoiseOpampProcessor() override = default;
+	SignalNoiseOpamp();
+	~SignalNoiseOpamp() override = default;
 
 	// JUCE overrides
 	void prepareToPlay(double sampleRate, int samplesPerBlock) override;

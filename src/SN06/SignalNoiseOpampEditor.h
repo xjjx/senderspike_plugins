@@ -7,20 +7,20 @@
 #include "SignalNoiseKnobLookAndFeel.h"
 #include "SignalNoiseKnobPrecise.h"
 #include "SignalNoiseKnobLabel.h"
-#include "SignalNoiseOpampProcessor.h"
+#include "SignalNoiseOpamp.h"
 
 class SignalNoiseOpampEditor : public juce::AudioProcessorEditor,
                                private juce::Timer
 {
 public:
-	explicit SignalNoiseOpampEditor (SignalNoiseOpampProcessor&);
+	explicit SignalNoiseOpampEditor (SignalNoiseOpamp&);
 	~SignalNoiseOpampEditor() override;
 
 	void paint (juce::Graphics&) override;
 	void resized() override;
 
 private:
-	SignalNoiseOpampProcessor& processor;
+	SignalNoiseOpamp& processor;
 	void timerCallback() override;
 
 	juce::Image background;
