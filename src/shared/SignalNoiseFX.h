@@ -90,11 +90,22 @@ protected:
 		{
 			const auto& p = paramArray[i];
 
+			juce::NormalisableRange<float> range;
+			if (p.type == ParamType::Decibel)
+			{
+				float step = 0.01f;
+				range = juce::NormalisableRange<float>(p.minValue, p.maxValue, step);
+			}
+			else
+			{
+				range = juce::NormalisableRange<float>(p.minValue, p.maxValue);
+			}
+
 			layout.add(std::make_unique<juce::AudioParameterFloat>(
 				p.id,
 				p.name,
-				juce::NormalisableRange<float>(0.0f, 1.0f),
-				p.defaultNorm,
+				range,
+				p.defaultValue,
 				p.unit
 			));
 		}

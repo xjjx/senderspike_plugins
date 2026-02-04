@@ -37,7 +37,6 @@ SignalNoiseOpampProcessor::createParameterLayout()
 	for (int i = 0; i < SNE_SIZE; ++i)
 	{
 		const auto& p = gParams[i];
-		const auto& traits = gParamTraits.at(p.type);
 
 		// Decibels type parameters
 		// Define the range in dB instead of normalized
@@ -48,7 +47,7 @@ SignalNoiseOpampProcessor::createParameterLayout()
 			p.name,
 			range,
 			p.defaultValue,
-			traits.unit
+			p.unit
 		));
 	}
 

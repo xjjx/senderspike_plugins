@@ -45,21 +45,21 @@ enum
 
 static const ParamDesc gParams[] =
 {
-    { "thrs", "Thresh",   "dB",  0.50f },  // SNE_TRSH  threshold
-    { "ratio","Ratio",    "num", 0.50f },  // SNE_FUNC  ratio
-    { "gain", "Gain",     "dB",  0.00f },  // SNE_GAIN  make-up gain
+    { ParamType::Normalized, "thrs", "Thresh",   "dB",  0.0f, 1.0f, 0.50f },  // SNE_TRSH  threshold
+    { ParamType::Normalized, "ratio","Ratio",    "num", 0.0f, 1.0f, 0.50f },  // SNE_FUNC  ratio
+    { ParamType::Normalized, "gain", "Gain",     "dB",  0.0f, 1.0f, 0.00f },  // SNE_GAIN  make-up gain
 
-    { "attk", "Attack",   "ms",  0.375f }, // SNE_ATTK  attack
-    { "rels", "Release",  "ms",  0.50f },  // SNE_RELS  release
+    { ParamType::Normalized, "attk", "Attack",   "ms",  0.0f, 1.0f, 0.375f }, // SNE_ATTK  attack
+    { ParamType::Normalized, "rels", "Release",  "ms",  0.0f, 1.0f, 0.50f },  // SNE_RELS  release
 
-    { "kwdt", "Knee dB",  "dB",  0.375f }, // SNE_KWDT  knee width
-    { "knee", "Knee %",   "%",   0.00f },  // SNE_KNEE  knee strength
+    { ParamType::Normalized, "kwdt", "Knee dB",  "dB",  0.0f, 1.0f, 0.375f }, // SNE_KWDT  knee width
+    { ParamType::Normalized, "knee", "Knee %",   "%",   0.0f, 1.0f, 0.00f },  // SNE_KNEE  knee strength
 
-    { "mode", "SC Mode",  "typ", 0.00f },  // SNE_MODE  sidechain mode
-    { "push", "Push",     "typ", 0.00f },  // SNE_PUSH  thrust
+    { ParamType::Normalized, "mode", "SC Mode",  "typ", 0.0f, 1.0f, 0.00f },  // SNE_MODE  sidechain mode
+    { ParamType::Normalized, "push", "Push",     "typ", 0.0f, 1.0f, 0.00f },  // SNE_PUSH  thrust
 
-    { "comp", "Wet/Dry",  "%",   0.00f },  // SNE_COMP  dry/wet
-    { "fbck", "F.Back",   "n/y", 0.00f },  // SNE_FBCK  feed-forward / feed-back
+    { ParamType::Normalized, "comp", "Wet/Dry",  "%",   0.0f, 1.0f, 0.00f },  // SNE_COMP  dry/wet
+    { ParamType::Normalized, "fbck", "F.Back",   "n/y", 0.0f, 1.0f, 0.00f },  // SNE_FBCK  feed-forward / feed-back
 };
 
 //------------------------------------------------------------------------------------

@@ -47,29 +47,29 @@ enum
 
 static const ParamDesc gParams[] =
 {
-	{ "trim",   "Input",     "dB",  0.50f }, // SNE_TRIM   input trim +/-24 dB
-	{ "gain",   "Output",    "dB",  0.50f }, // SNE_GAIN   output gain +/-24 dB
+	{ ParamType::Normalized, "trim", "Input",    "dB",  0.0f, 1.0f, 0.50f }, // SNE_TRIM   input trim +/-24 dB
+	{ ParamType::Normalized, "gain", "Output",   "dB",  0.0f, 1.0f, 0.50f }, // SNE_GAIN   output gain +/-24 dB
 
-	{ "eqsc",   "EQ Curve",  "Typ", 0.50f }, // SNE_EQSC   EQ curve [NAB, IEC 15, AES]
+	{ ParamType::Normalized, "eqsc", "EQ Curve", "Typ", 0.0f, 1.0f, 0.50f }, // SNE_EQSC   EQ curve [NAB, IEC 15, AES]
 
-	{ "rclo",   "EQ RecLo",  "dB",  0.50f }, // SNE_RCLO   rec EQ bass +/-10 dB
-	{ "rchi",   "EQ RecHi",  "dB",  0.50f }, // SNE_RCHI   rec EQ high +/-14 dB
-	{ "rplo",   "EQ RepLo",  "dB",  0.50f }, // SNE_RPLO   rep EQ bass +/-10 dB
-	{ "rphi",   "EQ RepHi",  "dB",  0.50f }, // SNE_RPHI   rep EQ high +/-14 dB
+	{ ParamType::Normalized, "rclo", "EQ RecLo", "dB",  0.0f, 1.0f, 0.50f }, // SNE_RCLO   rec EQ bass +/-10 dB
+	{ ParamType::Normalized, "rchi", "EQ RecHi", "dB",  0.0f, 1.0f, 0.50f }, // SNE_RCHI   rec EQ high +/-14 dB
+	{ ParamType::Normalized, "rplo", "EQ RepLo", "dB",  0.0f, 1.0f, 0.50f }, // SNE_RPLO   rep EQ bass +/-10 dB
+	{ ParamType::Normalized, "rphi", "EQ RepHi", "dB",  0.0f, 1.0f, 0.50f }, // SNE_RPHI   rep EQ high +/-14 dB
 
-	{ "head",   "HB Freq",   "Hz",  0.00f }, // SNE_HEAD   head bump frequency
-	{ "bump",   "HB Strn",   "dB",  0.00f }, // SNE_BUMP   head bump magnitude
+	{ ParamType::Normalized, "head", "HB Freq",  "Hz",  0.0f, 1.0f, 0.00f }, // SNE_HEAD   head bump frequency
+	{ ParamType::Normalized, "bump", "HB Strn",  "dB",  0.0f, 1.0f, 0.00f }, // SNE_BUMP   head bump magnitude
 
-	{ "hiss",   "Hiss dB",   "dB",  0.50f }, // SNE_HISS   hiss gain
+	{ ParamType::Normalized, "hiss", "Hiss dB",  "dB",  0.0f, 1.0f, 0.50f }, // SNE_HISS   hiss gain
 
-	{ "room",   "VU Ref",    "dB",  0.625f }, // SNE_ROOM  VU meter headroom
-	{ "hold",   "VU Hold",   "n/y", 0.00f },  // SNE_HOLD  VU meter peak hold
-	{ "path",   "VU Path",   "I/O", 1.00f },  // SNE_PATH  VU meter path
+	{ ParamType::Normalized, "room", "VU Ref",   "dB",  0.0f, 1.0f, 0.625f }, // SNE_ROOM  VU meter headroom
+	{ ParamType::Normalized, "hold", "VU Hold",  "n/y", 0.0f, 1.0f, 0.00f },  // SNE_HOLD  VU meter peak hold
+	{ ParamType::Normalized, "path", "VU Path",  "I/O", 0.0f, 1.0f, 1.00f },  // SNE_PATH  VU meter path
 
-	{ "attn",   "HB Attn",   "dB",  1.00f }, // SNE_ATTN   bump attenuator
-	{ "nois",   "Hiss On",   "n/y", 1.00f }, // SNE_NOIS   noise on/off
-	{ "hbon",   "HB On",     "n/y", 1.00f }, // SNE_HBON   head bump on/off
-	{ "loon",   "Anarchy",   "n/y", 0.00f }, // SNE_LOON   force LO on
+	{ ParamType::Normalized, "attn", "HB Attn",  "dB",  0.0f, 1.0f, 1.00f }, // SNE_ATTN   bump attenuator
+	{ ParamType::Normalized, "nois", "Hiss On",  "n/y", 0.0f, 1.0f, 1.00f }, // SNE_NOIS   noise on/off
+	{ ParamType::Normalized, "hbon", "HB On",    "n/y", 0.0f, 1.0f, 1.00f }, // SNE_HBON   head bump on/off
+	{ ParamType::Normalized, "loon", "Anarchy",  "n/y", 0.0f, 1.0f, 0.00f }, // SNE_LOON   force LO on
 };
 
 //------------------------------------------------------------------------------------

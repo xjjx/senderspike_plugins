@@ -41,15 +41,15 @@ enum
 //------------------------------------------------------------------------------------
 static const ParamDesc gParams[] =
 {
-    { "gain",   "Gain",      "dB",  0.00f }, // SNE_GAIN      input gain
-    { "ceil",   "Ceiling",   "dB",  1.00f }, // SNE_CEIL      ceiling
-    { "atkh",   "AT",        "ms",  0.00f }, // SNE_ATKH      attack - Holters' limiter
-    { "relh",   "R1",        "ms",  1.00f }, // SNE_RELH      release - Holters' limiter
-    { "rels",   "R2",        "ms",  1.00f }, // SNE_RELS      release - brickwall
-    { "mode",   "Mode",      "L/C", 0.00f }, // SNE_MODE      mode (clip/limit)
-    { "hpon",   "HP On",     "y/n", 0.00f }, // SNE_HPON      high pass on/off
-    { "hpfc",   "HP Freq",   "Hz",  0.50f }, // SNE_HPFC      high pass cutoff
-    { "clip",   "SC",        "%",   0.00f }, // SNE_CLIP      clipper % (0% = true bypass)
+    { ParamType::Normalized, "gain",   "Gain",    "dB",  0.0f, 1.0f, 0.00f }, // SNE_GAIN input gain
+    { ParamType::Normalized, "ceil",   "Ceiling", "dB",  0.0f, 1.0f, 1.00f }, // SNE_CEIL ceiling
+    { ParamType::Normalized, "atkh",   "AT",      "ms",  0.0f, 1.0f, 0.00f }, // SNE_ATKH attack - Holters' limiter
+    { ParamType::Normalized, "relh",   "R1",      "ms",  0.0f, 1.0f, 1.00f }, // SNE_RELH release - Holters' limiter
+    { ParamType::Normalized, "rels",   "R2",      "ms",  0.0f, 1.0f, 1.00f }, // SNE_RELS release - brickwall
+    { ParamType::Normalized, "mode",   "Mode",    "L/C", 0.0f, 1.0f, 0.00f }, // SNE_MODE mode (clip/limit)
+    { ParamType::Normalized, "hpon",   "HP On",   "y/n", 0.0f, 1.0f, 0.00f }, // SNE_HPON high pass on/off
+    { ParamType::Normalized, "hpfc",   "HP Freq", "Hz",  0.0f, 1.0f, 0.50f }, // SNE_HPFC high pass cutoff
+    { ParamType::Normalized, "clip",   "SC",      "%",   0.0f, 1.0f, 0.00f }, // SNE_CLIP clipper % (0% = true bypass)
 };
 
 //------------------------------------------------------------------------------------

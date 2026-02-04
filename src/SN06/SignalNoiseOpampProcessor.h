@@ -24,11 +24,11 @@ enum
 	SNE_SIZE,	// num of params
 };
 
-static const ParamDescNew gParams[] =
+static const ParamDesc gParams[] =
 {
-	{ ParamType::Decibel, "gain", "Gain",-8.0f, 24.0f, 0.0f },
-	{ ParamType::Decibel, "trim", "Trim", -20.0f, 20.0f, 0.0f },
-	{ ParamType::Decibel, "volume", "Volume", -48.0f, 16.0f, 0.0f }
+	{ ParamType::Decibel, "gain",   "Gain",   "dB", -8.0f, 24.0f, 0.0f },
+	{ ParamType::Decibel, "trim",   "Trim",   "dB", -20.0f, 20.0f, 0.0f },
+	{ ParamType::Decibel, "volume", "Volume", "dB", -48.0f, 16.0f, 0.0f }
 };
 
 class SignalNoiseOpampProcessor : public juce::AudioProcessor

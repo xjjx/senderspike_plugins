@@ -28,14 +28,6 @@ struct ParameterInfo
 	}
 };
 
-struct ParamDesc
-{
-	const char* id;		// JUCE parameter ID
-	const char* name;	// display name
-	const char* unit;	// "dB", "Hz", "n/y", etc.
-	float defaultNorm;	// normalized [0..1]
-};
-
 enum class ParamType
 {
 	Normalized,	// legacy 0..1
@@ -43,27 +35,17 @@ enum class ParamType
 	Choice		// generic stepped parameter (EQ frequencies, etc)
 };
 
-struct ParamTypeTraits
+struct ParamDesc
 {
-	const char* unit = "";					// "dB", "ms", "", etc
-};
-
-static const std::map<ParamType, ParamTypeTraits> gParamTraits =
-{
-	{ ParamType::Normalized,	{ "" } },
-	{ ParamType::Decibel,		{ "dB" } },
-};
-
-struct ParamDescNew
-{
-	ParamType type;			// type of parameter
-	const char* id;			// unique host/preset ID
-	const char* name;		// display name
+	ParamType type;		// type of parameter
+	const char* id;		// unique host/preset ID
+	const char* name;	// display name
+	const char* unit;	// "dB", "ms", "", etc
 
 	// only for continuous params
 	float minValue = 0.0f;
 	float maxValue = 1.0f;
 	float defaultValue = 0.0f;
 
-	std::vector<const char*> choiceLabels;	// non-empty -> choice param
+	std::vector<const char*> choiceLabels{};	// non-empty -> choice param
 };

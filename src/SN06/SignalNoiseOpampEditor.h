@@ -41,7 +41,7 @@ private:
 	SignalNoisePeakLed peakLed;
 
 	std::unique_ptr<SignalNoiseKnobPrecise> setupKnobAndLabel(
-		const ParamDescNew& p,
+		const ParamDesc& p,
 		juce::LookAndFeel* lnF,
 		SignalNoiseKnobLabel& label
 	);

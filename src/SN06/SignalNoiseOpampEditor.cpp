@@ -59,7 +59,7 @@ SignalNoiseOpampEditor::~SignalNoiseOpampEditor()
 
 //---------------------------------------------------------
 std::unique_ptr<SignalNoiseKnobPrecise> SignalNoiseOpampEditor::setupKnobAndLabel(
-	const ParamDescNew& p,
+	const ParamDesc& p,
 	juce::LookAndFeel* lnF,
 	SignalNoiseKnobLabel& label)
 {
