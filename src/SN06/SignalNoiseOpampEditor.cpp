@@ -30,9 +30,9 @@ SignalNoiseOpampEditor::SignalNoiseOpampEditor(SignalNoiseOpampProcessor& p)
 	largeLNF.setImage(knobLargeImage);
 	screwLNF.setImage(knobScrewImage);
 
-	gainKnob   = setupKnobAndLabel(parameterInfos[SNE_GAIN], &largeLNF, gainLabel);
-	trimKnob   = setupKnobAndLabel(parameterInfos[SNE_TRIM], &screwLNF, trimLabel);
-	volumeKnob = setupKnobAndLabel(parameterInfos[SNE_VOLU], &largeLNF, volumeLabel);
+	gainKnob   = setupKnobAndLabel(gParams[SNE_GAIN], &largeLNF, gainLabel);
+	trimKnob   = setupKnobAndLabel(gParams[SNE_TRIM], &screwLNF, trimLabel);
+	volumeKnob = setupKnobAndLabel(gParams[SNE_VOLU], &largeLNF, volumeLabel);
 
 	addAndMakeVisible(inputMeter);
 	addAndMakeVisible(outputMeter);
@@ -59,19 +59,19 @@ SignalNoiseOpampEditor::~SignalNoiseOpampEditor()
 
 //---------------------------------------------------------
 std::unique_ptr<SignalNoiseKnobPrecise> SignalNoiseOpampEditor::setupKnobAndLabel(
-	const ParameterInfo& info,
+	const ParamDescNew& p,
 	juce::LookAndFeel* lnF,
 	SignalNoiseKnobLabel& label)
 {
 	auto& params = processor.getParameters();
 
-	auto knob = std::make_unique<SignalNoiseKnobPrecise>(info.defaultDb);
+	auto knob = std::make_unique<SignalNoiseKnobPrecise>(p.defaultValue);
 	knob->setLookAndFeel(lnF);
 
 	addAndMakeVisible(*knob);
 	addAndMakeVisible(label);
 
-	knob->attachToParameter(params, info.paramID);
+	knob->attachToParameter(params, p.id);
 	label.attachKnob(*knob);
 
 	knob->onValueChange = [&label, knobPtr = knob.get()]

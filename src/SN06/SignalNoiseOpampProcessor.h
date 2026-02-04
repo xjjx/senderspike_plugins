@@ -24,10 +24,11 @@ enum
 	SNE_SIZE,	// num of params
 };
 
-static const std::vector<ParameterInfo> parameterInfos = {
-	{ -8.0f, 24.0f, 0.0f, "gain", "dB" },
-	{ -20.0f, 20.0f, 0.0f, "trim", "dB" },
-	{ -48.0f, 16.0f, 0.0f, "volume", "dB" }
+static const ParamDescNew gParams[] =
+{
+	{ ParamType::Decibel, "gain", "Gain",-8.0f, 24.0f, 0.0f },
+	{ ParamType::Decibel, "trim", "Trim", -20.0f, 20.0f, 0.0f },
+	{ ParamType::Decibel, "volume", "Volume", -48.0f, 16.0f, 0.0f }
 };
 
 class SignalNoiseOpampProcessor : public juce::AudioProcessor
@@ -74,6 +75,8 @@ private:
 
 	foHPF _hpfL;
 	foHPF _hpfR;
+
+	juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
 
 	// ================= METERS =================
 	std::atomic<float> inputLevel  { 0.0f };

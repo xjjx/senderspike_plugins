@@ -18,35 +18,41 @@
 SignalNoiseOpampProcessor::SignalNoiseOpampProcessor()
 : AudioProcessor(
 	BusesProperties()
-		.withInput  ("Input",  juce::AudioChannelSet::stereo(), true)
+		.withInput	("Input",  juce::AudioChannelSet::stereo(), true)
 		.withOutput ("Output", juce::AudioChannelSet::stereo(), true)
   ),
-  parameters(*this, nullptr) // minimal constructor
+  parameters(*this, nullptr, "PARAMETERS", createParameterLayout())
 {
 	_erfL = 0.0;
 	_erfR = 0.0;
 	_norm = 1e-15;
+}
+
+juce::AudioProcessorValueTreeState::ParameterLayout
+SignalNoiseOpampProcessor::createParameterLayout()
+{
+	juce::AudioProcessorValueTreeState::ParameterLayout layout;
 	float step = 0.01f;
 
-	// Now add parameters using ParameterInfos
-	for (auto& info : parameterInfos)
+	for (int i = 0; i < SNE_SIZE; ++i)
 	{
-		// Define the range in dB instead of normalized
-		juce::NormalisableRange<float> range(info.minDb, info.maxDb, step);
+		const auto& p = gParams[i];
+		const auto& traits = gParamTraits.at(p.type);
 
-		// Create parameter with default in dB
-		parameters.createAndAddParameter(
-			std::make_unique<juce::AudioParameterFloat>(
-				info.paramID,	// parameter ID
-				info.paramID,	// name shown in host
-				range,			// now in dB
-				info.defaultDb,	// default in dB
-				info.unit		// unit	
-			)
-		);
+		// Decibels type parameters
+		// Define the range in dB instead of normalized
+		juce::NormalisableRange<float> range(p.minValue, p.maxValue, step);
+
+		layout.add (std::make_unique<juce::AudioParameterFloat>(
+			p.id,
+			p.name,
+			range,
+			p.defaultValue,
+			traits.unit
+		));
 	}
 
-	parameters.state = juce::ValueTree("PARAMETERS"); // finalize
+	return layout;
 }
 
 bool SignalNoiseOpampProcessor::isBusesLayoutSupported(const BusesLayout& layouts) const
@@ -83,17 +89,14 @@ void SignalNoiseOpampProcessor::processImpl(juce::AudioBuffer<Sample>& buffer)
 	const float gainParam	= *parameters.getRawParameterValue("gain");
 	const float trimParam	= *parameters.getRawParameterValue("trim");
 	const float volumeParam = *parameters.getRawParameterValue("volume");
-
-	const auto& gainInfo   = parameterInfos[SNE_GAIN]; // gain
-//	const auto& trimInfo   = parameterInfos[SNE_TRIM]; // trim
-//	const auto& volumeInfo = parameterInfos[SNE_VOLU]; // volume
+	const float gainParamNorm = parameters.getParameter("gain")->getValue();
 
 	const double drive = dB2lin(gainParam);
 	const double trim  = dB2lin(trimParam);
 	const double volu  = dB2lin(volumeParam);
 
 	// Crossfade coefficients
-	double fact = gainInfo.dbToNormalized(gainParam) * 0.55;
+	double fact = gainParamNorm * 0.55;
 	double invf = 1.0 - fact;
 	fact *= drive;
 	invf *= drive;
