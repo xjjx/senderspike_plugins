@@ -16,42 +16,17 @@
 // Constructor
 // ----------------------
 SignalNoiseOpamp::SignalNoiseOpamp()
-: AudioProcessor(
-	BusesProperties()
-		.withInput	("Input",  juce::AudioChannelSet::stereo(), true)
-		.withOutput ("Output", juce::AudioChannelSet::stereo(), true)
-  ),
-  parameters(*this, nullptr, "PARAMETERS", createParameterLayout())
+: SignalNoiseFX(
+	"SignalNoiseOpamp",
+	createLayout(gParams, SNE_SIZE)
+  )
 {
 	_erfL = 0.0;
 	_erfR = 0.0;
 	_norm = 1e-15;
-}
-
-juce::AudioProcessorValueTreeState::ParameterLayout
-SignalNoiseOpamp::createParameterLayout()
-{
-	juce::AudioProcessorValueTreeState::ParameterLayout layout;
-	float step = 0.01f;
 
 	for (int i = 0; i < SNE_SIZE; ++i)
-	{
-		const auto& p = gParams[i];
-
-		// Decibels type parameters
-		// Define the range in dB instead of normalized
-		juce::NormalisableRange<float> range(p.minValue, p.maxValue, step);
-
-		layout.add (std::make_unique<juce::AudioParameterFloat>(
-			p.id,
-			p.name,
-			range,
-			p.defaultValue,
-			p.unit
-		));
-	}
-
-	return layout;
+		parameters.addParameterListener (gParams[i].id, this);
 }
 
 bool SignalNoiseOpamp::isBusesLayoutSupported(const BusesLayout& layouts) const
@@ -67,6 +42,11 @@ void SignalNoiseOpamp::prepareToPlay(double sampleRate, int /*samplesPerBlock*/)
 {
 	_hpfL.setup(15.0, sampleRate);
 	_hpfR.setup(15.0, sampleRate);
+}
+
+void SignalNoiseOpamp::parameterChanged (const juce::String& id, float /*newValue*/)
+{
+	return;
 }
 
 // ----------------------

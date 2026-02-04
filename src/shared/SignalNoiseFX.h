@@ -52,6 +52,7 @@ public:
 	void releaseResources() override {}
 
 	const juce::AudioProcessorValueTreeState& getParameters() const { return parameters; }
+	juce::AudioProcessorValueTreeState& getParameters() { return parameters; }
 
 	bool isBusesLayoutSupported(const BusesLayout& layouts) const override
 	{
