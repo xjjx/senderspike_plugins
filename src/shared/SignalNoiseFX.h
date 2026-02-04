@@ -13,8 +13,27 @@
 
 #pragma once
 
-#include "ParameterInfo.h"
+enum class ParamType
+{
+	Normalized,	// legacy 0..1
+	Decibel,	// linear gain in dB
+	Choice		// generic stepped parameter (EQ frequencies, etc)
+};
 
+struct ParamDesc
+{
+	ParamType type;		// type of parameter
+	const char* id;		// unique host/preset ID
+	const char* name;	// display name
+	const char* unit;	// "dB", "ms", "", etc
+
+	// only for continuous params
+	float minValue = 0.0f;
+	float maxValue = 1.0f;
+	float defaultValue = 0.0f;
+
+	std::vector<const char*> choiceLabels{};	// non-empty -> choice param
+};
 
 //------------------------------------------------------------------------------------
 class SignalNoiseFX

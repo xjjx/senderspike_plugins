@@ -1,7 +1,6 @@
 #pragma once
 
 #include <juce_gui_basics/juce_gui_basics.h>
-#include "ParameterInfo.h"
 #include "SignalNoisePeakMeter.h"
 #include "SignalNoisePeakLed.h"
 #include "SignalNoiseKnobLookAndFeel.h"
