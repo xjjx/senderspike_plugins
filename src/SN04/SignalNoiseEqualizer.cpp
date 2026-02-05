@@ -128,26 +128,6 @@ static double gMFr[] = { 0, 2.26, 2.26, 2.26, 2.26, 2.26, 1.80, 0.6 };
 
 //------------------------------------------------------------------------------------
 
-static int snGetIndex7(float v)
-{
-	for(int i = 0; i < 8; i++)
-		if(v < (i * 0.142) + 0.071)
-			return i;
-	return 0;
-}
-
-//------------------------------------------------------------------------------------
-
-static int snGetIndex5(float v)
-{
-	for(int i = 0; i < 6; i++)
-		if(v < (i * 0.2) + 0.1)
-			return i;
-	return 0;
-}
-
-//------------------------------------------------------------------------------------
-
 static int snGetIndex4(float v)
 {
 	static const float sv = 1.f / 3.f;
@@ -185,7 +165,7 @@ void SignalNoiseEqualizer::setupHF()
 	float Gdb = getParamValue(SNE_HF_G);
 	float G = getParamNorm(SNE_HF_G);
 	float Q = getParamValue(SNE_HF_Q);
-	int fi = snGetIndex7(getParamValue(SNE_HF_F));
+	int fi = getParamChoice(SNE_HF_F);
 	biquad_e typ = getParamValue(SNE_HF_M) > 0.5 ? PKF : HSF;
 
 	if(!fi)
@@ -244,7 +224,7 @@ void SignalNoiseEqualizer::setupMF()
 	float gainDb = getParamValue(SNE_MF_G);
 	float gain = getParamNorm(SNE_MF_G);
 	float fact = getParamValue(SNE_MF_Q);
-	int fi = snGetIndex7(getParamValue(SNE_MF_F));
+	int fi = getParamChoice(SNE_MF_F);
 
 	if(!fi)
 	{
@@ -273,7 +253,7 @@ void SignalNoiseEqualizer::setupLF()
 	float Q = getParamValue(SNE_LF_Q);
 	float G = getParamNorm(SNE_LF_G);
 	float Gdb = getParamValue(SNE_LF_G);
-	int fi = snGetIndex7(getParamValue(SNE_LF_F));
+	int fi = getParamChoice(SNE_LF_F);
 	biquad_e typ = getParamValue(SNE_LF_M) > 0.5 ? PKF : LSF;
 
 	if(!fi)
@@ -340,7 +320,7 @@ void SignalNoiseEqualizer::setupLF()
 void SignalNoiseEqualizer::setupLP()
 {
 	double fc;
-	int fi = snGetIndex5(getParamValue(SNE_LPAS));
+	int fi = getParamChoice(SNE_LPAS);
 	int ti = snGetIndex4(getParamValue(SNE_LOCT));
 
 	if(fi)
@@ -378,7 +358,7 @@ void SignalNoiseEqualizer::setupLP()
 void SignalNoiseEqualizer::setupHP()
 {
 	double fc;
-	int fi = snGetIndex5(getParamValue(SNE_HPAS));
+	int fi = getParamChoice(SNE_HPAS);
 	int ti = snGetIndex4(getParamValue(SNE_HOCT));
 	
 	if(fi)
