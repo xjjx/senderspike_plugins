@@ -55,38 +55,38 @@ enum
 
 static const ParamDesc gParams[SNE_SIZE] =
 {
-	{ ParamType::Normalized, "gain",  "Output",   "dB",   0.0f, 1.0f, 0.50f }, // SNE_GAIN
-	{ ParamType::Normalized, "iphs",  "Phase",    "n/y",  0.0f, 1.0f, 0.00f }, // SNE_IPHS
+	{ ParamType::Decibel,    "gain",  "Output",   "dB", -25.0f, 25.0f,  0.0f }, // SNE_GAIN
+	{ ParamType::Normalized, "iphs",  "Phase",    "n/y",  0.0f,  1.0f,  0.0f }, // SNE_IPHS
 
-	{ ParamType::Normalized, "hf_f",  "HF Freq",  "Hz",   0.0f, 1.0f, 0.00f }, // SNE_HF_F
-	{ ParamType::Normalized, "hf_g",  "HF Gain",  "dB",   0.0f, 1.0f, 0.50f }, // SNE_HF_G
-	{ ParamType::Normalized, "hf_q",  "HF BW",    "oct",  0.0f, 1.0f, 0.50f }, // SNE_HF_Q
-	{ ParamType::Normalized, "hf_t",  "HF Type",  "typ",  0.0f, 1.0f, 0.00f }, // SNE_HF_T
-	{ ParamType::Normalized, "hf_m",  "HF Mode",  "n/y",  0.0f, 1.0f, 0.00f }, // SNE_HF_M
+	{ ParamType::Normalized, "hf_f",  "HF Freq",  "Hz",   0.0f,  1.0f, 0.00f }, // SNE_HF_F
+	{ ParamType::Decibel,    "hf_g",  "HF Gain",  "dB", -18.0f, 18.0f,  0.0f }, // SNE_HF_G
+	{ ParamType::Normalized, "hf_q",  "HF BW",    "oct",  0.0f,  1.0f, 0.50f }, // SNE_HF_Q
+	{ ParamType::Normalized, "hf_t",  "HF Type",  "typ",  0.0f,  1.0f, 0.00f }, // SNE_HF_T
+	{ ParamType::Normalized, "hf_m",  "HF Mode",  "n/y",  0.0f,  1.0f, 0.00f }, // SNE_HF_M
 
-	{ ParamType::Normalized, "mf_f",  "MF Freq",  "Hz",   0.0f, 1.0f, 0.00f }, // SNE_MF_F
-	{ ParamType::Normalized, "mf_g",  "MF Gain",  "dB",   0.0f, 1.0f, 0.50f }, // SNE_MF_G
-	{ ParamType::Normalized, "mf_q",  "MF BW",    "oct",  0.0f, 1.0f, 0.50f }, // SNE_MF_Q
-	{ ParamType::Normalized, "mf_t",  "MF Type",  "typ",  0.0f, 1.0f, 0.00f }, // SNE_MF_T
+	{ ParamType::Normalized, "mf_f",  "MF Freq",  "Hz",   0.0f,  1.0f, 0.00f }, // SNE_MF_F
+	{ ParamType::Decibel,    "mf_g",  "MF Gain",  "dB", -18.0f, 18.0f,  0.0f }, // SNE_MF_G
+	{ ParamType::Normalized, "mf_q",  "MF BW",    "oct",  0.0f,  1.0f, 0.50f }, // SNE_MF_Q
+	{ ParamType::Normalized, "mf_t",  "MF Type",  "typ",  0.0f,  1.0f, 0.00f }, // SNE_MF_T
 
-	{ ParamType::Normalized, "lf_f",  "LF Freq",  "Hz",   0.0f, 1.0f, 0.00f }, // SNE_LF_F
-	{ ParamType::Normalized, "lf_g",  "LF Gain",  "dB",   0.0f, 1.0f, 0.50f }, // SNE_LF_G
-	{ ParamType::Normalized, "lf_q",  "LF BW",    "oct",  0.0f, 1.0f, 0.50f }, // SNE_LF_Q
-	{ ParamType::Normalized, "lf_t",  "LF Type",  "typ",  0.0f, 1.0f, 0.00f }, // SNE_LF_T
-	{ ParamType::Normalized, "lf_m",  "LF Mode",  "n/y",  0.0f, 1.0f, 0.00f }, // SNE_LF_M
+	{ ParamType::Normalized, "lf_f",  "LF Freq",  "Hz",   0.0f,  1.0f, 0.00f }, // SNE_LF_F
+	{ ParamType::Decibel,    "lf_g",  "LF Gain",  "dB", -18.0f, 18.0f,  0.0f }, // SNE_LF_G
+	{ ParamType::Normalized, "lf_q",  "LF BW",    "oct",  0.0f,  1.0f, 0.50f }, // SNE_LF_Q
+	{ ParamType::Normalized, "lf_t",  "LF Type",  "typ",  0.0f,  1.0f, 0.00f }, // SNE_LF_T
+	{ ParamType::Normalized, "lf_m",  "LF Mode",  "n/y",  0.0f,  1.0f, 0.00f }, // SNE_LF_M
 
-	{ ParamType::Normalized, "lpas",  "Lo-Pass",  "Hz",   0.0f, 1.0f, 0.00f }, // SNE_LPAS
-	{ ParamType::Normalized, "hpas",  "Hi-Pass",  "Hz",   0.0f, 1.0f, 0.00f }, // SNE_HPAS
-	{ ParamType::Normalized, "loct",  "Lo Slope", "dB/o", 0.0f, 1.0f, 0.00f }, // SNE_LOCT
-	{ ParamType::Normalized, "hoct",  "Hi Slope", "dB/o", 0.0f, 1.0f, 0.00f }, // SNE_HOCT
+	{ ParamType::Normalized, "lpas",  "Lo-Pass",  "Hz",   0.0f,  1.0f, 0.00f }, // SNE_LPAS
+	{ ParamType::Normalized, "hpas",  "Hi-Pass",  "Hz",   0.0f,  1.0f, 0.00f }, // SNE_HPAS
+	{ ParamType::Normalized, "loct",  "Lo Slope", "dB/o", 0.0f,  1.0f, 0.00f }, // SNE_LOCT
+	{ ParamType::Normalized, "hoct",  "Hi Slope", "dB/o", 0.0f,  1.0f, 0.00f }, // SNE_HOCT
 
-	{ ParamType::Normalized, "mojo",  "Analog",   "n/y",  0.0f, 1.0f, 0.00f }, // SNE_MOJO
+	{ ParamType::Normalized, "mojo",  "Analog",   "n/y",  0.0f,  1.0f, 0.00f }, // SNE_MOJO
 
-	{ ParamType::Normalized, "hf_b",  "Mute HF",  "n/y",  0.0f, 1.0f, 0.00f }, // SNE_HF_B
-	{ ParamType::Normalized, "mf_b",  "Mute MF",  "n/y",  0.0f, 1.0f, 0.00f }, // SNE_MF_B
-	{ ParamType::Normalized, "lf_b",  "Mute LF",  "n/y",  0.0f, 1.0f, 0.00f }, // SNE_LF_B
-	{ ParamType::Normalized, "lp_b",  "Mute LPF", "n/y",  0.0f, 1.0f, 0.00f }, // SNE_LP_B
-	{ ParamType::Normalized, "hp_b",  "Mute HPF", "n/y",  0.0f, 1.0f, 0.00f }, // SNE_HP_B
+	{ ParamType::Normalized, "hf_b",  "Mute HF",  "n/y",  0.0f,  1.0f, 0.00f }, // SNE_HF_B
+	{ ParamType::Normalized, "mf_b",  "Mute MF",  "n/y",  0.0f,  1.0f, 0.00f }, // SNE_MF_B
+	{ ParamType::Normalized, "lf_b",  "Mute LF",  "n/y",  0.0f,  1.0f, 0.00f }, // SNE_LF_B
+	{ ParamType::Normalized, "lp_b",  "Mute LPF", "n/y",  0.0f,  1.0f, 0.00f }, // SNE_LP_B
+	{ ParamType::Normalized, "hp_b",  "Mute HPF", "n/y",  0.0f,  1.0f, 0.00f }, // SNE_HP_B
 };
 
 //------------------------------------------------------------------------------------
@@ -143,6 +143,12 @@ private:
 	{
 		auto ptr = getParameters().getRawParameterValue(gParams[idx].id);
 		return ptr->load();
+	}
+
+	inline float getParamNorm (int idx) const noexcept
+	{
+		auto* p = getParameters().getParameter(gParams[idx].id);
+		return p->getValue();
 	}
 
 public:

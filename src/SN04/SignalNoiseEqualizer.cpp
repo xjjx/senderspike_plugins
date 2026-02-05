@@ -182,7 +182,8 @@ static double snGetBellBW(float f, float g, double db, double s, double r)
 void SignalNoiseEqualizer::setupHF()
 {
 	double f, v, q;
-	float G = getParamValue(SNE_HF_G);
+	float Gdb = getParamValue(SNE_HF_G);
+	float G = getParamNorm(SNE_HF_G);
 	float Q = getParamValue(SNE_HF_Q);
 	int fi = snGetIndex7(getParamValue(SNE_HF_F));
 	biquad_e typ = getParamValue(SNE_HF_M) > 0.5 ? PKF : HSF;
@@ -197,7 +198,7 @@ void SignalNoiseEqualizer::setupHF()
 	}
 
 	f = gHF[fi];
-	v = G * 36 - 18;
+	v = Gdb;
 
 	if(typ == HSF)
 	{
@@ -240,7 +241,8 @@ void SignalNoiseEqualizer::setupHF()
 void SignalNoiseEqualizer::setupMF()
 {
 	double f, v, q;
-	float gain = getParamValue(SNE_MF_G);
+	float gainDb = getParamValue(SNE_MF_G);
+	float gain = getParamNorm(SNE_MF_G);
 	float fact = getParamValue(SNE_MF_Q);
 	int fi = snGetIndex7(getParamValue(SNE_MF_F));
 
@@ -252,7 +254,7 @@ void SignalNoiseEqualizer::setupMF()
 	}
 
 	f = gMF[fi];
-	v = gain * 36 - 18;
+	v = gainDb;
 
 	if(getParamValue(SNE_MF_T) > 0.5)
 		q = snGetBellBW(fact, gain, v, gMFs[fi], gMFr[fi]);
@@ -269,7 +271,8 @@ void SignalNoiseEqualizer::setupLF()
 {
 	double f, v, q, n;
 	float Q = getParamValue(SNE_LF_Q);
-	float G = getParamValue(SNE_LF_G);
+	float G = getParamNorm(SNE_LF_G);
+	float Gdb = getParamValue(SNE_LF_G);
 	int fi = snGetIndex7(getParamValue(SNE_LF_F));
 	biquad_e typ = getParamValue(SNE_LF_M) > 0.5 ? PKF : LSF;
 
@@ -285,7 +288,7 @@ void SignalNoiseEqualizer::setupLF()
 	}
 
 	f = gLF[fi];
-	v = G * 36 - 18;
+	v = Gdb;
 
 	if(typ == LSF)
 	{
@@ -457,7 +460,7 @@ void SignalNoiseEqualizer::processImpl(juce::AudioBuffer<Sample>& buffer)
 
 	const float mojoParam  = getParamValue(SNE_MOJO);
 
-	const Sample dB = (Sample) dB2lin(gainParam * 50.0f - 25.0f);
+	const Sample dB = (Sample) dB2lin(gainParam);
 	const Sample ph = iphsParam > 0.5f ? (Sample) -1 : (Sample) 1;
 
 	const bool hf = hfParam < 0.5f;
