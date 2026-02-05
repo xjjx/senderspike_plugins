@@ -1,5 +1,6 @@
 add_library(SN STATIC
     sn_core.cpp
+	SignalNoiseFX.cpp
     SignalNoiseKnobLookAndFeel.cpp
     SignalNoiseKnobPrecise.cpp
     SignalNoisePeakMeter.cpp
