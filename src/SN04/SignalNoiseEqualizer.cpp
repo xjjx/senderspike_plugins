@@ -128,18 +128,6 @@ static double gMFr[] = { 0, 2.26, 2.26, 2.26, 2.26, 2.26, 1.80, 0.6 };
 
 //------------------------------------------------------------------------------------
 
-static int snGetIndex4(float v)
-{
-	static const float sv = 1.f / 3.f;
-
-	for(int i = 0; i < 4; i++)
-		if(v < (i * sv) + sv)
-			return i;
-	return 0;
-}
-
-//------------------------------------------------------------------------------------
-
 static double snGetBellBW(float f, float g, double db, double s, double r)
 {
 	double vm = g < 0.5 ? 0.5f - g : g - 0.5f;
@@ -321,7 +309,7 @@ void SignalNoiseEqualizer::setupLP()
 {
 	double fc;
 	int fi = getParamChoice(SNE_LPAS);
-	int ti = snGetIndex4(getParamValue(SNE_LOCT));
+	int ti = getParamChoice(SNE_LOCT);
 
 	if(fi)
 	{
@@ -359,7 +347,7 @@ void SignalNoiseEqualizer::setupHP()
 {
 	double fc;
 	int fi = getParamChoice(SNE_HPAS);
-	int ti = snGetIndex4(getParamValue(SNE_HOCT));
+	int ti = getParamChoice(SNE_HOCT);
 	
 	if(fi)
 	{
@@ -428,8 +416,6 @@ void SignalNoiseEqualizer::processImpl(juce::AudioBuffer<Sample>& buffer)
 
 	const float hpasParam = getParamValue(SNE_HPAS);
 	const float lpasParam = getParamValue(SNE_LPAS);
-	const float hoctParam = getParamValue(SNE_HOCT);
-	const float loctParam = getParamValue(SNE_LOCT);
 
 	const Sample dB = (Sample) dB2lin(gainParam);
 	const Sample ph = getParamChoice(SNE_IPHS) == 1 ? (Sample) -1 : (Sample) 1;
@@ -441,8 +427,8 @@ void SignalNoiseEqualizer::processImpl(juce::AudioBuffer<Sample>& buffer)
 	const bool lp = lpasParam >= 0.2f && getParamChoice(SNE_LP_B) == 0; // 0 - Off
 	const bool dm = getParamChoice(SNE_MOJO) == 1; // 1 - On
 
-	const int hi = snGetIndex4(hoctParam);
-	const int li = snGetIndex4(loctParam);
+	const int hi = getParamChoice(SNE_HOCT);
+	const int li = getParamChoice(SNE_LOCT);
 
 	_norm = -_norm;
 

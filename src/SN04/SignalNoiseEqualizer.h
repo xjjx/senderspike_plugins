@@ -61,6 +61,7 @@ static const std::vector<const char*> pLF = { "Disable", "35 Hz", "45 Hz", "60 H
 //static const std::vector<const char*> pnLF = { "Disable", "120 Hz", "150 Hz", "200 Hz", "300 Hz", "440 Hz", "600 Hz", "800 Hz" };
 static const std::vector<const char*> pLP = { "Disable", "18 kHz", "14 kHz", "10 kHz", "8 kHz", "6 kHz" };
 static const std::vector<const char*> pHP = { "Disable", "15 Hz", "45 Hz", "70 Hz", "160 Hz", "360 Hz" };
+static const std::vector<const char*> pSlope = { "6dB/oct", "12dB/oct", "18dB/oct", "24dB/oct" };
 static const ParamDesc gParams[SNE_SIZE] =
 {
 	{ ParamType::Decibel,    "gain",  "Output",   "dB", -25.0f, 25.0f,  0.0f }, // SNE_GAIN
@@ -85,8 +86,8 @@ static const ParamDesc gParams[SNE_SIZE] =
 
 	{ ParamType::Choice,     "lpas",  "Lo-Pass",  "Hz",   0.0f,  1.0f, 0.00f, pLP }, // SNE_LPAS
 	{ ParamType::Choice,     "hpas",  "Hi-Pass",  "Hz",   0.0f,  1.0f, 0.00f, pHP }, // SNE_HPAS
-	{ ParamType::Normalized, "loct",  "Lo Slope", "dB/o", 0.0f,  1.0f, 0.00f }, // SNE_LOCT
-	{ ParamType::Normalized, "hoct",  "Hi Slope", "dB/o", 0.0f,  1.0f, 0.00f }, // SNE_HOCT
+	{ ParamType::Choice,     "loct",  "Lo Slope",   "", 0.0f,  1.0f, 0.00f, pSlope }, // SNE_LOCT
+	{ ParamType::Choice,     "hoct",  "Hi Slope",   "", 0.0f,  1.0f, 0.00f, pSlope }, // SNE_HOCT
 
 	{ ParamType::Choice,     "mojo",  "Analog",      "",  0.0f,  1.0f, 0.00f, On }, // SNE_MOJO
 
