@@ -65,11 +65,12 @@ SignalNoiseFX::createLayout(const ParamDesc* paramArray, int numParams)
 			for (auto s : p.choiceLabels)
 				labels.add(s);
 
+			int defaultIndex = static_cast<int>(p.defaultValue);
 			layout.add(std::make_unique<juce::AudioParameterChoice>(
 				p.id,
 				p.name,
 				labels,
-				0, // default index
+				defaultIndex,
 				p.unit
 			));
 		}

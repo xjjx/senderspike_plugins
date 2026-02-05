@@ -102,7 +102,7 @@ void SignalNoiseTapedeck::setupTapeheads()
 	double fc = hd * 40 + 65;
 	double lf = hd * 10 + 10;
 	
-	if(getParamValue(SNE_HBON) > 0.5f)
+	if(getParamChoice(SNE_HBON) == 0) // 0 - On
 	{
 		_rep0L.setup(lf, fs);
 		_rep0R.setup(lf, fs);
@@ -122,16 +122,14 @@ void SignalNoiseTapedeck::setupTapeheads()
 
 void SignalNoiseTapedeck::setupEqualizer()
 {
-	static const float sv = 1.f / 3.f;
-
 	double fc, fs = sampleRate;
-	double eq = getParamValue(SNE_EQSC);
+	int eq = getParamChoice(SNE_EQSC);
 	double hi1 = getParamValue(SNE_RCHI);
 	double lo1 = getParamValue(SNE_RCLO);
 	double hi2 = getParamValue(SNE_RPHI);
 	double lo2 = getParamValue(SNE_RPLO);
 
-	if(eq < sv)
+	if(eq == 0) // NAB
 	{
 		fc = 3180;
 	}
@@ -142,7 +140,7 @@ void SignalNoiseTapedeck::setupEqualizer()
 			lo1 = 0;
 			lo2 = 0;
 		}
-		fc = (eq > 1 - sv) ? 9100 : 4550;
+		fc = (eq == 2) ? 9100 : 4550; // AES : IEC
 	}
 	_pre1L.setup(lo1, 50, fs);
 	_pre1R.setup(lo1, 50, fs);
@@ -172,14 +170,13 @@ void SignalNoiseTapedeck::processImpl(juce::AudioBuffer<Sample>& buffer)
 	const float gainParam  = getParamValue(SNE_GAIN);
 	const float trimParam  = getParamValue(SNE_TRIM);
 	const float hissParam  = getParamValue(SNE_HISS);
-	const float noiseParam = getParamValue(SNE_NOIS);
 	const float pathParam  = getParamValue(SNE_PATH);
 
 	const double iG = dB2lin(trimParam);
 	const double oG = dB2lin(gainParam);
 	const double hG = dB2lin(hissParam);
 
-	const bool nois = noiseParam > 0.5;
+	const bool nois = getParamChoice(SNE_NOIS) == 0; // 0 - On
 
 	const int id = pathParam > 0.5 ? 1 : 0;
 

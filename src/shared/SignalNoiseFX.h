@@ -34,8 +34,8 @@ struct ParamDesc
 	// only for continuous params
 	float minValue = 0.0f;
 	float maxValue = 1.0f;
-	float defaultValue = 0.0f;
 
+	float defaultValue = 0.0f;
 	std::vector<const char*> choiceLabels{};	// non-empty -> choice param
 };
 

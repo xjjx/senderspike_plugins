@@ -45,12 +45,14 @@ enum
 
 //------------------------------------------------------------------------------------
 
+static const std::vector<const char*> On = { "Off", "On" };
+static const std::vector<const char*> EQSC = { "NAB", "IEC 15 IPS", "AES 30 IPS" };
 static const ParamDesc gParams[] =
 {
 	{ ParamType::Decibel,    "trim", "Input",    "dB", -24.0f, 24.0f,    0.0f }, // SNE_TRIM input trim +/-24 dB
 	{ ParamType::Decibel,    "gain", "Output",   "dB", -24.0f, 24.0f,    0.0f }, // SNE_GAIN output gain +/-24 dB
 
-	{ ParamType::Normalized, "eqsc", "EQ Curve", "Typ",  0.0f,  1.0f,    0.5f }, // SNE_EQSC EQ curve [NAB, IEC 15, AES]
+	{ ParamType::Choice,     "eqsc", "EQ Curve",   "",  0.0f,  3.0f,    1.0f, EQSC }, // SNE_EQSC EQ curve [NAB, IEC 15, AES]
 
 	{ ParamType::Decibel,    "rclo", "EQ RecLo", "dB", -14.0f, 14.0f,    0.0f }, // SNE_RCLO rec EQ bass +/-10 dB
 	{ ParamType::Decibel,    "rchi", "EQ RecHi", "dB", -14.0f, 14.0f,    0.0f }, // SNE_RCHI rec EQ high +/-14 dB
@@ -67,8 +69,8 @@ static const ParamDesc gParams[] =
 	{ ParamType::Normalized, "path", "VU Path",  "I/O",  0.0f, 1.0f,    1.00f }, // SNE_PATH VU meter path
 
 	{ ParamType::Normalized, "attn", "HB Attn",  "dB",   0.0f, 1.0f,    1.00f }, // SNE_ATTN bump attenuator
-	{ ParamType::Normalized, "nois", "Hiss On",  "n/y",  0.0f, 1.0f,    1.00f }, // SNE_NOIS noise on/off
-	{ ParamType::Normalized, "hbon", "HB On",    "n/y",  0.0f, 1.0f,    1.00f }, // SNE_HBON head bump on/off
+	{ ParamType::Choice,     "nois", "Hiss On",    "",   0.0f, 1.0f,    1.00f, On }, // SNE_NOIS noise on/off
+	{ ParamType::Choice,     "hbon", "HB On",      "",   0.0f, 1.0f,    1.00f, On }, // SNE_HBON head bump on/off
 	{ ParamType::Normalized, "loon", "Anarchy",  "n/y",  0.0f, 1.0f,    0.00f }, // SNE_LOON force LO on
 };
 
@@ -119,6 +121,12 @@ private:
 	{
 		auto ptr = getParameters().getRawParameterValue(gParams[idx].id);
 		return ptr->load();
+	}
+
+	inline int getParamChoice(int idx)
+	{
+		auto ptr = getParameters().getRawParameterValue(gParams[idx].id);
+		return static_cast<int>(ptr->load());
 	}
 
 public:
