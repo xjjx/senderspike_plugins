@@ -110,7 +110,7 @@ void SignalNoiseLimiter::setupClipper()
 {
 	double rels = getParamValue(SNE_RELS);
 
-	if(getParamValue(SNE_MODE) < 0.5)
+	if(getParamChoice(SNE_MODE) == 0)
 		rels = (rels * rels * rels * 499.0) + 1.0;
 	else
 		rels = (rels * rels * rels * 49.9) + 0.1;
