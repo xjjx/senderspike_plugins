@@ -415,7 +415,7 @@ void SignalNoiseEqualizer::setupHP()
 
 void SignalNoiseEqualizer::setupAnalog()
 {
-	if(getParamValue(SNE_MOJO) > 0.5)
+	if(getParamChoice(SNE_MOJO) == 1) // 1 - On
 	{
 		_hsfL.setup(-2, 15000, sampleRate);
 		_hsfR.setup(-2, 15000, sampleRate);
@@ -445,30 +445,21 @@ void SignalNoiseEqualizer::processImpl(juce::AudioBuffer<Sample>& buffer)
 	// Read parameters once
 	// ----------------------
 	const float gainParam  = getParamValue(SNE_GAIN);
-	const float iphsParam  = getParamValue(SNE_IPHS);
 
-	const float hfParam    = getParamValue(SNE_HF_F);
-	const float mfParam    = getParamValue(SNE_MF_F);
-	const float lfParam    = getParamValue(SNE_LF_F);
-
-	const float hpasParam  = getParamValue(SNE_HPAS);
-	const float hpParam    = getParamValue(SNE_HP_B);
-	const float lpasParam  = getParamValue(SNE_LPAS);
-	const float lpParam    = getParamValue(SNE_LP_B);
-	const float hoctParam  = getParamValue(SNE_HOCT);
-	const float loctParam  = getParamValue(SNE_LOCT);
-
-	const float mojoParam  = getParamValue(SNE_MOJO);
+	const float hpasParam = getParamValue(SNE_HPAS);
+	const float lpasParam = getParamValue(SNE_LPAS);
+	const float hoctParam = getParamValue(SNE_HOCT);
+	const float loctParam = getParamValue(SNE_LOCT);
 
 	const Sample dB = (Sample) dB2lin(gainParam);
-	const Sample ph = iphsParam > 0.5f ? (Sample) -1 : (Sample) 1;
+	const Sample ph = getParamChoice(SNE_IPHS) == 1 ? (Sample) -1 : (Sample) 1;
 
-	const bool hf = hfParam < 0.5f;
-	const bool mf = mfParam < 0.5f;
-	const bool lf = lfParam < 0.5f;
-	const bool hp = hpasParam >= 0.2f && hpParam < 0.5f;
-	const bool lp = lpasParam >= 0.2f && lpParam < 0.5f;
-	const bool dm = mojoParam > 0.5f;
+	const bool hf = getParamChoice(SNE_HF_F) == 0; // 0 - Off
+	const bool mf = getParamChoice(SNE_MF_F) == 0; // 0 - Off
+	const bool lf = getParamChoice(SNE_LF_F) == 0; // 0 - Off
+	const bool hp = hpasParam >= 0.2f && getParamChoice(SNE_HP_B) == 0; // 0 - Off
+	const bool lp = lpasParam >= 0.2f && getParamChoice(SNE_LP_B) == 0; // 0 - Off
+	const bool dm = getParamChoice(SNE_MOJO) == 1; // 1 - On
 
 	const int hi = snGetIndex4(hoctParam);
 	const int li = snGetIndex4(loctParam);

@@ -53,10 +53,11 @@ enum
 	SNE_SIZE,		// num of params
 };
 
+static const std::vector<const char*> On = { "Off", "On" };
 static const ParamDesc gParams[SNE_SIZE] =
 {
 	{ ParamType::Decibel,    "gain",  "Output",   "dB", -25.0f, 25.0f,  0.0f }, // SNE_GAIN
-	{ ParamType::Normalized, "iphs",  "Phase",    "n/y",  0.0f,  1.0f,  0.0f }, // SNE_IPHS
+	{ ParamType::Choice,     "iphs",  "Phase",      "",  0.0f,  1.0f,  0.0f, On }, // SNE_IPHS
 
 	{ ParamType::Normalized, "hf_f",  "HF Freq",  "Hz",   0.0f,  1.0f, 0.00f }, // SNE_HF_F
 	{ ParamType::Decibel,    "hf_g",  "HF Gain",  "dB", -18.0f, 18.0f,  0.0f }, // SNE_HF_G
@@ -80,13 +81,13 @@ static const ParamDesc gParams[SNE_SIZE] =
 	{ ParamType::Normalized, "loct",  "Lo Slope", "dB/o", 0.0f,  1.0f, 0.00f }, // SNE_LOCT
 	{ ParamType::Normalized, "hoct",  "Hi Slope", "dB/o", 0.0f,  1.0f, 0.00f }, // SNE_HOCT
 
-	{ ParamType::Normalized, "mojo",  "Analog",   "n/y",  0.0f,  1.0f, 0.00f }, // SNE_MOJO
+	{ ParamType::Choice,     "mojo",  "Analog",      "",  0.0f,  1.0f, 0.00f, On }, // SNE_MOJO
 
-	{ ParamType::Normalized, "hf_b",  "Mute HF",  "n/y",  0.0f,  1.0f, 0.00f }, // SNE_HF_B
-	{ ParamType::Normalized, "mf_b",  "Mute MF",  "n/y",  0.0f,  1.0f, 0.00f }, // SNE_MF_B
-	{ ParamType::Normalized, "lf_b",  "Mute LF",  "n/y",  0.0f,  1.0f, 0.00f }, // SNE_LF_B
-	{ ParamType::Normalized, "lp_b",  "Mute LPF", "n/y",  0.0f,  1.0f, 0.00f }, // SNE_LP_B
-	{ ParamType::Normalized, "hp_b",  "Mute HPF", "n/y",  0.0f,  1.0f, 0.00f }, // SNE_HP_B
+	{ ParamType::Choice,     "hf_b",  "Mute HF",  "n/y",  0.0f,  1.0f, 0.00f, On }, // SNE_HF_B
+	{ ParamType::Choice,     "mf_b",  "Mute MF",  "n/y",  0.0f,  1.0f, 0.00f, On }, // SNE_MF_B
+	{ ParamType::Choice,     "lf_b",  "Mute LF",  "n/y",  0.0f,  1.0f, 0.00f, On }, // SNE_LF_B
+	{ ParamType::Choice,     "lp_b",  "Mute LPF", "n/y",  0.0f,  1.0f, 0.00f, On }, // SNE_LP_B
+	{ ParamType::Choice,     "hp_b",  "Mute HPF", "n/y",  0.0f,  1.0f, 0.00f, On }, // SNE_HP_B
 };
 
 //------------------------------------------------------------------------------------
@@ -149,6 +150,12 @@ private:
 	{
 		auto* p = getParameters().getParameter(gParams[idx].id);
 		return p->getValue();
+	}
+
+	inline int getParamChoice(int idx)
+	{
+		auto ptr = getParameters().getRawParameterValue(gParams[idx].id);
+		return static_cast<int>(ptr->load());
 	}
 
 public:
