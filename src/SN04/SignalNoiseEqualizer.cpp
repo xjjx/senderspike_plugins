@@ -182,10 +182,10 @@ static double snGetBellBW(float f, float g, double db, double s, double r)
 void SignalNoiseEqualizer::setupHF()
 {
 	double f, v, q;
-	float G = getParamNorm(SNE_HF_G);
-	float Q = getParamNorm(SNE_HF_Q);
-	int fi = snGetIndex7(getParamNorm(SNE_HF_F));
-	biquad_e typ = getParamNorm(SNE_HF_M) > 0.5 ? PKF : HSF;
+	float G = getParamValue(SNE_HF_G);
+	float Q = getParamValue(SNE_HF_Q);
+	int fi = snGetIndex7(getParamValue(SNE_HF_F));
+	biquad_e typ = getParamValue(SNE_HF_M) > 0.5 ? PKF : HSF;
 
 	if(!fi)
 	{
@@ -201,7 +201,7 @@ void SignalNoiseEqualizer::setupHF()
 
 	if(typ == HSF)
 	{
-		if(getParamNorm(SNE_HF_T) < 0.5)
+		if(getParamValue(SNE_HF_T) < 0.5)
 		{
 			//API
 			_hf_Lb.setup(v, f, sampleRate);
@@ -223,7 +223,7 @@ void SignalNoiseEqualizer::setupHF()
 	}
 	else
 	{
-		if(getParamNorm(SNE_HF_T) > 0.5)
+		if(getParamValue(SNE_HF_T) > 0.5)
 			q = snGetBellBW(Q, G, v, gHFs[fi], gHFr[fi]);
 		else
 			q = snGetBellBW(Q, G, 0, gHFs[fi], gHFr[fi]);
@@ -240,9 +240,9 @@ void SignalNoiseEqualizer::setupHF()
 void SignalNoiseEqualizer::setupMF()
 {
 	double f, v, q;
-	float gain = getParamNorm(SNE_MF_G);
-	float fact = getParamNorm(SNE_MF_Q);
-	int fi = snGetIndex7(getParamNorm(SNE_MF_F));
+	float gain = getParamValue(SNE_MF_G);
+	float fact = getParamValue(SNE_MF_Q);
+	int fi = snGetIndex7(getParamValue(SNE_MF_F));
 
 	if(!fi)
 	{
@@ -254,7 +254,7 @@ void SignalNoiseEqualizer::setupMF()
 	f = gMF[fi];
 	v = gain * 36 - 18;
 
-	if(getParamNorm(SNE_MF_T) > 0.5)
+	if(getParamValue(SNE_MF_T) > 0.5)
 		q = snGetBellBW(fact, gain, v, gMFs[fi], gMFr[fi]);
 	else
 		q = snGetBellBW(fact, gain, 0, gMFs[fi], gMFr[fi]);
@@ -268,10 +268,10 @@ void SignalNoiseEqualizer::setupMF()
 void SignalNoiseEqualizer::setupLF()
 {
 	double f, v, q, n;
-	float Q = getParamNorm(SNE_LF_Q);
-	float G = getParamNorm(SNE_LF_G);
-	int fi = snGetIndex7(getParamNorm(SNE_LF_F));
-	biquad_e typ = getParamNorm(SNE_LF_M) > 0.5 ? PKF : LSF;
+	float Q = getParamValue(SNE_LF_Q);
+	float G = getParamValue(SNE_LF_G);
+	int fi = snGetIndex7(getParamValue(SNE_LF_F));
+	biquad_e typ = getParamValue(SNE_LF_M) > 0.5 ? PKF : LSF;
 
 	if(!fi)
 	{
@@ -289,7 +289,7 @@ void SignalNoiseEqualizer::setupLF()
 
 	if(typ == LSF)
 	{
-		if(getParamNorm(SNE_LF_T) < 0.5)
+		if(getParamValue(SNE_LF_T) < 0.5)
 		{
 			//550A
 			_lf_Lc.setup(v, f, sampleRate);
@@ -318,7 +318,7 @@ void SignalNoiseEqualizer::setupLF()
 	}
 	else
 	{
-		if(getParamNorm(SNE_LF_T) > 0.5)
+		if(getParamValue(SNE_LF_T) > 0.5)
 			q = snGetBellBW(Q, G, v, 4.53, 2.26);
 		else
 			q = snGetBellBW(Q, G, 0, 4.53, 2.26);
@@ -337,8 +337,8 @@ void SignalNoiseEqualizer::setupLF()
 void SignalNoiseEqualizer::setupLP()
 {
 	double fc;
-	int fi = snGetIndex5(getParamNorm(SNE_LPAS));
-	int ti = snGetIndex4(getParamNorm(SNE_LOCT));
+	int fi = snGetIndex5(getParamValue(SNE_LPAS));
+	int ti = snGetIndex4(getParamValue(SNE_LOCT));
 
 	if(fi)
 	{
@@ -375,8 +375,8 @@ void SignalNoiseEqualizer::setupLP()
 void SignalNoiseEqualizer::setupHP()
 {
 	double fc;
-	int fi = snGetIndex5(getParamNorm(SNE_HPAS));
-	int ti = snGetIndex4(getParamNorm(SNE_HOCT));
+	int fi = snGetIndex5(getParamValue(SNE_HPAS));
+	int ti = snGetIndex4(getParamValue(SNE_HOCT));
 	
 	if(fi)
 	{
@@ -412,7 +412,7 @@ void SignalNoiseEqualizer::setupHP()
 
 void SignalNoiseEqualizer::setupAnalog()
 {
-	if(getParamNorm(SNE_MOJO) > 0.5)
+	if(getParamValue(SNE_MOJO) > 0.5)
 	{
 		_hsfL.setup(-2, 15000, sampleRate);
 		_hsfR.setup(-2, 15000, sampleRate);
@@ -441,21 +441,21 @@ void SignalNoiseEqualizer::processImpl(juce::AudioBuffer<Sample>& buffer)
 	// ----------------------
 	// Read parameters once
 	// ----------------------
-	const float gainParam  = getParamNorm(SNE_GAIN);
-	const float iphsParam  = getParamNorm(SNE_IPHS);
+	const float gainParam  = getParamValue(SNE_GAIN);
+	const float iphsParam  = getParamValue(SNE_IPHS);
 
-	const float hfParam    = getParamNorm(SNE_HF_F);
-	const float mfParam    = getParamNorm(SNE_MF_F);
-	const float lfParam    = getParamNorm(SNE_LF_F);
+	const float hfParam    = getParamValue(SNE_HF_F);
+	const float mfParam    = getParamValue(SNE_MF_F);
+	const float lfParam    = getParamValue(SNE_LF_F);
 
-	const float hpasParam  = getParamNorm(SNE_HPAS);
-	const float hpParam    = getParamNorm(SNE_HP_B);
-	const float lpasParam  = getParamNorm(SNE_LPAS);
-	const float lpParam    = getParamNorm(SNE_LP_B);
-	const float hoctParam  = getParamNorm(SNE_HOCT);
-	const float loctParam  = getParamNorm(SNE_LOCT);
+	const float hpasParam  = getParamValue(SNE_HPAS);
+	const float hpParam    = getParamValue(SNE_HP_B);
+	const float lpasParam  = getParamValue(SNE_LPAS);
+	const float lpParam    = getParamValue(SNE_LP_B);
+	const float hoctParam  = getParamValue(SNE_HOCT);
+	const float loctParam  = getParamValue(SNE_LOCT);
 
-	const float mojoParam  = getParamNorm(SNE_MOJO);
+	const float mojoParam  = getParamValue(SNE_MOJO);
 
 	const Sample dB = (Sample) dB2lin(gainParam * 50.0f - 25.0f);
 	const Sample ph = iphsParam > 0.5f ? (Sample) -1 : (Sample) 1;

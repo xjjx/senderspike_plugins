@@ -94,15 +94,15 @@ void SignalNoiseTapedeck::parameterChanged (const juce::String& id, float /*newV
 void SignalNoiseTapedeck::setupTapeheads()
 {
 	double fs = sampleRate;
-	double of = getParamNorm(SNE_ATTN) * 2;
-	double hd = getParamNorm(SNE_HEAD);
-	double hv = getParamNorm(SNE_BUMP);
+	double of = getParamValue(SNE_ATTN) * 2;
+	double hd = getParamValue(SNE_HEAD);
+	double hv = getParamValue(SNE_BUMP);
 	double sc = 4 - hd;
 	double dB = hv * sc + sc - of;
 	double fc = hd * 40 + 65;
 	double lf = hd * 10 + 10;
 	
-	if(getParamNorm(SNE_HBON) > 0.5f)
+	if(getParamValue(SNE_HBON) > 0.5f)
 	{
 		_rep0L.setup(lf, fs);
 		_rep0R.setup(lf, fs);
@@ -125,11 +125,11 @@ void SignalNoiseTapedeck::setupEqualizer()
 	static const float sv = 1.f / 3.f;
 
 	double fc, fs = sampleRate;
-	double eq = getParamNorm(SNE_EQSC);
-	double hi1 = getParamNorm(SNE_RCHI) * 28 - 14;
-	double lo1 = getParamNorm(SNE_RCLO) * 20 - 10;
-	double hi2 = getParamNorm(SNE_RPHI) * 28 - 14;
-	double lo2 = getParamNorm(SNE_RPLO) * 20 - 10;
+	double eq = getParamValue(SNE_EQSC);
+	double hi1 = getParamValue(SNE_RCHI) * 28 - 14;
+	double lo1 = getParamValue(SNE_RCLO) * 20 - 10;
+	double hi2 = getParamValue(SNE_RPHI) * 28 - 14;
+	double lo2 = getParamValue(SNE_RPLO) * 20 - 10;
 
 	if(eq < sv)
 	{
@@ -137,7 +137,7 @@ void SignalNoiseTapedeck::setupEqualizer()
 	}
 	else
 	{
-		if(getParamNorm(SNE_LOON) < 0.5f)
+		if(getParamValue(SNE_LOON) < 0.5f)
 		{
 			lo1 = 0;
 			lo2 = 0;
@@ -169,11 +169,11 @@ void SignalNoiseTapedeck::processImpl(juce::AudioBuffer<Sample>& buffer)
 	Sample* outL = inL;
 	Sample* outR = inR;
 
-	const float gainParam  = getParamNorm(SNE_GAIN);
-	const float trimParam  = getParamNorm(SNE_TRIM);
-	const float hissParam  = getParamNorm(SNE_HISS);
-	const float noiseParam = getParamNorm(SNE_NOIS);
-	const float pathParam  = getParamNorm(SNE_PATH);
+	const float gainParam  = getParamValue(SNE_GAIN);
+	const float trimParam  = getParamValue(SNE_TRIM);
+	const float hissParam  = getParamValue(SNE_HISS);
+	const float noiseParam = getParamValue(SNE_NOIS);
+	const float pathParam  = getParamValue(SNE_PATH);
 
 	const double iG = dB2lin(trimParam * 48 - 24);
 	const double oG = dB2lin(gainParam * 48 - 24);

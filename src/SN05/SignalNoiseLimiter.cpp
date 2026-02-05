@@ -94,8 +94,8 @@ void SignalNoiseLimiter::parameterChanged (const juce::String& id, float /*newVa
 
 void SignalNoiseLimiter::setupLimiter()
 {
-	double attk = getParamNorm(SNE_ATKH);
-	double rels = getParamNorm(SNE_RELH);
+	double attk = getParamValue(SNE_ATKH);
+	double rels = getParamValue(SNE_RELH);
 	double t = (1.0 / sampleRate) * -2.2;
 
 	attk = (attk * attk * attk * 249.98) + 0.02;
@@ -108,9 +108,9 @@ void SignalNoiseLimiter::setupLimiter()
 
 void SignalNoiseLimiter::setupClipper()
 {
-	double rels = getParamNorm(SNE_RELS);
+	double rels = getParamValue(SNE_RELS);
 
-	if(getParamNorm(SNE_MODE) < 0.5)
+	if(getParamValue(SNE_MODE) < 0.5)
 		rels = (rels * rels * rels * 499.0) + 1.0;
 	else
 		rels = (rels * rels * rels * 49.9) + 0.1;
@@ -123,7 +123,7 @@ void SignalNoiseLimiter::setupClipper()
 
 void SignalNoiseLimiter::setupSidechain()
 {
-	double fc = getParamNorm(SNE_HPFC) * 1975 + 15;
+	double fc = getParamValue(SNE_HPFC) * 1975 + 15;
 
 	_hL1.setup_q(HPF, 0, qf18, fc, sampleRate);
 	_hR1.setup_q(HPF, 0, qf18, fc, sampleRate);
@@ -147,11 +147,11 @@ void SignalNoiseLimiter::processImpl(juce::AudioBuffer<Sample>& buffer)
 	// ----------------------
 	// Read parameters once
 	// ----------------------
-	const float gainParam = getParamNorm(SNE_GAIN);
-	const float modeParam = getParamNorm(SNE_MODE);
-	const float ceilParam = getParamNorm(SNE_CEIL);
-	const float hponParam = getParamNorm(SNE_HPON);
-	const float clipParam = getParamNorm(SNE_CLIP);
+	const float gainParam = getParamValue(SNE_GAIN);
+	const float modeParam = getParamValue(SNE_MODE);
+	const float ceilParam = getParamValue(SNE_CEIL);
+	const float hponParam = getParamValue(SNE_HPON);
+	const float clipParam = getParamValue(SNE_CLIP);
 
 	const double gain = dB2lin(gainParam * 24.0);
 	const double trsh = (1 - ceilParam) * -24.0;

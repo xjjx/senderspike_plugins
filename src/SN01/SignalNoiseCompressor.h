@@ -90,7 +90,7 @@ private:
 
 	int paramIdToIndex (const juce::String& id);
 
-	inline float getParamNorm (int idx) const noexcept
+	inline float getParamValue (int idx) const noexcept
 	{
 		auto ptr = getParameters().getRawParameterValue(gParams[idx].id);
 		return ptr->load();

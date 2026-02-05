@@ -86,8 +86,8 @@ static int GetSwitch(const float& v)
 
 void SignalNoiseCompressor::setupEnvelope()
 {
-	double attk = getParamNorm(SNE_ATTK);
-	double rels = getParamNorm(SNE_RELS);
+	double attk = getParamValue(SNE_ATTK);
+	double rels = getParamValue(SNE_RELS);
 	attk = (attk * attk * attk * 29.97) + 0.03;
 	rels = (rels * rels * rels * 1950.0) + 50.0;
 	_atk = exp(-1000.0 / (attk * sampleRate));
@@ -98,7 +98,7 @@ void SignalNoiseCompressor::setupEnvelope()
 
 void SignalNoiseCompressor::setupSidechain()
 {
-	switch(GetSwitch(getParamNorm(SNE_MODE)))
+	switch(GetSwitch(getParamValue(SNE_MODE)))
 	{
 	case 1:
 		_lsL.setup_q(LSF, -14.0, 0.49, 40.0, sampleRate);
@@ -129,15 +129,15 @@ void SignalNoiseCompressor::processImpl(juce::AudioBuffer<Sample>& buffer)
 	Sample* outL = inL;
 	Sample* outR = inR;
 
-	const float gainParam  = getParamNorm(SNE_GAIN);
-	const float fbckParam  = getParamNorm(SNE_FBCK);
-	const float ratioParam = getParamNorm(SNE_FUNC);
-	const float trshParam  = getParamNorm(SNE_TRSH);
-	const float kneeParam  = getParamNorm(SNE_KNEE);
-	const float kwdtParam  = getParamNorm(SNE_KWDT);
-	const float compParam  = getParamNorm(SNE_COMP);
-	const float modeParam  = getParamNorm(SNE_MODE);
-	const float pushParam  = getParamNorm(SNE_PUSH);
+	const float gainParam  = getParamValue(SNE_GAIN);
+	const float fbckParam  = getParamValue(SNE_FBCK);
+	const float ratioParam = getParamValue(SNE_FUNC);
+	const float trshParam  = getParamValue(SNE_TRSH);
+	const float kneeParam  = getParamValue(SNE_KNEE);
+	const float kwdtParam  = getParamValue(SNE_KWDT);
+	const float compParam  = getParamValue(SNE_COMP);
+	const float modeParam  = getParamValue(SNE_MODE);
+	const float pushParam  = getParamValue(SNE_PUSH);
 
 	const double gain = dB2lin(gainParam * 24.0);
 	const int fbck = fbckParam > 0.5 ? 1 : 0;
