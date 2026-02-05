@@ -84,18 +84,18 @@ static const ParamDesc gParams[SNE_SIZE] =
 	{ ParamType::Normalized, "lf_t",  "LF Type",  "typ",  0.0f,  1.0f, 0.00f }, // SNE_LF_T
 	{ ParamType::Normalized, "lf_m",  "LF Mode",  "n/y",  0.0f,  1.0f, 0.00f }, // SNE_LF_M
 
-	{ ParamType::Choice,     "lpas",  "Lo-Pass",  "Hz",   0.0f,  1.0f, 0.00f, pLP }, // SNE_LPAS
-	{ ParamType::Choice,     "hpas",  "Hi-Pass",  "Hz",   0.0f,  1.0f, 0.00f, pHP }, // SNE_HPAS
-	{ ParamType::Choice,     "loct",  "Lo Slope",   "", 0.0f,  1.0f, 0.00f, pSlope }, // SNE_LOCT
-	{ ParamType::Choice,     "hoct",  "Hi Slope",   "", 0.0f,  1.0f, 0.00f, pSlope }, // SNE_HOCT
+	{ ParamType::Choice,     "lpas",  "Lo-Pass",    "",   0.0f,  1.0f, 0.00f, pLP }, // SNE_LPAS
+	{ ParamType::Choice,     "hpas",  "Hi-Pass",    "",   0.0f,  1.0f, 0.00f, pHP }, // SNE_HPAS
+	{ ParamType::Choice,     "loct",  "Lo Slope",   "",   0.0f,  1.0f, 0.00f, pSlope }, // SNE_LOCT
+	{ ParamType::Choice,     "hoct",  "Hi Slope",   "",   0.0f,  1.0f, 0.00f, pSlope }, // SNE_HOCT
 
-	{ ParamType::Choice,     "mojo",  "Analog",      "",  0.0f,  1.0f, 0.00f, On }, // SNE_MOJO
+	{ ParamType::Choice,     "mojo",  "Analog",     "",   0.0f,  1.0f, 0.00f, On }, // SNE_MOJO
 
-	{ ParamType::Choice,     "hf_b",  "Mute HF",  "n/y",  0.0f,  1.0f, 0.00f, On }, // SNE_HF_B
-	{ ParamType::Choice,     "mf_b",  "Mute MF",  "n/y",  0.0f,  1.0f, 0.00f, On }, // SNE_MF_B
-	{ ParamType::Choice,     "lf_b",  "Mute LF",  "n/y",  0.0f,  1.0f, 0.00f, On }, // SNE_LF_B
-	{ ParamType::Choice,     "lp_b",  "Mute LPF", "n/y",  0.0f,  1.0f, 0.00f, On }, // SNE_LP_B
-	{ ParamType::Choice,     "hp_b",  "Mute HPF", "n/y",  0.0f,  1.0f, 0.00f, On }, // SNE_HP_B
+	{ ParamType::Choice,     "hf_b",  "Mute HF",    "",  0.0f,  1.0f, 0.00f, On }, // SNE_HF_B
+	{ ParamType::Choice,     "mf_b",  "Mute MF",    "",  0.0f,  1.0f, 0.00f, On }, // SNE_MF_B
+	{ ParamType::Choice,     "lf_b",  "Mute LF",    "",  0.0f,  1.0f, 0.00f, On }, // SNE_LF_B
+	{ ParamType::Choice,     "lp_b",  "Mute LPF",   "",  0.0f,  1.0f, 0.00f, On }, // SNE_LP_B
+	{ ParamType::Choice,     "hp_b",  "Mute HPF",   "",  0.0f,  1.0f, 0.00f, On }, // SNE_HP_B
 };
 
 //------------------------------------------------------------------------------------
