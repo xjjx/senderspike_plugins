@@ -43,6 +43,8 @@ enum
 
 //------------------------------------------------------------------------------------
 
+static const std::vector<const char*> MODE = { "FeedForward", "FeedBack" };
+static const std::vector<const char*> PUSH = { "0", "1", "2" };
 static const ParamDesc gParams[] =
 {
     { ParamType::Decibel,    "thrs", "Thresh",   "dB", -40.0f,   0.0f, -20.0f }, // SNE_TRSH threshold
@@ -56,10 +58,10 @@ static const ParamDesc gParams[] =
     { ParamType::Percent,    "knee", "Knee %",    "%",   0.0f, 100.0f,  0.00f }, // SNE_KNEE knee strength
 
     { ParamType::Normalized, "mode", "SC Mode", "typ",   0.0f,   1.0f,  0.00f }, // SNE_MODE sidechain mode
-    { ParamType::Normalized, "push", "Push",    "typ",   0.0f,   1.0f,  0.00f }, // SNE_PUSH thrust
+    { ParamType::Choice,     "push", "Push",       "",   0.0f,   1.0f,  0.00f, PUSH }, // SNE_PUSH thrust
 
     { ParamType::Percent,    "comp", "Wet/Dry",   "%",   0.0f, 100.0f,  0.00f }, // SNE_COMP dry/wet
-    { ParamType::Normalized, "fbck", "F.Back",  "n/y",   0.0f,   1.0f,  0.00f }, // SNE_FBCK feed-forward / feed-back
+    { ParamType::Choice,      "fbck",   "Mode",     "",   0.0f,   1.0f,  0.00f, MODE }, // SNE_FBCK feed-forward / feed-back
 };
 
 //------------------------------------------------------------------------------------
@@ -94,6 +96,12 @@ private:
 	{
 		auto ptr = getParameters().getRawParameterValue(gParams[idx].id);
 		return ptr->load();
+	}
+
+	inline int getParamChoice(int idx)
+	{
+		auto ptr = getParameters().getRawParameterValue(gParams[idx].id);
+		return static_cast<int>(ptr->load());
 	}
 
 public:
