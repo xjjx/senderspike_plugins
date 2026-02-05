@@ -78,7 +78,7 @@ static const ParamDesc gParams[SNE_SIZE] =
 	{ ParamType::Normalized, "mf_q",  "MF BW",    "oct",  0.0f,  1.0f, 0.50f }, // SNE_MF_Q
 	{ ParamType::Normalized, "mf_t",  "MF Type",  "typ",  0.0f,  1.0f, 0.00f }, // SNE_MF_T
 
-	{ ParamType::Normalized, "lf_f",  "LF Freq",    "",   0.0f,  1.0f, 0.00f, pLF }, // SNE_LF_F
+	{ ParamType::Choice,     "lf_f",  "LF Freq",    "",   0.0f,  1.0f, 0.00f, pLF }, // SNE_LF_F
 	{ ParamType::Decibel,    "lf_g",  "LF Gain",  "dB", -18.0f, 18.0f,  0.0f }, // SNE_LF_G
 	{ ParamType::Normalized, "lf_q",  "LF BW",    "oct",  0.0f,  1.0f, 0.50f }, // SNE_LF_Q
 	{ ParamType::Normalized, "lf_t",  "LF Type",  "typ",  0.0f,  1.0f, 0.00f }, // SNE_LF_T
