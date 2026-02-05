@@ -126,10 +126,10 @@ void SignalNoiseTapedeck::setupEqualizer()
 
 	double fc, fs = sampleRate;
 	double eq = getParamValue(SNE_EQSC);
-	double hi1 = getParamValue(SNE_RCHI) * 28 - 14;
-	double lo1 = getParamValue(SNE_RCLO) * 20 - 10;
-	double hi2 = getParamValue(SNE_RPHI) * 28 - 14;
-	double lo2 = getParamValue(SNE_RPLO) * 20 - 10;
+	double hi1 = getParamValue(SNE_RCHI);
+	double lo1 = getParamValue(SNE_RCLO);
+	double hi2 = getParamValue(SNE_RPHI);
+	double lo2 = getParamValue(SNE_RPLO);
 
 	if(eq < sv)
 	{
@@ -175,9 +175,9 @@ void SignalNoiseTapedeck::processImpl(juce::AudioBuffer<Sample>& buffer)
 	const float noiseParam = getParamValue(SNE_NOIS);
 	const float pathParam  = getParamValue(SNE_PATH);
 
-	const double iG = dB2lin(trimParam * 48 - 24);
-	const double oG = dB2lin(gainParam * 48 - 24);
-	const double hG = dB2lin(hissParam * 60 - 96);
+	const double iG = dB2lin(trimParam);
+	const double oG = dB2lin(gainParam);
+	const double hG = dB2lin(hissParam);
 
 	const bool nois = noiseParam > 0.5;
 
