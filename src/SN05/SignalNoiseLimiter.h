@@ -39,6 +39,8 @@ enum
 };
 
 //------------------------------------------------------------------------------------
+static const std::vector<const char*> CL = { "Clipper", "Limiter" };
+static const std::vector<const char*> On = { "Off", "On" };
 static const ParamDesc gParams[] =
 {
     { ParamType::Decibel,    "gain", "Gain",    "dB",  0.0f,  24.0f, 0.00f }, // SNE_GAIN input gain
@@ -46,8 +48,8 @@ static const ParamDesc gParams[] =
     { ParamType::Normalized, "atkh", "AT",      "ms",  0.0f,   1.0f, 0.00f }, // SNE_ATKH attack - Holters' limiter
     { ParamType::Normalized, "relh", "R1",      "ms",  0.0f,   1.0f, 1.00f }, // SNE_RELH release - Holters' limiter
     { ParamType::Normalized, "rels", "R2",      "ms",  0.0f,   1.0f, 1.00f }, // SNE_RELS release - brickwall
-    { ParamType::Normalized, "mode", "Mode",    "L/C", 0.0f,   1.0f, 0.00f }, // SNE_MODE mode (clip/limit)
-    { ParamType::Normalized, "hpon", "HP On",   "y/n", 0.0f,   1.0f, 0.00f }, // SNE_HPON high pass on/off
+    { ParamType::Choice,     "mode", "Mode",    "", 0.0f,   1.0f, 0.00f, CL }, // SNE_MODE mode (clip/limit)
+    { ParamType::Choice,     "hpon", "HP On",   "", 0.0f,   1.0f, 0.00f, On }, // SNE_HPON high pass on/off
     { ParamType::Normalized, "hpfc", "HP Freq", "Hz",  0.0f,   1.0f, 0.50f }, // SNE_HPFC high pass cutoff
     { ParamType::Percent,    "clip", "SC",      "%",   0.0f, 100.0f, 0.00f }, // SNE_CLIP clipper % (0% = true bypass)
 };
@@ -96,6 +98,12 @@ private:
 	{
 		auto ptr = getParameters().getRawParameterValue(gParams[idx].id);
 		return ptr->load();
+	}
+
+	inline int getParamChoice(int idx)
+	{
+		auto ptr = getParameters().getRawParameterValue(gParams[idx].id);
+		return static_cast<int>(ptr->load());
 	}
 
 	// ================= METERS =================

@@ -148,16 +148,14 @@ void SignalNoiseLimiter::processImpl(juce::AudioBuffer<Sample>& buffer)
 	// Read parameters once
 	// ----------------------
 	const float gainParam = getParamValue(SNE_GAIN);
-	const float modeParam = getParamValue(SNE_MODE);
 	const float ceilParam = getParamValue(SNE_CEIL);
-	const float hponParam = getParamValue(SNE_HPON);
 	const float clipParam = getParamValue(SNE_CLIP);
 
 	const double gain = dB2lin(gainParam);
 	const double trsh = ceilParam;
 	const double ceil = dB2lin(trsh);
-	const bool mode = modeParam < 0.5;
-	const bool hpon = hponParam > 0.5;
+	const bool mode = getParamChoice(SNE_MODE) == 0;
+	const bool hpon = getParamChoice(SNE_HPON) == 1;
 	const double wet  = clipParam;
 	const double dry  = 1 - wet;
 
