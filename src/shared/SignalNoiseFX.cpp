@@ -40,16 +40,24 @@ SignalNoiseFX::createLayout(const ParamDesc* paramArray, int numParams)
 	for (int i = 0; i < numParams; ++i)
 	{
 		const auto& p = paramArray[i];
-
+		float step;
 		juce::NormalisableRange<float> range;
-		if (p.type == ParamType::Decibel)
+		switch (p.type)
 		{
-			float step = 0.01f;
+		case ParamType::Decibel:
+			step = 0.01f;
 			range = juce::NormalisableRange<float>(p.minValue, p.maxValue, step);
-		}
-		else
-		{
+			break;
+		case ParamType::Percent:
+			step = 0.1f;
+			range = juce::NormalisableRange<float>(p.minValue, p.maxValue, step);
+			break;
+		case ParamType::Normalized:
 			range = juce::NormalisableRange<float>(p.minValue, p.maxValue);
+			break;
+		case ParamType::Choice:
+			// TODO
+			break;
 		}
 
 		layout.add(std::make_unique<juce::AudioParameterFloat>(

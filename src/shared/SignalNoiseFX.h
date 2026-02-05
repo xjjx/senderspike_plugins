@@ -20,6 +20,7 @@ enum class ParamType
 {
 	Normalized,	// legacy 0..1
 	Decibel,	// linear gain in dB
+	Percent,
 	Choice		// generic stepped parameter (EQ frequencies, etc)
 };
 
