@@ -55,18 +55,34 @@ SignalNoiseFX::createLayout(const ParamDesc* paramArray, int numParams)
 		case ParamType::Normalized:
 			range = juce::NormalisableRange<float>(p.minValue, p.maxValue);
 			break;
-		case ParamType::Choice:
-			// TODO
+		case ParamType::Choice: // just to please compilier
 			break;
 		}
 
-		layout.add(std::make_unique<juce::AudioParameterFloat>(
-			p.id,
-			p.name,
-			range,
-			p.defaultValue,
-			p.unit
-		));
+		if (p.type == ParamType::Choice)
+		{
+			juce::StringArray labels;
+			for (auto s : p.choiceLabels)
+				labels.add(s);
+
+			layout.add(std::make_unique<juce::AudioParameterChoice>(
+				p.id,
+				p.name,
+				labels,
+				0, // default index
+				p.unit
+			));
+		}
+		else
+		{
+			layout.add(std::make_unique<juce::AudioParameterFloat>(
+				p.id,
+				p.name,
+				range,
+				p.defaultValue,
+				p.unit
+			));
+		}
 	}
 
 	return layout;
