@@ -161,11 +161,11 @@ void SignalNoiseLimiter::processImpl(juce::AudioBuffer<Sample>& buffer)
 
 	for (int n = 0; n < numSamples; ++n)
 	{
-		double gr, ec, fL, fR;
+		double L, R, gr, ec, fL, fR;
 		double grh = 0;
 
-		Sample L = *inL++;
-		Sample R = mono ? 0 : *inR++;
+		L = *inL++;
+		R = mono ? 0 : *inR++;
 		L *= gain;
 		R *= gain;
 
@@ -241,8 +241,8 @@ void SignalNoiseLimiter::processImpl(juce::AudioBuffer<Sample>& buffer)
 			
 		gr = dB2lin(-dB);
 				
-		(*outL++) = L * gr;
-		(*outR++) = R * gr;
+		(*outL++) = static_cast<Sample>(L * gr);
+		(*outR++) = static_cast<Sample>(R * gr);
 
 		gainReduction.store(grh);
 // TODO: store dB

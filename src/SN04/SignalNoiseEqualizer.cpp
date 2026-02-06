@@ -434,8 +434,8 @@ void SignalNoiseEqualizer::processImpl(juce::AudioBuffer<Sample>& buffer)
 
 	for (int n = 0; n < numSamples; ++n)
 	{
-		Sample L = *inL++;
-		Sample R = mono ? 0 : *inR++;
+		double L = *inL++;
+		double R = mono ? 0 : *inR++;
 
 		//"analog"
 		if(dm)
@@ -513,7 +513,7 @@ void SignalNoiseEqualizer::processImpl(juce::AudioBuffer<Sample>& buffer)
 
 		if(mono)
 		{
-			const Sample m = L * ph;
+			const Sample m = static_cast<Sample>(L * ph);
 			(*outL++) = m;
 			(*outR++) = m;
 #ifdef SN04G
@@ -522,8 +522,8 @@ void SignalNoiseEqualizer::processImpl(juce::AudioBuffer<Sample>& buffer)
 		}
 		else
 		{
-			(*outL++) = float(L * ph);
-			(*outR++) = float(R * ph);
+			(*outL++) = static_cast<Sample>(L * ph);
+			(*outR++) = static_cast<Sample>(R * ph);
 #ifdef SN04G
 			((SignalNoiseEqualizerGUI*)editor)->trackPeaks((fabs(L) + fabs(R)) * 0.5);
 #endif

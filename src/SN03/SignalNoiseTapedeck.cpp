@@ -182,7 +182,8 @@ void SignalNoiseTapedeck::processImpl(juce::AudioBuffer<Sample>& buffer)
 
 	for (int n = 0; n < numSamples; ++n)
 	{
-		double L, R, vuL[2], vuR[2];
+		double L, R;
+		Sample vuL[2], vuR[2];
 
 		vuL[0] = L = *inL++;
 		vuR[0] = R = mono ? 0 : *inR++;
@@ -212,8 +213,8 @@ void SignalNoiseTapedeck::processImpl(juce::AudioBuffer<Sample>& buffer)
 		L = _dee2L.run(_dee1L.run(L));
 		R = _dee2R.run(_dee1R.run(R));
 
-		(*outL++) = vuL[1] = L * oG;
-		(*outR++) = vuR[1] = R * oG;
+		(*outL++) = vuL[1] = static_cast<Sample>(L * oG);
+		(*outR++) = vuR[1] = static_cast<Sample>(R * oG);
 
 		float vuAbs = mono ? std::abs(vuL[id]) : (std::abs(vuL[id]) + std::abs(vuR[id])) * 0.5;
 		vuLevel.store(vuAbs);
