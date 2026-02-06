@@ -151,7 +151,7 @@ void SignalNoiseCompressor::processImpl(juce::AudioBuffer<Sample>& buffer)
 	for (int n = 0; n < numSamples; ++n)
 	{
 		double L = *inL++;
-		double R = mono ? L : *inR++;
+		double R = mono ? 0 : *inR++;
 
 		//SC -> FF/FB + filter
 		double fL, fR;
@@ -204,7 +204,7 @@ void SignalNoiseCompressor::processImpl(juce::AudioBuffer<Sample>& buffer)
 
 		//output		
 		(*outL++) = (Sample)((_fbL * wet) + (dry * L));
-		if (mono)
+		if (!mono)
 			(*outR++) = (Sample)((_fbR * wet) + (dry * R));
 
 #ifdef SN01G

@@ -435,7 +435,7 @@ void SignalNoiseEqualizer::processImpl(juce::AudioBuffer<Sample>& buffer)
 	for (int n = 0; n < numSamples; ++n)
 	{
 		Sample L = *inL++;
-		Sample R = *inR++;
+		Sample R = mono ? 0 : *inR++;
 
 		//"analog"
 		if(dm)

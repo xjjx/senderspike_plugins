@@ -185,7 +185,7 @@ void SignalNoiseTapedeck::processImpl(juce::AudioBuffer<Sample>& buffer)
 		double L, R, vuL[2], vuR[2];
 
 		vuL[0] = L = *inL++;
-		vuR[0] = R = *inR++;
+		vuR[0] = R = mono ? 0 : *inR++;
 		L = L * iG;
 		R = R * iG;
 

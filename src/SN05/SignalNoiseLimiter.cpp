@@ -164,10 +164,10 @@ void SignalNoiseLimiter::processImpl(juce::AudioBuffer<Sample>& buffer)
 		double gr, ec, fL, fR;
 		double grh = 0;
 
-		Sample L = *inL++ * gain;
-		Sample R = *inR++ * gain;
-
-		if(mono) R = 0;
+		Sample L = *inL++;
+		Sample R = mono ? 0 : *inR++;
+		L *= gain;
+		R *= gain;
 
 		//Holters' limiter 
 		if(mode)

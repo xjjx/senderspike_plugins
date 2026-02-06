@@ -88,7 +88,7 @@ void SignalNoiseOpamp::processImpl(juce::AudioBuffer<Sample>& buffer)
 	{
 		// Input
 		L = *inL++;
-		R = mono ? L : *inR++;
+		R = mono ? 0 : *inR++;
 
 		// Trim
 		L *= trim;
@@ -116,8 +116,6 @@ void SignalNoiseOpamp::processImpl(juce::AudioBuffer<Sample>& buffer)
 
 		// Write output
 		(*outL++) = static_cast<Sample>(L);
-		if (mono)
-			(*outR++) = static_cast<Sample>(R);
 
 		float inAbs, outAbs;
 		if(mono)
@@ -127,6 +125,7 @@ void SignalNoiseOpamp::processImpl(juce::AudioBuffer<Sample>& buffer)
 		}
 		else
 		{
+			(*outR++) = static_cast<Sample>(R);
 			inAbs  = (std::abs(iL) + std::abs(iR)) * 0.5;
 			outAbs = (std::abs(L) + std::abs(L)) * 0.5;
 		}
