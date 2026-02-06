@@ -132,9 +132,9 @@ void SignalNoiseCompressor::processImpl(juce::AudioBuffer<Sample>& buffer)
 	const float gainParam  = getParamValue(SNE_GAIN);
 	const float ratioParam = getParamValue(SNE_FUNC);
 	const float trshParam  = getParamValue(SNE_TRSH);
-	const float kneeParam  = getParamValue(SNE_KNEE);
+	const float kneeParam  = getParamNorm(SNE_KNEE);
 	const float kwdtParam  = getParamValue(SNE_KWDT);
-	const float compParam  = getParamValue(SNE_COMP);
+	const float compParam  = getParamNorm(SNE_COMP);
 	const float modeParam  = getParamValue(SNE_MODE);
 
 	const double gain = dB2lin(gainParam);

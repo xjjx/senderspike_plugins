@@ -61,7 +61,7 @@ static const ParamDesc gParams[] =
     { ParamType::Choice,     "push", "Push",       "",   0.0f,   1.0f,  0.00f, PUSH }, // SNE_PUSH thrust
 
     { ParamType::Percent,    "comp", "Wet/Dry",   "%",   0.0f, 100.0f,  0.00f }, // SNE_COMP dry/wet
-    { ParamType::Choice,      "fbck",   "Mode",     "",   0.0f,   1.0f,  0.00f, MODE }, // SNE_FBCK feed-forward / feed-back
+    { ParamType::Choice,     "fbck",    "Mode",    "",   0.0f,   1.0f,  0.00f, MODE }, // SNE_FBCK feed-forward / feed-back
 };
 
 //------------------------------------------------------------------------------------
@@ -96,6 +96,12 @@ private:
 	{
 		auto ptr = getParameters().getRawParameterValue(gParams[idx].id);
 		return ptr->load();
+	}
+
+	inline float getParamNorm (int idx) const noexcept
+	{
+		auto* p = getParameters().getParameter(gParams[idx].id);
+		return p->getValue();
 	}
 
 	inline int getParamChoice(int idx)
