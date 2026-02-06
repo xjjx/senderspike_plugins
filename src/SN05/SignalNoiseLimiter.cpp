@@ -154,7 +154,7 @@ void SignalNoiseLimiter::processImpl(juce::AudioBuffer<Sample>& buffer)
 	const double gain = dB2lin(gainParam);
 	const double trsh = ceilParam;
 	const double ceil = dB2lin(trsh);
-	const bool mode = getParamChoice(SNE_MODE) == 0;
+	const bool mode = getParamChoice(SNE_MODE) == 0; // 0 - limiter
 	const bool hpon = getParamChoice(SNE_HPON) == 1;
 	const double wet  = clipParam;
 	const double dry  = 1 - wet;

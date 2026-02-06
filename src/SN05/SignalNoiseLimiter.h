@@ -39,7 +39,7 @@ enum
 };
 
 //------------------------------------------------------------------------------------
-static const std::vector<const char*> CL = { "Clipper", "Limiter" };
+static const std::vector<const char*> LC = { "Limiter", "Clipper" };
 static const std::vector<const char*> On = { "Off", "On" };
 static const ParamDesc gParams[] =
 {
@@ -48,7 +48,7 @@ static const ParamDesc gParams[] =
     { ParamType::Normalized, "atkh", "AT",      "ms",  0.0f,   1.0f, 0.00f }, // SNE_ATKH attack - Holters' limiter
     { ParamType::Normalized, "relh", "R1",      "ms",  0.0f,   1.0f, 1.00f }, // SNE_RELH release - Holters' limiter
     { ParamType::Normalized, "rels", "R2",      "ms",  0.0f,   1.0f, 1.00f }, // SNE_RELS release - brickwall
-    { ParamType::Choice,     "mode", "Mode",    "", 0.0f,   1.0f, 0.00f, CL }, // SNE_MODE mode (clip/limit)
+    { ParamType::Choice,     "mode", "Mode",    "", 0.0f,   1.0f, 0.00f, LC }, // SNE_MODE mode (limit/clip)
     { ParamType::Choice,     "hpon", "HP On",   "", 0.0f,   1.0f, 0.00f, On }, // SNE_HPON high pass on/off
     { ParamType::Normalized, "hpfc", "HP Freq", "Hz",  0.0f,   1.0f, 0.50f }, // SNE_HPFC high pass cutoff
     { ParamType::Percent,    "clip", "SC",      "%",   0.0f, 100.0f, 0.00f }, // SNE_CLIP clipper % (0% = true bypass)
