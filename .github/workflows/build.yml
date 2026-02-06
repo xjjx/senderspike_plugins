@@ -45,9 +45,9 @@ jobs:
     - name: Prepare Artifacts
       run: |
         mkdir -p release
-        mv build/VST/libSN06-J-OpAmp.so release/
-        mv build/VST3/SN06-J-OpAmp.vst3 release/
-        mv build/LV2/SN06-J-OpAmp.lv2 release/
+        mv build/VST/*.so release/
+        mv build/VST3/*.vst3 release/
+        mv build/LV2/*.lv2 release/
 
     - name: Upload Artifacts
       uses: actions/upload-artifact@v4
