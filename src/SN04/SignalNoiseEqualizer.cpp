@@ -420,9 +420,9 @@ void SignalNoiseEqualizer::processImpl(juce::AudioBuffer<Sample>& buffer)
 	const Sample dB = (Sample) dB2lin(gainParam);
 	const Sample ph = getParamChoice(SNE_IPHS) == 1 ? (Sample) -1 : (Sample) 1;
 
-	const bool hf = getParamChoice(SNE_HF_F) == 0; // 0 - Off
-	const bool mf = getParamChoice(SNE_MF_F) == 0; // 0 - Off
-	const bool lf = getParamChoice(SNE_LF_F) == 0; // 0 - Off
+	const bool hf = getParamChoice(SNE_HF_B) == 0; // 0 - Off
+	const bool mf = getParamChoice(SNE_MF_B) == 0; // 0 - Off
+	const bool lf = getParamChoice(SNE_LF_B) == 0; // 0 - Off
 	const bool hp = hpasParam >= 0.2f && getParamChoice(SNE_HP_B) == 0; // 0 - Off
 	const bool lp = lpasParam >= 0.2f && getParamChoice(SNE_LP_B) == 0; // 0 - Off
 	const bool dm = getParamChoice(SNE_MOJO) == 1; // 1 - On
