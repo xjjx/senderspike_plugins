@@ -70,6 +70,9 @@ int run(const char* libpath)
 	std::printf("Plugin loaded OK\n");
 	std::printf("Inputs: %d Outputs: %d\n", effect->numInputs, effect->numOutputs);
 
+	bool supportsDouble = (effect->flags & effFlagsCanDoubleReplacing) != 0;
+	std::printf("Support double precission: %s\n", supportsDouble ? "true" : "false");
+
 	if (effect->dispatcher)
 	{
 		effect->dispatcher(effect, effOpen, 0, 0, nullptr, 0);
