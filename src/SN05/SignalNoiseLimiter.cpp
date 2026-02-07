@@ -45,6 +45,12 @@ SignalNoiseLimiter::SignalNoiseLimiter()
 		parameters.addParameterListener (gParams[i].id, this);
 }
 
+SignalNoiseLimiter::~SignalNoiseLimiter()
+{
+	for (int i = 0; i < SNE_SIZE; ++i)
+		parameters.removeParameterListener (gParams[i].id, this);
+}
+
 //------------------------------------------------------------------------------------
 void SignalNoiseLimiter::prepareToPlay(double newSampleRate, int /*samplesPerBlock*/)
 {

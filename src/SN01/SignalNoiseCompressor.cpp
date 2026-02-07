@@ -34,6 +34,12 @@ SignalNoiseCompressor::SignalNoiseCompressor()
 		parameters.addParameterListener (gParams[i].id, this);
 }
 
+SignalNoiseCompressor::~SignalNoiseCompressor()
+{
+	for (int i = 0; i < SNE_SIZE; ++i)
+		parameters.removeParameterListener (gParams[i].id, this);
+}
+
 //------------------------------------------------------------------------------------
 
 void SignalNoiseCompressor::prepareToPlay(double newSampleRate, int /*samplesPerBlock*/)

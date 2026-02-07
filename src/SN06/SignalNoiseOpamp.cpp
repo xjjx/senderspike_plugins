@@ -25,8 +25,8 @@ SignalNoiseOpamp::SignalNoiseOpamp()
 	_erfR = 0.0;
 	_norm = 1e-15;
 
-	for (int i = 0; i < SNE_SIZE; ++i)
-		parameters.addParameterListener (gParams[i].id, this);
+//	for (int i = 0; i < SNE_SIZE; ++i)
+//		parameters.addParameterListener (gParams[i].id, this);
 }
 
 bool SignalNoiseOpamp::isBusesLayoutSupported(const BusesLayout& layouts) const

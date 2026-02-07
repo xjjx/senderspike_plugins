@@ -117,7 +117,7 @@ private:
 
 public:
 	SignalNoiseLimiter();
-	~SignalNoiseLimiter() override = default;
+	~SignalNoiseLimiter();
 
 	// JUCE overrides
 	void prepareToPlay(double newSampleRate, int samplesPerBlock) override;

@@ -168,7 +168,7 @@ private:
 
 public:
 	SignalNoiseEqualizer();
-	~SignalNoiseEqualizer() override = default;
+	~SignalNoiseEqualizer();
 
 	// JUCE overrides
 	void prepareToPlay(double newSampleRate, int samplesPerBlock) override;

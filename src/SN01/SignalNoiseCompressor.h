@@ -112,7 +112,7 @@ private:
 
 public:
 	SignalNoiseCompressor();
-	~SignalNoiseCompressor() override = default;
+	~SignalNoiseCompressor();
 
 	// JUCE overrides
 	void processBlock (juce::AudioBuffer<float>&, juce::MidiBuffer&) override;

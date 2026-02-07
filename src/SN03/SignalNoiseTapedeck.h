@@ -132,7 +132,7 @@ private:
 public:
 //create & destroy
 	SignalNoiseTapedeck();
-	~SignalNoiseTapedeck() override = default;
+	~SignalNoiseTapedeck();
 
 	// JUCE overrides
 	void prepareToPlay(double newSampleRate, int samplesPerBlock) override;

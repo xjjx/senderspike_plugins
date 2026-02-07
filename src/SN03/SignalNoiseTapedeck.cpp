@@ -33,6 +33,12 @@ SignalNoiseTapedeck::SignalNoiseTapedeck()
 		parameters.addParameterListener (gParams[i].id, this);
 }
 
+SignalNoiseTapedeck::~SignalNoiseTapedeck()
+{
+	for (int i = 0; i < SNE_SIZE; ++i)
+		parameters.removeParameterListener (gParams[i].id, this);
+}
+
 //------------------------------------------------------------------------------------
 
 void SignalNoiseTapedeck::prepareToPlay(double newSampleRate, int /*samplesPerBlock*/)
