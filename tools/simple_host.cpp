@@ -71,7 +71,23 @@ int run(const char* libpath)
 	std::printf("Inputs: %d Outputs: %d\n", effect->numInputs, effect->numOutputs);
 
 	if (effect->dispatcher)
+	{
 		effect->dispatcher(effect, effOpen, 0, 0, nullptr, 0);
+
+	// ------------------- Enumerate parameters -------------------
+		const int numParams = effect->numParams;
+		std::printf("Plugin has %d parameters:\n", numParams);
+
+		char name[256] = {};
+		for (int i = 0; i < numParams; ++i)
+		{
+			effect->dispatcher(effect, effGetParamName, i, 0, name, 0.0f);
+
+			float value = effect->getParameter(effect, i);
+
+			std::printf("  Param %d: '%s' = %f\n", i, name, value);
+		}
+	}
 
 	// ===================== Simple audio test =====================
 	const int blockSize = 64;
