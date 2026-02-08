@@ -66,10 +66,6 @@ static const ParamDesc gParams[] =
 
 //------------------------------------------------------------------------------------
 
-#define SN01_VER		1210
-
-//------------------------------------------------------------------------------------
-
 class SignalNoiseCompressor : public SignalNoiseFX
 {
 private:

@@ -11,6 +11,16 @@
 #include "aeffectx.h"
 
 // -------------------- Host callback --------------------
+static void printVersion(const char* label, int v)
+{
+	int major = (v >> 16) & 0xFF;
+	int minor = (v >> 8)  & 0xFF;
+	int patch = v & 0xFF;
+
+	std::printf("%s: %d.%d.%d (raw: %d)\n",
+		label, major, minor, patch, v);
+}
+
 static VstIntPtr VSTCALLBACK hostCallback(
 	AEffect* effect,
 	VstInt32 opcode,
@@ -72,6 +82,12 @@ int run(const char* libpath)
 
 	bool supportsDouble = (effect->flags & effFlagsCanDoubleReplacing) != 0;
 	std::printf("Support double precission: %s\n", supportsDouble ? "true" : "false");
+
+	int versionStruct = effect->version;
+	int versionVendor = effect->dispatcher(effect, effGetVendorVersion, 0, 0, nullptr, 0.0f);
+
+	printVersion("Version (AEffect)", versionStruct);
+	printVersion("Version (Vendor)",  versionVendor);
 
 	if (effect->dispatcher)
 	{

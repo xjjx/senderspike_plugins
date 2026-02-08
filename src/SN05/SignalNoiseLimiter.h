@@ -56,15 +56,6 @@ static const ParamDesc gParams[] =
 
 //------------------------------------------------------------------------------------
 
-#define SN05_VER		2210
-#ifdef SN05G
-#define SN05_NAM		"SN05-G Limiter"
-#else
-#define SN05_NAM		"SN05 Limiter"
-#endif
-
-//------------------------------------------------------------------------------------
-
 class SignalNoiseLimiter : public SignalNoiseFX
 {
 private:

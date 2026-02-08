@@ -76,15 +76,6 @@ static const ParamDesc gParams[] =
 
 //------------------------------------------------------------------------------------
 
-#define SN03_VER		1310
-#ifdef SN03G
-#define SN03_NAM		"SN03-G Tape Recorder"
-#else
-#define SN03_NAM		"SN03 Tape Recorder"
-#endif
-
-//------------------------------------------------------------------------------------
-
 class SignalNoiseTapedeck : public SignalNoiseFX
 {
 private:

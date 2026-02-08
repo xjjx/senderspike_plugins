@@ -100,15 +100,6 @@ static const ParamDesc gParams[SNE_SIZE] =
 
 //------------------------------------------------------------------------------------
 
-#define SN04_VER		1210
-#ifdef SN04G
-#define SN04_NAM		"SN04-G Channel EQ"
-#else
-#define SN04_NAM		"SN04 Channel EQ"
-#endif
-
-//------------------------------------------------------------------------------------
-
 class SignalNoiseEqualizer : public SignalNoiseFX
 {
 private:

@@ -6,6 +6,7 @@ juce_add_plugin(SN05
     FORMATS LV2 VST3 VST
     PRODUCT_NAME "SN05-J-Limiter"
     PLUGIN_NAME "SN05-J Limiter"
+    VERSION 2.2.10
 
     IS_SYNTH FALSE
     NEEDS_MIDI_INPUT FALSE

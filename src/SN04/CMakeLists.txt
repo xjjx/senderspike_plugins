@@ -6,6 +6,7 @@ juce_add_plugin(SN04
     FORMATS LV2 VST3 VST
     PRODUCT_NAME "SN04-J-Channel-EQ"
     PLUGIN_NAME "SN04-J Channel EQ"
+    VERSION 1.2.10
 
     IS_SYNTH FALSE
     NEEDS_MIDI_INPUT FALSE

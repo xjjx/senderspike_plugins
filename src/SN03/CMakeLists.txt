@@ -6,6 +6,7 @@ juce_add_plugin(SN03
     FORMATS LV2 VST3 VST
     PRODUCT_NAME "SN03-J-Tape-Recorder"
     PLUGIN_NAME "SN03-J Tape Recorder"
+    VERSION 1.3.10
 
     IS_SYNTH FALSE
     NEEDS_MIDI_INPUT FALSE
