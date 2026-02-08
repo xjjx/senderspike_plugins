@@ -9,14 +9,14 @@
 //------------------------------------------------------------------------------------
 
 
-#include <sn_05e.h>
-#include <sn_05g.h>
 #include <stdio.h>
 #include <math.h>
-
+#include <juce_audio_processors/juce_audio_processors.h>
+#include "SignalNoiseLimiterGUI.h"
+#include "BinaryData.h"
 
 //------------------------------------------------------------------------------------
-
+/*
 static void snFormatValueGain(float val, char* str)
 {
 	sprintf(str, "%2.2f", val * 24);
@@ -73,84 +73,94 @@ SignalNoiseLimiterGR::~SignalNoiseLimiterGR()
 
 //------------------------------------------------------------------------------------
 
-void SignalNoiseLimiterGR::draw(CDrawContext* ctx)
-{
-	if(_map == 0)
-		return;
-
-	CPoint pt;
-	CCoord w = size.right - size.left;
-	CCoord h = size.bottom - size.top;
-
-	//draw unlit
-	pt.v = h;
-	if(bTransparencyEnabled)
-		_map->drawTransparent(ctx, size, pt);
-	else
-		_map->draw(ctx, size, pt);
-
-	//draw value
-	double yb = _val < 0.0 ? 0.0 : (_val > 20.0 ? 20.0 : _val);
-	CCoord cc = w - (long)(((long)(100 * (yb / 20.f) + 0.5f) / 100.f) * w);
-	pt(cc, 0);
-	cc += size.left;
-	CRect rc(size.left, size.top, size.right, size.bottom);
-	rc.left = cc;
-
-	if(bTransparencyEnabled)
-		_map->drawTransparent(ctx, rc, pt);
-	else
-		_map->draw(ctx, rc, pt);
-
-	setDirty(false);
-
-	_val = _val - 0.25;
-}
-
-//------------------------------------------------------------------------------------
-
-void SignalNoiseLimiterGR::setDirty(const bool val)
-{
-	CView::setDirty(val);
-}
-
-//------------------------------------------------------------------------------------
-
 void SignalNoiseLimiterGR::setVal(double dB)
 {
 	if(dB > _val)
 		_val = dB;
 	setDirty(true);
 }
-
+*/
 //------------------------------------------------------------------------------------
 // GUI
 //------------------------------------------------------------------------------------
 
-SignalNoiseLimiterGUI::SignalNoiseLimiterGUI(AudioEffect* fx) : AEffGUIEditor(fx) 
+SignalNoiseLimiterGUI::SignalNoiseLimiterGUI(SignalNoiseLimiter& p)
+	: AudioProcessorEditor(&p), processor(p)
 {
-	_grHL = 0;
-	_grHC = 0;
-	_ceil = 0;
-	_gain = 0;
-	_hpfc = 0;
-	_atkh = 0;
-	_relh = 0;
-	_rels = 0;
-	_clip = 0;
-	_txtg = 0;
-	_txtc = 0;
-	_mode = 0;
-	_hpon = 0;
-	_open = 0;
+	// Load background image
+	background = juce::ImageCache::getFromMemory(
+		BinaryData::sn05g_bk_png,
+		BinaryData::sn05g_bk_pngSize
+	);
 
-	//init the size of the plugin
-	CBitmap* bk	= new CBitmap(101);
-	rect.left   = 0;
-	rect.top    = 0;
-	rect.right  = (short)bk->getWidth();
-	rect.bottom = (short)bk->getHeight();
-	bk->forget();
+	// Knobs
+	juce::Image knobLargeImage = juce::ImageCache::getFromMemory(
+		BinaryData::sn01g_b1_png,
+		BinaryData::sn01g_b1_pngSize
+	);
+
+	juce::Image knobNormalImage = juce::ImageCache::getFromMemory(
+		BinaryData::sn05g_b1_png,
+		BinaryData::sn05g_b1_pngSize
+	);
+
+	jassert(!knobLargeImage.isNull());
+	jassert(!knobNormalImage.isNull());
+
+	largeLNF.setImage(knobLargeImage);
+	normalLNF.setImage(knobNormalImage);
+
+	auto& params = processor.getParameters();
+
+	gainKnob = std::make_unique<SignalNoiseKnobPrecise>(0);
+	gainKnob->setLookAndFeel(&largeLNF);
+	gainKnob->attachToParameter(params, gParams[SNE_GAIN].id);
+	addAndMakeVisible(*gainKnob);
+
+	ceilKnob = std::make_unique<SignalNoiseKnobPrecise>(0);
+	ceilKnob->setLookAndFeel(&largeLNF);
+	ceilKnob->attachToParameter(params, gParams[SNE_CEIL].id);
+	addAndMakeVisible(*ceilKnob);
+
+	addAndMakeVisible (hpfcKnob);
+	hpfcKnob.setSliderStyle (juce::Slider::RotaryHorizontalVerticalDrag);
+	hpfcKnob.setTextBoxStyle (juce::Slider::NoTextBox, false, 0, 0);
+	hpfcKnob.setLookAndFeel(&normalLNF);
+	hpfcAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
+		params, gParams[SNE_HPFC].id, hpfcKnob);
+
+	addAndMakeVisible (atkhKnob);
+	atkhKnob.setSliderStyle (juce::Slider::RotaryHorizontalVerticalDrag);
+	atkhKnob.setTextBoxStyle (juce::Slider::NoTextBox, false, 0, 0);
+	atkhKnob.setLookAndFeel(&normalLNF);
+	atkhAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
+		params, gParams[SNE_ATKH].id, atkhKnob);
+
+	addAndMakeVisible (relhKnob);
+	relhKnob.setSliderStyle (juce::Slider::RotaryHorizontalVerticalDrag);
+	relhKnob.setTextBoxStyle (juce::Slider::NoTextBox, false, 0, 0);
+	relhKnob.setLookAndFeel(&normalLNF);
+	relhAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
+		params, gParams[SNE_RELH].id, relhKnob);
+
+	addAndMakeVisible (relsKnob);
+	relsKnob.setSliderStyle (juce::Slider::RotaryHorizontalVerticalDrag);
+	relsKnob.setTextBoxStyle (juce::Slider::NoTextBox, false, 0, 0);
+	relsKnob.setLookAndFeel(&normalLNF);
+	relsAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
+		params, gParams[SNE_RELS].id, relsKnob);
+
+	addAndMakeVisible (clipKnob);
+	clipKnob.setSliderStyle (juce::Slider::RotaryHorizontalVerticalDrag);
+	clipKnob.setTextBoxStyle (juce::Slider::NoTextBox, false, 0, 0);
+	clipKnob.setLookAndFeel(&normalLNF);
+	clipAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
+		params, gParams[SNE_CLIP].id, clipKnob);
+
+	// Set initial size based on background
+	setSize(background.getWidth(), background.getHeight());
+
+	startTimerHz(30); // GUI refresh rate
 }
 
 //------------------------------------------------------------------------------------
@@ -162,181 +172,31 @@ SignalNoiseLimiterGUI::~SignalNoiseLimiterGUI()
 
 //------------------------------------------------------------------------------------
 
-bool SignalNoiseLimiterGUI::open(void *ptr)
+void SignalNoiseLimiterGUI::resized()
 {
-	// always call this first !!!
-	AEffGUIEditor::open(ptr);
+	gainKnob->setBounds (30, 35, 80, 80);  // Gain
+	ceilKnob->setBounds (400, 35, 80, 80); // Ceiling
 
-	// initialize ------------------------------------------
-
-	CCoord x, y;
-	CPoint pt(0, 0);
-	CBitmap* backg = new CBitmap(101);	// background
-	CBitmap* knob1 = new CBitmap(102);	// large knob
-	CBitmap* knob2 = new CBitmap(103);	// small knob
-	CBitmap* meter = new CBitmap(104);	// GR meter
-	CBitmap* onoff = new CBitmap(105);	// rocker switch
-	CBitmap* slide = new CBitmap(106);	// led "button"
-
-	setKnobMode(kLinearMode);
-
-	// frame -----------------------------------------------
-
-	CRect rc(0, 0, backg->getWidth(), backg->getHeight());
-	CFrame* frm = new CFrame(rc, ptr, this);
-	frm->setBackground(backg);
-
-	// knobs -----------------------------------------------
-
-	x = 30;
-	y = 35;
-	rc(x, y, x + 80, y + 80);
-	_gain = new SignalNoiseKnobP(rc, this, SNE_GAIN, 97, 80, knob1, pt);
-	_gain->setValue(effect->getParameter(SNE_GAIN));
-	frm->addView(_gain);
-
-	x = 400;
-	rc(x, y, x + 80, y + 80);
-	_ceil = new SignalNoiseKnobP(rc, this, SNE_CEIL, 97, 80, knob1, pt);
-	_ceil->setValue(effect->getParameter(SNE_CEIL));
-	frm->addView(_ceil);
-
-	x = 155;
-	y = 20;
-	rc(x, y, x + 40, y + 40);
-	_hpfc = new SignalNoiseKnob(rc, this, SNE_HPFC, 97, 40, knob2, pt);
-	_hpfc->setValue(effect->getParameter(SNE_HPFC));
-	frm->addView(_hpfc);
-
-	x = 235;
-	rc(x, y, x + 40, y + 40);
-	_atkh = new SignalNoiseKnob(rc, this, SNE_ATKH, 97, 40, knob2, pt);
-	_atkh->setValue(effect->getParameter(SNE_ATKH));
-	frm->addView(_atkh);
-
-	x = 315;
-	rc(x, y, x + 40, y + 40);
-	_relh = new SignalNoiseKnob(rc, this, SNE_RELH, 97, 40, knob2, pt);
-	_relh->setValue(effect->getParameter(SNE_RELH));
-	frm->addView(_relh);
-
-	x = 155;
-	y = 93;
-	rc(x, y, x + 40, y + 40);
-	_clip = new SignalNoiseKnob(rc, this, SNE_CLIP, 97, 40, knob2, pt);
-	_clip->setValue(effect->getParameter(SNE_CLIP));
-	frm->addView(_clip);
-
-	x = 315;
-	rc(x, y, x + 40, y + 40);
-	_rels = new SignalNoiseKnob(rc, this, SNE_RELS, 97, 40, knob2, pt);
-	_rels->setValue(effect->getParameter(SNE_RELS));
-	frm->addView(_rels);
-
-	// buttons ---------------------------------------------
-
-	rc(235, 94, 275, 134);
-	_mode = new COnOffButton(rc, this, SNE_MODE, onoff);
-	_mode->setValue(effect->getParameter(SNE_MODE));
-	frm->addView(_mode);
-
-	rc(122, 6, 150, 34);
-	_hpon = new COnOffButton(rc, this, SNE_HPON, slide);
-	_hpon->setValue(effect->getParameter(SNE_HPON));
-	frm->addView(_hpon);
-
-	// text edits ------------------------------------------
-
-	x = 55;
-	y = 135;
-	_txtg = snCreateTextEdit(x, y, this, IDC_TX_GAIN);
-	_txtg->setValue(effect->getParameter(SNE_GAIN));
-	frm->addView(_txtg);
-
-	x = 425;
-	_txtc = snCreateTextEdit(x, y, this, IDC_TX_CEIL);
-	_txtc->setValue(effect->getParameter(SNE_CEIL));
-	frm->addView(_txtc);
-
-	// GR meters -------------------------------------------
-
-	rc(55, 179, 455, 189);
-	_grHL = new SignalNoiseLimiterGR(rc, meter, effect->getSampleRate());
-	frm->addView(_grHL);
-
-	rc(55, 191, 455, 201);
-	_grHC = new SignalNoiseLimiterGR(rc, meter, effect->getSampleRate());
-	frm->addView(_grHC);
-
-	// finalize --------------------------------------------
-
-	_gain->setRangePixels(480);
-	_ceil->setRangePixels(480);
-	_gain->setRangeAbsolute(24);
-	_ceil->setRangeAbsolute(24);
-
-	_atkh->setRange(480);
-	_relh->setRange(480);
-	_rels->setRange(480);
-	_hpfc->setRange(632);
-	_clip->setRange(500);
-
-	_gain->setWheelInc(0.125f);
-	_ceil->setWheelInc(0.125f);
-	_atkh->setWheelInc(0.125f);
-	_relh->setWheelInc(0.125f);
-	_rels->setWheelInc(0.125f);
-	_hpfc->setWheelInc(0.125f);
-	_clip->setWheelInc(0.125f);
-
-	_gain->setDefaultValue(gParam[SNE_GAIN].val);
-	_ceil->setDefaultValue(gParam[SNE_CEIL].val);
-	_atkh->setDefaultValue(gParam[SNE_ATKH].val);
-	_relh->setDefaultValue(gParam[SNE_RELH].val);
-	_rels->setDefaultValue(gParam[SNE_RELS].val);
-	_mode->setDefaultValue(gParam[SNE_MODE].val);
-	_hpon->setDefaultValue(gParam[SNE_HPON].val);
-	_hpfc->setDefaultValue(gParam[SNE_HPFC].val);
-	_clip->setDefaultValue(gParam[SNE_CLIP].val);
-
-	backg->forget();
-	knob1->forget();
-	knob2->forget();
-	onoff->forget();
-	slide->forget();
-
-	frame = frm;
-
-	_open = 1;
-
-	return true;
+    hpfcKnob.setBounds (155, 20, 40, 40); // HPF frequency
+    atkhKnob.setBounds (235, 20, 40, 40); // Attack (H)
+    relhKnob.setBounds (315, 20, 40, 40); // Release (H)
+    clipKnob.setBounds (155, 93, 40, 40); // Soft clip %
+    relsKnob.setBounds (315, 93, 40, 40); // Release (S)
 }
 
 //------------------------------------------------------------------------------------
 
-void SignalNoiseLimiterGUI::close()
+void SignalNoiseLimiterGUI::paint(juce::Graphics& g)
 {
-	_open = 0;
+	// Fill background with black if image fails
+	g.fillAll(juce::Colours::black);
 
-	delete frame; // deletes all attached views
-	frame = 0;
-	_grHL = 0;
-	_grHC = 0;
-	_ceil = 0;
-	_gain = 0;
-	_hpfc = 0;
-	_atkh = 0;
-	_relh = 0;
-	_rels = 0;
-	_clip = 0;
-	_txtg = 0;
-	_txtc = 0;
-	_mode = 0;
-	_hpon = 0;
+	if (background.isValid())
+		g.drawImage(background, getLocalBounds().toFloat(), juce::RectanglePlacement::stretchToFit);
 }
 
 //------------------------------------------------------------------------------------
-
+/*
 void SignalNoiseLimiterGUI::setParameter(VstInt32 at, float v)
 {
 	if(_open == 0)
@@ -408,4 +268,12 @@ void SignalNoiseLimiterGUI::trackMeter(double lim, double clp)
 }
 
 //------------------------------------------------------------------------------------
+*/
+void SignalNoiseLimiterGUI::timerCallback()
+{
+//	inputMeter .setLevel(processor.getInputLevel());
+///	outputMeter.setLevel(processor.getOutputLevel());
+//	peakLed.setLevel(processor.getOutputLevel());
 
+	repaint();
+}

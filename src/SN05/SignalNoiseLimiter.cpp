@@ -11,7 +11,7 @@
 
 #include <math.h>
 #include "SignalNoiseLimiter.h"
-//#include "SignalNoiseLimiterEditor.h"
+#include "SignalNoiseLimiterGUI.h"
 
 #ifdef SN05G
 #include <sn_05g.h>
@@ -265,8 +265,7 @@ void SignalNoiseLimiter::processBlock(juce::AudioBuffer<double>& buffer, juce::M
 // Editor
 juce::AudioProcessorEditor* SignalNoiseLimiter::createEditor()
 {
-//	return new SignalNoiseOpampEditor (*this);
-	return nullptr;
+	return new SignalNoiseLimiterGUI (*this);
 }
 
 // ----------------------

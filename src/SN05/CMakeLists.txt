@@ -16,14 +16,14 @@ juce_add_plugin(SN05
 	LV2URI "urn:signalsnoise:sn05"
 )
 
-#juce_add_binary_data(SN05_BinaryData
-#    SOURCES
-#        ../graphics/sn06g/sn06g_bk.png
-#        ../graphics/sn06g/sn06g_b1.png
-#        ../graphics/sn01g/sn01g_b1.png
-#)
+juce_add_binary_data(SN05_BinaryData
+    SOURCES
+        ../graphics/sn05g/sn05g_bk.png
+        ../graphics/sn05g/sn05g_b1.png
+        ../graphics/sn01g/sn01g_b1.png
+)
 
-#target_link_libraries(SN05 PRIVATE SN05_BinaryData)
+target_link_libraries(SN05 PRIVATE SN05_BinaryData)
 
 # ----------------------
 # Add plugin source files
@@ -31,7 +31,7 @@ juce_add_plugin(SN05
 target_sources(SN05
     PRIVATE
         SignalNoiseLimiter.cpp
-#        SignalNoiseLimiterEditor.cpp
+        SignalNoiseLimiterGUI.cpp
 )
 
 # ----------------------
