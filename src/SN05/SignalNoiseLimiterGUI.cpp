@@ -109,8 +109,15 @@ SignalNoiseLimiterGUI::SignalNoiseLimiterGUI(SignalNoiseLimiter& p)
 		BinaryData::sn01g_s3_pngSize
 	);
 
+	juce::Image hponImage = juce::ImageCache::getFromMemory(
+		BinaryData::sn04g_ld_png,
+		BinaryData::sn04g_ld_pngSize
+	);
+
 	jassert(!knobLargeImage.isNull());
 	jassert(!knobNormalImage.isNull());
+	jassert(!switchImage.isNull());
+	jassert(!hponImage.isNull());
 
 	largeLNF.setImage(knobLargeImage);
 	normalLNF.setImage(knobNormalImage);
@@ -169,6 +176,13 @@ SignalNoiseLimiterGUI::SignalNoiseLimiterGUI(SignalNoiseLimiter& p)
 		params, gParams[SNE_MODE].id, *modeSwitch
 	);
 
+	hponSwitch = std::make_unique<SignalNoiseSwitchButton>("hponSwitch", hponImage);
+	addAndMakeVisible(*hponSwitch);
+
+	hponAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(
+		params, gParams[SNE_HPON].id, *hponSwitch
+	);
+
 	// Set initial size based on background
 	setSize(background.getWidth(), background.getHeight());
 
@@ -195,6 +209,7 @@ void SignalNoiseLimiterGUI::resized()
 	clipKnob.setBounds (155, 93, 40, 40); // Soft clip %
 	relsKnob.setBounds (315, 93, 40, 40); // Release (S)
 
+	hponSwitch->setBounds(121, 8, 28, 28);
 	modeSwitch->setBounds(235, 93, 40, 40);
 }
 

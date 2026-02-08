@@ -58,8 +58,6 @@ private:
 
 //	SignalNoiseLimiterGR*	_grHL;	// GR meter limiter
 //	SignalNoiseLimiterGR*	_grHC;	// GR meter clipper
-//	SignalNoiseKnobP*		_gain;	// gain
-//	SignalNoiseKnobP*		_ceil;	// ceiling
 
 	SignalNoiseKnobLookAndFeel largeLNF;
 	SignalNoiseKnobLookAndFeel normalLNF;
@@ -73,6 +71,7 @@ private:
 	juce::Slider		relsKnob;	// release
 	juce::Slider		clipKnob;	// soft clip %
 	std::unique_ptr<SignalNoiseSwitchButton> modeSwitch;
+	std::unique_ptr<SignalNoiseSwitchButton> hponSwitch;
 
 	std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> hpfcAttachment;
 	std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> atkhAttachment;
@@ -81,14 +80,12 @@ private:
 	std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> clipAttachment;
 
 	std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> modeAttachment;
+	std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> hponAttachment;
 
-//	COnOffButton*			_mode;	// mode switch
-//	COnOffButton*			_hpon;	// HPF switch
 //	CTextEdit*				_txtg;	// gain text
 //	CTextEdit*				_txtc;	// ceil text
 	int						_open;
 public:
-//create & destroy
 	SignalNoiseLimiterGUI(SignalNoiseLimiter&);
 	virtual ~SignalNoiseLimiterGUI();
 
