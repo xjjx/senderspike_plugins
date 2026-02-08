@@ -14,6 +14,7 @@
 #include "SignalNoiseKnobLookAndFeel.h"
 #include "SignalNoiseKnobPrecise.h"
 #include "SignalNoiseLimiter.h"
+#include "SignalNoiseSwitchButton.h"
 
 //------------------------------------------------------------------------------------
 //text fields
@@ -71,12 +72,15 @@ private:
 	juce::Slider		relhKnob;	// Holters' release
 	juce::Slider		relsKnob;	// release
 	juce::Slider		clipKnob;	// soft clip %
+	std::unique_ptr<SignalNoiseSwitchButton> modeSwitch;
 
 	std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> hpfcAttachment;
 	std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> atkhAttachment;
 	std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> relhAttachment;
 	std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> relsAttachment;
 	std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> clipAttachment;
+
+	std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> modeAttachment;
 
 //	COnOffButton*			_mode;	// mode switch
 //	COnOffButton*			_hpon;	// HPF switch

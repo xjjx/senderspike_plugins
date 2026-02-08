@@ -104,6 +104,11 @@ SignalNoiseLimiterGUI::SignalNoiseLimiterGUI(SignalNoiseLimiter& p)
 		BinaryData::sn05g_b1_pngSize
 	);
 
+	juce::Image switchImage = juce::ImageCache::getFromMemory(
+		BinaryData::sn01g_s3_png,
+		BinaryData::sn01g_s3_pngSize
+	);
+
 	jassert(!knobLargeImage.isNull());
 	jassert(!knobNormalImage.isNull());
 
@@ -157,6 +162,13 @@ SignalNoiseLimiterGUI::SignalNoiseLimiterGUI(SignalNoiseLimiter& p)
 	clipAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
 		params, gParams[SNE_CLIP].id, clipKnob);
 
+	modeSwitch = std::make_unique<SignalNoiseSwitchButton>("modeSwitch", switchImage);
+	addAndMakeVisible(*modeSwitch);
+
+	modeAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(
+		params, gParams[SNE_MODE].id, *modeSwitch
+	);
+
 	// Set initial size based on background
 	setSize(background.getWidth(), background.getHeight());
 
@@ -177,11 +189,13 @@ void SignalNoiseLimiterGUI::resized()
 	gainKnob->setBounds (30, 35, 80, 80);  // Gain
 	ceilKnob->setBounds (400, 35, 80, 80); // Ceiling
 
-    hpfcKnob.setBounds (155, 20, 40, 40); // HPF frequency
-    atkhKnob.setBounds (235, 20, 40, 40); // Attack (H)
-    relhKnob.setBounds (315, 20, 40, 40); // Release (H)
-    clipKnob.setBounds (155, 93, 40, 40); // Soft clip %
-    relsKnob.setBounds (315, 93, 40, 40); // Release (S)
+	hpfcKnob.setBounds (155, 20, 40, 40); // HPF frequency
+	atkhKnob.setBounds (235, 20, 40, 40); // Attack (H)
+	relhKnob.setBounds (315, 20, 40, 40); // Release (H)
+	clipKnob.setBounds (155, 93, 40, 40); // Soft clip %
+	relsKnob.setBounds (315, 93, 40, 40); // Release (S)
+
+	modeSwitch->setBounds(235, 93, 40, 40);
 }
 
 //------------------------------------------------------------------------------------

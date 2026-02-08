@@ -18,9 +18,12 @@ juce_add_plugin(SN05
 
 juce_add_binary_data(SN05_BinaryData
     SOURCES
-        ../graphics/sn05g/sn05g_bk.png
-        ../graphics/sn05g/sn05g_b1.png
-        ../graphics/sn01g/sn01g_b1.png
+        ../graphics/sn05g/sn05g_bk.png # background
+        ../graphics/sn05g/sn05g_b1.png # small knob
+        ../graphics/sn01g/sn01g_b1.png # big knob
+        ../graphics/sn05g/sn05g_gr.png # GR meter
+        ../graphics/sn01g/sn01g_s3.png # rocker switch
+        ../graphics/sn04g/sn04g_ld.png # led "button"
 )
 
 target_link_libraries(SN05 PRIVATE SN05_BinaryData)
