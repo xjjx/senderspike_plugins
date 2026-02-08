@@ -16,10 +16,7 @@
 // Constructor
 // ----------------------
 SignalNoiseOpamp::SignalNoiseOpamp()
-: SignalNoiseFX(
-	"SignalNoiseOpamp",
-	createLayout(gParams, SNE_SIZE)
-  )
+: SignalNoiseFX(createLayout(gParams, SNE_SIZE))
 {
 	_erfL = 0.0;
 	_erfR = 0.0;

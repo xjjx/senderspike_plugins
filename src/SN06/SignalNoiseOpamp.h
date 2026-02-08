@@ -44,6 +44,8 @@ public:
 	void processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer&) override;
 	void processBlock(juce::AudioBuffer<double>& buffer, juce::MidiBuffer&) override;
 
+	const juce::String getName() const override { return JucePlugin_Name; }
+
 	juce::AudioProcessorEditor* createEditor() override;
 	bool hasEditor() const override { return true; }
 

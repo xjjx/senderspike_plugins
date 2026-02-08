@@ -114,6 +114,8 @@ public:
 	void processBlock (juce::AudioBuffer<float>&, juce::MidiBuffer&) override;
 	void processBlock (juce::AudioBuffer<double>&, juce::MidiBuffer&) override;
 
+	const juce::String getName() const override { return JucePlugin_Name; }
+
 	void prepareToPlay(double newSampleRate, int samplesPerBlock) override;
 	void parameterChanged(const juce::String& parameterID, float newValue) override;
 

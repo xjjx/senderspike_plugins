@@ -23,10 +23,7 @@
 //------------------------------------------------------------------------------------
 
 SignalNoiseEqualizer::SignalNoiseEqualizer()
-	: SignalNoiseFX(
-		"SignalNoiseCompressor",
-		createLayout(gParams, SNE_SIZE)
-      )
+	: SignalNoiseFX(createLayout(gParams, SNE_SIZE))
 {
 	_norm = 1e-15;
 	_mojo.seed();

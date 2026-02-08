@@ -23,10 +23,7 @@
 //------------------------------------------------------------------------------------
 
 SignalNoiseLimiter::SignalNoiseLimiter()
-    : SignalNoiseFX(
-          "SignalNoiseLimiter",
-          createLayout(gParams, SNE_SIZE)
-      )
+    : SignalNoiseFX(createLayout(gParams, SNE_SIZE))
 {
 	for(int i = 0; i < 5; i++)
 	{

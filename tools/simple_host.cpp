@@ -11,6 +11,21 @@
 #include "aeffectx.h"
 
 // -------------------- Host callback --------------------
+static void showVstString(AEffect* effect, const char* label, int opcode)
+{
+	char tempStr[64]  = {};
+	memset(tempStr, 0, sizeof(tempStr));
+
+	VstIntPtr result = effect->dispatcher(effect, opcode, 0, 0, tempStr, 0.0f);
+
+	tempStr[sizeof(tempStr) - 1] = '\0';
+
+	if (result == 0 || tempStr[0] == '\0')
+		strcpy(tempStr, "<not reported>");
+
+    std::printf("%s: %s\n", label, tempStr);
+}
+
 static void printVersion(const char* label, int v)
 {
 	int major = (v >> 16) & 0xFF;
@@ -78,6 +93,10 @@ int run(const char* libpath)
 	}
 
 	std::printf("Plugin loaded OK\n");
+
+	showVstString(effect, "Effect name", effGetEffectName);
+	showVstString(effect, "Product name", effGetProductString);
+
 	std::printf("Inputs: %d Outputs: %d\n", effect->numInputs, effect->numOutputs);
 
 	bool supportsDouble = (effect->flags & effFlagsCanDoubleReplacing) != 0;
@@ -93,7 +112,7 @@ int run(const char* libpath)
 	{
 		effect->dispatcher(effect, effOpen, 0, 0, nullptr, 0);
 
-	// ------------------- Enumerate parameters -------------------
+		// ------------------- Enumerate parameters -------------------
 		const int numParams = effect->numParams;
 		std::printf("Plugin has %d parameters:\n", numParams);
 

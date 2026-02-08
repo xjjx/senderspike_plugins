@@ -46,15 +46,13 @@ class SignalNoiseFX
 {
 public:
 	SignalNoiseFX(
-		const juce::String& name,
 		juce::AudioProcessorValueTreeState::ParameterLayout layout)
 		: AudioProcessor(
 			BusesProperties()
 				.withInput	("Input",  juce::AudioChannelSet::stereo(), true)
 				.withOutput ("Output", juce::AudioChannelSet::stereo(), true)
 		  ),
-		  parameters(*this, nullptr, "PARAMS", std::move(layout)),
-		  pluginName(name)
+		  parameters(*this, nullptr, "PARAMS", std::move(layout))
 	{}
 
 	~SignalNoiseFX() override = default;
@@ -80,16 +78,12 @@ public:
 
 	bool isBusesLayoutSupported(const BusesLayout& layouts) const override;
 
-	void setName(juce::String& name) { pluginName = name; }
-	const juce::String getName() const override { return pluginName; }
-
 	void getStateInformation(juce::MemoryBlock& destData) override;
 	void setStateInformation(const void* data, int sizeInBytes) override;
 
 protected:
 	double sampleRate = 44100.0;
 	juce::AudioProcessorValueTreeState parameters;
-	juce::String pluginName;
 
 	juce::AudioProcessorValueTreeState::ParameterLayout
 	createLayout(const ParamDesc* paramArray, int numParams);

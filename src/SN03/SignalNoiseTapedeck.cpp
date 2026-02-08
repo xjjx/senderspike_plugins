@@ -22,10 +22,7 @@
 //------------------------------------------------------------------------------------
 
 SignalNoiseTapedeck::SignalNoiseTapedeck()
-    : SignalNoiseFX(
-          "SignalNoiseTapedeck",
-          createLayout(gParams, SNE_SIZE)
-	  )
+    : SignalNoiseFX(createLayout(gParams, SNE_SIZE))
 {
 	_rand.seed();
 

@@ -18,10 +18,7 @@
 //------------------------------------------------------------------------------------
 
 SignalNoiseCompressor::SignalNoiseCompressor()
-    : SignalNoiseFX(
-          "SignalNoiseCompressor",
-          createLayout(gParams, SNE_SIZE)
-      )
+    : SignalNoiseFX(createLayout(gParams, SNE_SIZE))
 {
 	_TdB = DC_OFFSET;
 	_atk = 0;
