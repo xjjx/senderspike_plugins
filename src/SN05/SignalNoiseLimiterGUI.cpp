@@ -133,18 +133,12 @@ SignalNoiseLimiterGUI::SignalNoiseLimiterGUI(SignalNoiseLimiter& p)
 	auto& params = processor.getParameters();
 
 	modeSwitch = std::make_unique<SignalNoiseSwitchButton>("modeSwitch", switchImage);
+	modeSwitch->attachToParameter(params, gParams[SNE_MODE].id);
 	addAndMakeVisible(*modeSwitch);
 
-	modeAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(
-		params, gParams[SNE_MODE].id, *modeSwitch
-	);
-
 	hponSwitch = std::make_unique<SignalNoiseSwitchButton>("hponSwitch", hponImage);
+	hponSwitch->attachToParameter(params, gParams[SNE_HPON].id);
 	addAndMakeVisible(*hponSwitch);
-
-	hponAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(
-		params, gParams[SNE_HPON].id, *hponSwitch
-	);
 
 	// Set initial size based on background
 	setSize(background.getWidth(), background.getHeight());

@@ -80,9 +80,6 @@ private:
 	std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> relsAttachment;
 	std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> clipAttachment;
 
-	std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> modeAttachment;
-	std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> hponAttachment;
-
 //	CTextEdit*				_txtg;	// gain text
 //	CTextEdit*				_txtc;	// ceil text
 	int						_open;

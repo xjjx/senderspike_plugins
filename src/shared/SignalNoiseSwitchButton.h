@@ -21,6 +21,14 @@ public:
 					sx, sy, sw, sh);									 // source
 	}
 
+	void attachToParameter(juce::AudioProcessorValueTreeState& params, const juce::String& paramId)
+	{
+		attachment = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(
+			params, paramId, *this
+		);
+	}
+
 private:
 	juce::Image image;
+	std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> attachment;
 };
