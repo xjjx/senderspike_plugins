@@ -13,6 +13,7 @@
 #include <juce_gui_basics/juce_gui_basics.h>
 #include "SignalNoiseKnobLookAndFeel.h"
 #include "SignalNoiseKnobPrecise.h"
+#include "SignalNoiseKnob.h"
 #include "SignalNoiseLimiter.h"
 #include "SignalNoiseSwitchButton.h"
 
@@ -62,14 +63,14 @@ private:
 	SignalNoiseKnobLookAndFeel largeLNF;
 	SignalNoiseKnobLookAndFeel normalLNF;
 
-	std::unique_ptr<SignalNoiseKnobPrecise> gainKnob;
-	std::unique_ptr<SignalNoiseKnobPrecise> ceilKnob;
+	std::unique_ptr<SignalNoiseKnobPrecise>	gainKnob;
+	std::unique_ptr<SignalNoiseKnobPrecise>	ceilKnob;
 
-	juce::Slider		hpfcKnob;	// HPF frequency
-	juce::Slider		atkhKnob;	// Holters' attack
-	juce::Slider		relhKnob;	// Holters' release
-	juce::Slider		relsKnob;	// release
-	juce::Slider		clipKnob;	// soft clip %
+	std::unique_ptr<SignalNoiseKnob>		hpfcKnob;	// HPF frequency
+	std::unique_ptr<SignalNoiseKnob>		atkhKnob;	// Holters' attack
+	std::unique_ptr<SignalNoiseKnob>		relhKnob;	// Holters' release
+	std::unique_ptr<SignalNoiseKnob>		relsKnob;	// release
+	std::unique_ptr<SignalNoiseKnob>		clipKnob;	// soft clip %
 	std::unique_ptr<SignalNoiseSwitchButton> modeSwitch;
 	std::unique_ptr<SignalNoiseSwitchButton> hponSwitch;
 
@@ -85,6 +86,10 @@ private:
 //	CTextEdit*				_txtg;	// gain text
 //	CTextEdit*				_txtc;	// ceil text
 	int						_open;
+
+	virtual std::unique_ptr<SignalNoiseKnobPrecise> setupKnobPrecise(const ParamDesc&, juce::LookAndFeel*);
+	virtual std::unique_ptr<SignalNoiseKnob> setupKnob(const ParamDesc&, juce::LookAndFeel*);
+
 public:
 	SignalNoiseLimiterGUI(SignalNoiseLimiter&);
 	virtual ~SignalNoiseLimiterGUI();

@@ -122,52 +122,15 @@ SignalNoiseLimiterGUI::SignalNoiseLimiterGUI(SignalNoiseLimiter& p)
 	largeLNF.setImage(knobLargeImage);
 	normalLNF.setImage(knobNormalImage);
 
+	gainKnob = setupKnobPrecise(gParams[SNE_GAIN], &largeLNF);
+	ceilKnob = setupKnobPrecise(gParams[SNE_CEIL], &largeLNF);
+	hpfcKnob = setupKnob(gParams[SNE_HPFC], &normalLNF);
+	atkhKnob = setupKnob(gParams[SNE_ATKH], &normalLNF);
+	relhKnob = setupKnob(gParams[SNE_RELH], &normalLNF);
+	relsKnob = setupKnob(gParams[SNE_RELS], &normalLNF);
+	clipKnob = setupKnob(gParams[SNE_CLIP], &normalLNF);
+
 	auto& params = processor.getParameters();
-
-	gainKnob = std::make_unique<SignalNoiseKnobPrecise>(0);
-	gainKnob->setLookAndFeel(&largeLNF);
-	gainKnob->attachToParameter(params, gParams[SNE_GAIN].id);
-	addAndMakeVisible(*gainKnob);
-
-	ceilKnob = std::make_unique<SignalNoiseKnobPrecise>(0);
-	ceilKnob->setLookAndFeel(&largeLNF);
-	ceilKnob->attachToParameter(params, gParams[SNE_CEIL].id);
-	addAndMakeVisible(*ceilKnob);
-
-	addAndMakeVisible (hpfcKnob);
-	hpfcKnob.setSliderStyle (juce::Slider::RotaryHorizontalVerticalDrag);
-	hpfcKnob.setTextBoxStyle (juce::Slider::NoTextBox, false, 0, 0);
-	hpfcKnob.setLookAndFeel(&normalLNF);
-	hpfcAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
-		params, gParams[SNE_HPFC].id, hpfcKnob);
-
-	addAndMakeVisible (atkhKnob);
-	atkhKnob.setSliderStyle (juce::Slider::RotaryHorizontalVerticalDrag);
-	atkhKnob.setTextBoxStyle (juce::Slider::NoTextBox, false, 0, 0);
-	atkhKnob.setLookAndFeel(&normalLNF);
-	atkhAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
-		params, gParams[SNE_ATKH].id, atkhKnob);
-
-	addAndMakeVisible (relhKnob);
-	relhKnob.setSliderStyle (juce::Slider::RotaryHorizontalVerticalDrag);
-	relhKnob.setTextBoxStyle (juce::Slider::NoTextBox, false, 0, 0);
-	relhKnob.setLookAndFeel(&normalLNF);
-	relhAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
-		params, gParams[SNE_RELH].id, relhKnob);
-
-	addAndMakeVisible (relsKnob);
-	relsKnob.setSliderStyle (juce::Slider::RotaryHorizontalVerticalDrag);
-	relsKnob.setTextBoxStyle (juce::Slider::NoTextBox, false, 0, 0);
-	relsKnob.setLookAndFeel(&normalLNF);
-	relsAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
-		params, gParams[SNE_RELS].id, relsKnob);
-
-	addAndMakeVisible (clipKnob);
-	clipKnob.setSliderStyle (juce::Slider::RotaryHorizontalVerticalDrag);
-	clipKnob.setTextBoxStyle (juce::Slider::NoTextBox, false, 0, 0);
-	clipKnob.setLookAndFeel(&normalLNF);
-	clipAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
-		params, gParams[SNE_CLIP].id, clipKnob);
 
 	modeSwitch = std::make_unique<SignalNoiseSwitchButton>("modeSwitch", switchImage);
 	addAndMakeVisible(*modeSwitch);
@@ -189,6 +152,36 @@ SignalNoiseLimiterGUI::SignalNoiseLimiterGUI(SignalNoiseLimiter& p)
 	startTimerHz(30); // GUI refresh rate
 }
 
+std::unique_ptr<SignalNoiseKnobPrecise> SignalNoiseLimiterGUI::setupKnobPrecise(
+	const ParamDesc& p,
+	juce::LookAndFeel* lnF)
+{
+	auto& params = processor.getParameters();
+
+	auto knob = std::make_unique<SignalNoiseKnobPrecise>(p.defaultValue);
+
+	knob->setLookAndFeel(lnF);
+	knob->attachToParameter(params, p.id);
+	addAndMakeVisible (*knob);
+
+	return knob;
+}
+
+std::unique_ptr<SignalNoiseKnob> SignalNoiseLimiterGUI::setupKnob(
+	const ParamDesc& p,
+	juce::LookAndFeel* lnF)
+{
+	auto& params = processor.getParameters();
+
+	auto knob = std::make_unique<SignalNoiseKnob>(p.defaultValue);
+
+	knob->setLookAndFeel(lnF);
+	knob->attachToParameter(params, p.id);
+	addAndMakeVisible (*knob);
+
+	return knob;
+}
+
 //------------------------------------------------------------------------------------
 
 SignalNoiseLimiterGUI::~SignalNoiseLimiterGUI()
@@ -203,11 +196,11 @@ void SignalNoiseLimiterGUI::resized()
 	gainKnob->setBounds (30, 35, 80, 80);  // Gain
 	ceilKnob->setBounds (400, 35, 80, 80); // Ceiling
 
-	hpfcKnob.setBounds (155, 20, 40, 40); // HPF frequency
-	atkhKnob.setBounds (235, 20, 40, 40); // Attack (H)
-	relhKnob.setBounds (315, 20, 40, 40); // Release (H)
-	clipKnob.setBounds (155, 93, 40, 40); // Soft clip %
-	relsKnob.setBounds (315, 93, 40, 40); // Release (S)
+	hpfcKnob->setBounds (155, 20, 40, 40); // HPF frequency
+	atkhKnob->setBounds (235, 20, 40, 40); // Attack (H)
+	relhKnob->setBounds (315, 20, 40, 40); // Release (H)
+	clipKnob->setBounds (155, 93, 40, 40); // Soft clip %
+	relsKnob->setBounds (315, 93, 40, 40); // Release (S)
 
 	hponSwitch->setBounds(121, 8, 28, 28);
 	modeSwitch->setBounds(235, 93, 40, 40);

@@ -3,6 +3,7 @@ add_library(SN STATIC
 	SignalNoiseFX.cpp
     SignalNoiseKnobLookAndFeel.cpp
     SignalNoiseKnobPrecise.cpp
+    SignalNoiseKnob.cpp
     SignalNoisePeakMeter.cpp
     SignalNoiseKnobLabel.cpp
 )
