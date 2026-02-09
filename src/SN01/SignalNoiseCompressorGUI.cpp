@@ -20,13 +20,12 @@
 SignalNoiseCompressorGUI::SignalNoiseCompressorGUI(SignalNoiseCompressor& p)
 	: AudioProcessorEditor(&p), processor(p)
 {
-	// Load background image
+	// Load images
 	background = juce::ImageCache::getFromMemory(
 		BinaryData::sn01g_bk_png,
 		BinaryData::sn01g_bk_pngSize
 	);
 
-	// Knobs
 	juce::Image knobLargeImage = juce::ImageCache::getFromMemory(
 		BinaryData::sn01g_b1_png,
 		BinaryData::sn01g_b1_pngSize
@@ -42,10 +41,17 @@ SignalNoiseCompressorGUI::SignalNoiseCompressorGUI(SignalNoiseCompressor& p)
 		BinaryData::sn01g_b3_pngSize
 	);
 
+	juce::Image switchImage = juce::ImageCache::getFromMemory(
+		BinaryData::sn01g_s3_png,
+		BinaryData::sn01g_s3_pngSize
+	);
+
 	jassert(!knobLargeImage.isNull());
 	jassert(!knobNormalImage.isNull());
 	jassert(!knobScrewImage.isNull());
+	jassert(!switchImage.isNull());
 
+	// Knobs
 	largeLNF.setImage(knobLargeImage);
 	normalLNF.setImage(knobNormalImage);
 	screwLNF.setImage(knobScrewImage);
@@ -60,8 +66,11 @@ SignalNoiseCompressorGUI::SignalNoiseCompressorGUI(SignalNoiseCompressor& p)
 	kneeKnob = setupKnob(gParams[SNE_KNEE], &normalLNF); // knee strength
 	compKnob = setupKnob(gParams[SNE_COMP], &screwLNF); // dry/wet
 
-//	hpfcAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
-//		params, gParams[SNE_HPFC].id, hpfcKnob);
+	auto& params = processor.getParameters();
+
+	fbckSwitch = std::make_unique<SignalNoiseSwitchButton>("fbckSwitch", switchImage);
+	fbckSwitch->attachToParameter(params, gParams[SNE_FBCK].id);
+	addAndMakeVisible(*fbckSwitch);
 
 	// Set initial size based on background
 	setSize(background.getWidth(), background.getHeight());
@@ -133,7 +142,6 @@ void SignalNoiseCompressorGUI::resized()
 	frm->addView(_grdb);
 
 	// switches --------------------------------------------
-
 	x = SN01_MODES_X;
 	rc(x, SN01_MODES_Y, x + SN01_MODES_SZ, SN01_MODES_Y + SN01_MODES_SZ);
 	_mode = new CHorizontalSwitch(rc, this, SNE_MODE, 3, SN01_MODES_SZ, 3, modes, pt);
@@ -146,13 +154,8 @@ void SignalNoiseCompressorGUI::resized()
 	_push->setValue(effect->getParameter(SNE_PUSH));
 	frm->addView(_push);
 
-	// on/off buttons --------------------------------------
-
-	rc(25, 90, 65, 130);
-	_fbck = new COnOffButton(rc, this, SNE_FBCK, onoff);
-	_fbck->setValue(effect->getParameter(SNE_FBCK));
-	frm->addView(_fbck);
 */
+	fbckSwitch->setBounds(25, 90, 40, 40);
 }
 
 //------------------------------------------------------------------------------------

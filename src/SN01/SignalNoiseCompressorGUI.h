@@ -70,7 +70,7 @@ private:
 	std::unique_ptr<SignalNoiseKnob>		kwdtKnob;		// knee width
 	std::unique_ptr<SignalNoiseKnob>		kneeKnob;		// knee strength
 	std::unique_ptr<SignalNoiseKnob>		compKnob;		// dry amount
-//	COnOffButton*	fbckSwitch;	// FF/FB switch
+	std::unique_ptr<SignalNoiseSwitchButton> fbckSwitch;	// FF/FB switch
 
 	std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> thrsAttachment;
 	std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> funcAttachment;
