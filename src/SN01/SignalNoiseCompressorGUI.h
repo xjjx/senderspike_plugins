@@ -16,6 +16,7 @@
 #include "SignalNoiseKnob.h"
 #include "SignalNoiseCompressor.h"
 #include "SignalNoiseSwitchButton.h"
+#include "SwitchLookAndFeel.h"
 
 //------------------------------------------------------------------------------------
 // const
@@ -61,6 +62,7 @@ private:
 	SignalNoiseKnobLookAndFeel largeLNF;
 	SignalNoiseKnobLookAndFeel normalLNF;
 	SignalNoiseKnobLookAndFeel screwLNF;
+	SwitchLookAndFeel switchLNF;
 
 	std::unique_ptr<SignalNoiseKnobPrecise>	thrsKnob;		// threshold
 	std::unique_ptr<SignalNoiseKnob>		funcKnob;		// ratio
@@ -82,8 +84,11 @@ private:
 	std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> compAttachment;
 
 //	SignalNoiseGR*		_grdb;	// GR meter
-//	CHorizontalSwitch*	_mode;	// mode [flat, A, B]
+	juce::Slider	pushSlider; // mode [flat, A, B]
 //	CHorizontalSwitch*	_push;	// 'thrust' [0, +9, +18]
+
+	std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> pushAttachment;
+
 	int				_open;
 
 	virtual std::unique_ptr<SignalNoiseKnobPrecise> setupKnobPrecise(const ParamDesc&, juce::LookAndFeel*);

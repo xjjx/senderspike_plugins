@@ -41,7 +41,12 @@ SignalNoiseCompressorGUI::SignalNoiseCompressorGUI(SignalNoiseCompressor& p)
 		BinaryData::sn01g_b3_pngSize
 	);
 
-	juce::Image switchImage = juce::ImageCache::getFromMemory(
+	juce::Image switch1Image = juce::ImageCache::getFromMemory(
+		BinaryData::sn01g_s1_png,
+		BinaryData::sn01g_s1_pngSize
+	);
+
+	juce::Image switch3Image = juce::ImageCache::getFromMemory(
 		BinaryData::sn01g_s3_png,
 		BinaryData::sn01g_s3_pngSize
 	);
@@ -49,7 +54,8 @@ SignalNoiseCompressorGUI::SignalNoiseCompressorGUI(SignalNoiseCompressor& p)
 	jassert(!knobLargeImage.isNull());
 	jassert(!knobNormalImage.isNull());
 	jassert(!knobScrewImage.isNull());
-	jassert(!switchImage.isNull());
+	jassert(!switch1Image.isNull());
+	jassert(!switch3Image.isNull());
 
 	// Knobs
 	largeLNF.setImage(knobLargeImage);
@@ -68,9 +74,27 @@ SignalNoiseCompressorGUI::SignalNoiseCompressorGUI(SignalNoiseCompressor& p)
 
 	auto& params = processor.getParameters();
 
-	fbckSwitch = std::make_unique<SignalNoiseSwitchButton>("fbckSwitch", switchImage);
+	fbckSwitch = std::make_unique<SignalNoiseSwitchButton>("fbckSwitch", switch3Image);
 	fbckSwitch->attachToParameter(params, gParams[SNE_FBCK].id);
 	addAndMakeVisible(*fbckSwitch);
+
+	// Mode switch
+	switchLNF.setImage(switch1Image);
+
+	pushSlider.setSliderStyle (juce::Slider::LinearHorizontal); // or LinearHorizontal
+	pushSlider.setTextBoxStyle (juce::Slider::NoTextBox, false, 0, 0);
+
+	pushSlider.setRange (0, 2, 1);
+//	pushSlider.setSnapsToMousePosition (false);
+	pushSlider.setDoubleClickReturnValue (false, 0);
+	pushSlider.setVelocityBasedMode (false);
+	pushSlider.setMouseDragSensitivity (1000);
+	pushSlider.setLookAndFeel (&switchLNF);
+	addAndMakeVisible(pushSlider);
+
+	pushAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
+		params, gParams[SNE_PUSH].id, pushSlider
+	);
 
 	// Set initial size based on background
 	setSize(background.getWidth(), background.getHeight());
@@ -113,7 +137,7 @@ std::unique_ptr<SignalNoiseKnob> SignalNoiseCompressorGUI::setupKnob(
 
 SignalNoiseCompressorGUI::~SignalNoiseCompressorGUI()
 {
-	// empty
+	pushSlider.setLookAndFeel (nullptr);
 }
 
 //------------------------------------------------------------------------------------
@@ -140,14 +164,11 @@ void SignalNoiseCompressorGUI::resized()
 	rc(SN01_NEEDL_X, SN01_NEEDL_Y, SN01_NEEDL_W, SN01_NEEDL_H);
 	_grdb = new SignalNoiseGR(rc, needl, SN01_NEEDL_FRAMES, effect->getSampleRate());
 	frm->addView(_grdb);
-
+*/
 	// switches --------------------------------------------
-	x = SN01_MODES_X;
-	rc(x, SN01_MODES_Y, x + SN01_MODES_SZ, SN01_MODES_Y + SN01_MODES_SZ);
-	_mode = new CHorizontalSwitch(rc, this, SNE_MODE, 3, SN01_MODES_SZ, 3, modes, pt);
-	_mode->setValue(effect->getParameter(SNE_MODE));
-	frm->addView(_mode);
+	pushSlider.setBounds(698, 150, 45, 45);
 
+/*
 	x += SN01_MODES_OFFSET;
 	rc(x, SN01_MODES_Y, x + SN01_MODES_SZ, SN01_MODES_Y + SN01_MODES_SZ);
 	_push = new CHorizontalSwitch(rc, this, SNE_PUSH, 3, SN01_MODES_SZ, 3, modes, pt);
