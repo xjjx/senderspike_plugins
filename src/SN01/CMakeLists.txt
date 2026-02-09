@@ -16,12 +16,16 @@ juce_add_plugin(SN01
 	LV2URI "urn:signalsnoise:sn01"
 )
 
-#juce_add_binary_data(SN01_BinaryData
-#    SOURCES
-#        ../graphics/sn06g/sn06g_bk.png
-#        ../graphics/sn06g/sn06g_b1.png
-#        ../graphics/sn01g/sn01g_b1.png
-#)
+juce_add_binary_data(SN01_BinaryData
+    SOURCES
+        ../graphics/sn01g/sn01g_bk.png # background
+        ../graphics/sn01g/sn01g_b1.png
+        ../graphics/sn01g/sn01g_b2.png
+        ../graphics/sn01g/sn01g_b3.png
+#        ../graphics/sn01g/sn01g_gr.png
+        ../graphics/sn01g/sn01g_s1.png
+        ../graphics/sn01g/sn01g_s3.png
+)
 
 #target_link_libraries(SN01 PRIVATE SN01_BinaryData)
 
