@@ -9,13 +9,13 @@
 //------------------------------------------------------------------------------------
 
 
-#include <sn_03e.h>
-#include <sn_03g.h>
 #include <stdio.h>
-
+#include <juce_audio_processors/juce_audio_processors.h>
+#include "SignalNoiseTapedeckGUI.h"
+#include "BinaryData.h"
 
 //------------------------------------------------------------------------------------
-
+/*
 static void snFormatValueGain(float val, char* str)
 {
 	sprintf(str, "%2.2f", val * 48 - 24);
@@ -41,43 +41,84 @@ static CTextEdit* snCreateTextEdit(CCoord x, CCoord y, CControlListener* cl, lon
 	
 	return tx;
 }
+*/
 
 //------------------------------------------------------------------------------------
 // tape deck editor
 //------------------------------------------------------------------------------------
 
-SignalNoiseTapedeckGUI::SignalNoiseTapedeckGUI(AudioEffect* fx) : AEffGUIEditor(fx) 
+SignalNoiseTapedeckGUI::SignalNoiseTapedeckGUI(SignalNoiseTapedeck& p)
+: AudioProcessorEditor(&p), processor(p)
 {
-	_trim = 0;
-	_gain = 0;
-	_rclo = 0;
-	_rchi = 0;
-	_rplo = 0;
-	_rphi = 0;
-	_head = 0;
-	_bump = 0;
-	_hiss = 0;
-	_mode = 0;
-	_room = 0;
-	_hold = 0;
-	_path = 0;
-	_nois = 0;
-	_hbon = 0;
-	_loon = 0;
-	_attn = 0;
-	_vumt = 0;
-	_txti = 0;
-	_txto = 0;
-	_open = 0;
+	// Load images
+	background = juce::ImageCache::getFromMemory(
+		BinaryData::sn03g_bk_png,
+		BinaryData::sn03g_bk_pngSize
+	);
 
-	//init the size of the plugin
-	CBitmap* bk	= new CBitmap(101);
-	rect.left   = 0;
-	rect.top    = 0;
-	rect.right  = (short)bk->getWidth();
-	rect.bottom = (short)bk->getHeight();
-	bk->forget();
+	juce::Image knobLargeImage = juce::ImageCache::getFromMemory(
+		BinaryData::sn01g_b1_png,
+		BinaryData::sn01g_b1_pngSize
+	);
+
+	juce::Image knobNormalImage = juce::ImageCache::getFromMemory(
+		BinaryData::sn01g_b2_png,
+		BinaryData::sn01g_b2_pngSize
+	);
+
+	jassert(!knobLargeImage.isNull());
+	jassert(!knobNormalImage.isNull());
+
+	// Knobs
+	largeLNF.setImage(knobLargeImage);
+	normalLNF.setImage(knobNormalImage);
+
+	trimKnob = setupKnobPrecise(gParams[SNE_TRIM], &largeLNF);	// input trim
+	gainKnob = setupKnobPrecise(gParams[SNE_GAIN], &largeLNF);	// output gain
+	rcloKnob = setupKnob(gParams[SNE_RCLO], &normalLNF);		// rec lo
+	rchiKnob = setupKnob(gParams[SNE_RCHI], &normalLNF);		// rec hi
+	rploKnob = setupKnob(gParams[SNE_RPLO], &normalLNF);		// rep lo
+	rphiKnob = setupKnob(gParams[SNE_RPHI], &normalLNF);		// rep hi
+	headKnob = setupKnob(gParams[SNE_HEAD], &normalLNF);		// head Hz
+	bumpKnob = setupKnob(gParams[SNE_BUMP], &normalLNF);		// head dB
+	hissKnob = setupKnob(gParams[SNE_HISS], &normalLNF);		// hiss dB
+
+	// Set initial size based on background
+	setSize(background.getWidth(), background.getHeight());
+
+	startTimerHz(30); // GUI refresh rate
 }
+
+std::unique_ptr<SignalNoiseKnobPrecise> SignalNoiseTapedeckGUI::setupKnobPrecise(
+	const ParamDesc& p,
+	juce::LookAndFeel* lnF)
+{
+	auto& params = processor.getParameters();
+
+	auto knob = std::make_unique<SignalNoiseKnobPrecise>(p.defaultValue);
+
+	knob->setLookAndFeel(lnF);
+	knob->attachToParameter(params, p.id);
+	addAndMakeVisible (*knob);
+
+	return knob;
+}
+
+std::unique_ptr<SignalNoiseKnob> SignalNoiseTapedeckGUI::setupKnob(
+	const ParamDesc& p,
+	juce::LookAndFeel* lnF)
+{
+	auto& params = processor.getParameters();
+
+	auto knob = std::make_unique<SignalNoiseKnob>(p.defaultValue);
+
+	knob->setLookAndFeel(lnF);
+	knob->attachToParameter(params, p.id);
+	addAndMakeVisible (*knob);
+
+	return knob;
+}
+
 
 //------------------------------------------------------------------------------------
 
@@ -88,50 +129,22 @@ SignalNoiseTapedeckGUI::~SignalNoiseTapedeckGUI()
 
 //------------------------------------------------------------------------------------
 
-bool SignalNoiseTapedeckGUI::open(void *ptr)
+void SignalNoiseTapedeckGUI::resized()
 {
-	// always call this first !!!
-	AEffGUIEditor::open(ptr);
+	// Knob 1 (large knobs: 80x80)
+	trimKnob->setBounds(30, 67, 80, 80);
+	gainKnob->setBounds(410, 67, 80, 80);
 
-	// initialize ------------------------------------------
+	// Knob 2 (small knobs: 60x60)
+	rcloKnob->setBounds(30, 220, 60, 60);
+	rchiKnob->setBounds(140, 220, 60, 60);
+	rploKnob->setBounds(320, 220, 60, 60);
+	rphiKnob->setBounds(430, 220, 60, 60);
+	headKnob->setBounds(30, 330, 60, 60);
+	bumpKnob->setBounds(140, 330, 60, 60);
+	hissKnob->setBounds(430, 330, 60, 60);
 
-	CCoord x, y;
-	CPoint pt(0, 0);
-	CBitmap* backg = new CBitmap(101);	// background
-	CBitmap* knob1 = new CBitmap(102);	// large knob
-	CBitmap* knob2 = new CBitmap(103);	// small knob
-	CBitmap* modes = new CBitmap(104);	// switch
-	CBitmap* vublk = new CBitmap(105);	// VU needle
-	CBitmap* vured = new CBitmap(106);	// peak needle
-	CBitmap* peakl = new CBitmap(107);	// peak led
-	CBitmap* displ = new CBitmap(108);	// headroom display
-	CBitmap* slide = new CBitmap(109);	// on/off slider
-	CBitmap* three = new CBitmap(110);	// 3-way switch
-	CBitmap* buttn = new CBitmap(111);	// "A" button
-
-	setKnobMode(kLinearMode);
-
-	// frame -----------------------------------------------
-
-	CRect rc(0, 0, backg->getWidth(), backg->getHeight());
-	CFrame* frm = new CFrame(rc, ptr, this);
-	frm->setBackground(backg);
-
-	// big knobs -------------------------------------------
-
-	x = 30;
-	y = 67;
-	rc(x, y, x + SN03_KNOB1_W, y + SN03_KNOB1_W);
-	_trim = new SignalNoiseKnobP(rc, this, SNE_TRIM, SN03_KNOB1_FRAMES, SN03_KNOB1_W, knob1, pt);
-	_trim->setValue(effect->getParameter(SNE_TRIM));
-	frm->addView(_trim);
-
-	x = 410;
-	rc(x, y, x + SN03_KNOB1_W, y + SN03_KNOB1_W);
-	_gain = new SignalNoiseKnobP(rc, this, SNE_GAIN, SN03_KNOB1_FRAMES, SN03_KNOB1_W, knob1, pt);
-	_gain->setValue(effect->getParameter(SNE_GAIN));
-	frm->addView(_gain);
-
+/*
 	// text edits ------------------------------------------
 
 	x = 110;
@@ -144,55 +157,10 @@ bool SignalNoiseTapedeckGUI::open(void *ptr)
 	_txto = snCreateTextEdit(x, y, this, IDC_TX_GAIN);
 	_txto->setValue(effect->getParameter(SNE_GAIN));
 	frm->addView(_txto);
-
-	// small knobs -----------------------------------------
-
-	x = 30;
-	y = 220;
-	rc(x, y, x + SN03_KNOB2_W, y + SN03_KNOB2_W);
-	_rclo = new SignalNoiseKnob(rc, this, SNE_RCLO, SN03_KNOB2_FRAMES, SN03_KNOB2_W, knob2, pt);
-	_rclo->setValue(effect->getParameter(SNE_RCLO));
-	frm->addView(_rclo);
-
-	x = 140;
-	rc(x, y, x + SN03_KNOB2_W, y + SN03_KNOB2_W);
-	_rchi = new SignalNoiseKnob(rc, this, SNE_RCHI, SN03_KNOB2_FRAMES, SN03_KNOB2_W, knob2, pt);
-	_rchi->setValue(effect->getParameter(SNE_RCHI));
-	frm->addView(_rchi);
-
-	x = 320;
-	rc(x, y, x + SN03_KNOB2_W, y + SN03_KNOB2_W);
-	_rplo = new SignalNoiseKnob(rc, this, SNE_RPLO, SN03_KNOB2_FRAMES, SN03_KNOB2_W, knob2, pt);
-	_rplo->setValue(effect->getParameter(SNE_RPLO));
-	frm->addView(_rplo);
-
-	x = 430;
-	rc(x, y, x + SN03_KNOB2_W, y + SN03_KNOB2_W);
-	_rphi = new SignalNoiseKnob(rc, this, SNE_RPHI, SN03_KNOB2_FRAMES, SN03_KNOB2_W, knob2, pt);
-	_rphi->setValue(effect->getParameter(SNE_RPHI));
-	frm->addView(_rphi);
-
-	x = 30;
-	y = 330;
-	rc(x, y, x + SN03_KNOB2_W, y + SN03_KNOB2_W);
-	_head = new SignalNoiseKnob(rc, this, SNE_HEAD, SN03_KNOB2_FRAMES, SN03_KNOB2_W, knob2, pt);
-	_head->setValue(effect->getParameter(SNE_HEAD));
-	frm->addView(_head);
-
-	x = 140;
-	rc(x, y, x + SN03_KNOB2_W, y + SN03_KNOB2_W);
-	_bump = new SignalNoiseKnob(rc, this, SNE_BUMP, SN03_KNOB2_FRAMES, SN03_KNOB2_W, knob2, pt);
-	_bump->setValue(effect->getParameter(SNE_BUMP));
-	frm->addView(_bump);
-
-	x = 430;
-	rc(x, y, x + SN03_KNOB2_W, y + SN03_KNOB2_W);
-	_hiss = new SignalNoiseKnob(rc, this, SNE_HISS, SN03_KNOB2_FRAMES, SN03_KNOB2_W, knob2, pt);
-	_hiss->setValue(effect->getParameter(SNE_HISS));
-	frm->addView(_hiss);
+*/
 
 	// switches --------------------------------------------
-
+/*
 	x = 240;
 	y = 230;
 	rc(x, y, x + SN03_MODES_SZ, y + SN03_MODES_SZ);
@@ -263,49 +231,6 @@ bool SignalNoiseTapedeckGUI::open(void *ptr)
 	_peak = new SignalNoisePeakLed(rc, peakl);
 	frm->addView(_peak);
 
-	// finalize --------------------------------------------
-
-	_trim->setRangePixels(480);
-	_gain->setRangePixels(480);
-	_trim->setRangeAbsolute(48);
-	_gain->setRangeAbsolute(48);
-	_trim->setLinkInversed(_gain);
-
-	_rclo->setRange(400);
-	_rchi->setRange(560);
-	_rplo->setRange(400);
-	_rphi->setRange(560);
-	_head->setRange(400);
-	_bump->setRange(400);
-	_hiss->setRange(450);
-
-	_trim->setWheelInc(0.125f);
-	_gain->setWheelInc(0.125f);
-	_rclo->setWheelInc(0.125f);
-	_rchi->setWheelInc(0.125f);
-	_rplo->setWheelInc(0.125f);
-	_rphi->setWheelInc(0.125f);
-	_head->setWheelInc(0.125f);
-	_bump->setWheelInc(0.125f);
-	_hiss->setWheelInc(0.125f);
-
-	_trim->setDefaultValue(gParam[SNE_TRIM].val);
-	_gain->setDefaultValue(gParam[SNE_GAIN].val);
-	_rclo->setDefaultValue(gParam[SNE_RCLO].val);
-	_rchi->setDefaultValue(gParam[SNE_RCHI].val);
-	_rplo->setDefaultValue(gParam[SNE_RPLO].val);
-	_rphi->setDefaultValue(gParam[SNE_RPHI].val);
-	_head->setDefaultValue(gParam[SNE_HEAD].val);
-	_bump->setDefaultValue(gParam[SNE_BUMP].val);
-	_hiss->setDefaultValue(gParam[SNE_HISS].val);
-	_mode->setDefaultValue(gParam[SNE_EQSC].val);
-	_room->setDefaultValue(gParam[SNE_ROOM].val);
-	_hold->setDefaultValue(gParam[SNE_HOLD].val);
-	_path->setDefaultValue(gParam[SNE_PATH].val);
-	_attn->setDefaultValue(gParam[SNE_ATTN].val);
-	_nois->setDefaultValue(gParam[SNE_NOIS].val);
-	_hbon->setDefaultValue(gParam[SNE_HBON].val);
-
 	if(effect->getParameter(SNE_HOLD) > 0.5)
 		_vumt->setPeakBitmap(vured);
 
@@ -314,58 +239,35 @@ bool SignalNoiseTapedeckGUI::open(void *ptr)
 	else if(rm < .50f)	_vumt->setLevel(-14);
 	else if(rm < .75f)	_vumt->setLevel(-18);
 	else				_vumt->setLevel(-20);
-
-	backg->forget();
-	knob1->forget();
-	knob2->forget();
-	modes->forget();
-	vublk->forget();
-	vured->forget();
-	peakl->forget();
-	displ->forget();
-	slide->forget();
-	three->forget();
-	buttn->forget();
-
-	frame = frm;
+*/
 
 	_open = 1;
-
-	return true;
 }
 
 //------------------------------------------------------------------------------------
 
-void SignalNoiseTapedeckGUI::close()
+void SignalNoiseTapedeckGUI::paint(juce::Graphics& g)
 {
-	_open = 0;
+	// Fill background with black if image fails
+	g.fillAll(juce::Colours::black);
 
-	delete frame; // deletes all attached views
-	frame = 0;
-	_trim = 0;
-	_gain = 0;
-	_rclo = 0;
-	_rchi = 0;
-	_rplo = 0;
-	_rphi = 0;
-	_head = 0;
-	_bump = 0;
-	_hiss = 0;
-	_mode = 0;
-	_room = 0;
-	_hold = 0;
-	_path = 0;
-	_nois = 0;
-	_hbon = 0;
-	_loon = 0;
-	_attn = 0;
-	_vumt = 0;
-	_txti = 0;
-	_txto = 0;
+	if (background.isValid())
+		g.drawImage(background, getLocalBounds().toFloat(), juce::RectanglePlacement::stretchToFit);
 }
 
 //------------------------------------------------------------------------------------
 
+void SignalNoiseTapedeckGUI::timerCallback()
+{
+//	inputMeter .setLevel(processor.getInputLevel());
+///	outputMeter.setLevel(processor.getOutputLevel());
+//	peakLed.setLevel(processor.getOutputLevel());
+
+	repaint();
+}
+
+//------------------------------------------------------------------------------------
+/*
 void SignalNoiseTapedeckGUI::setParameter(VstInt32 at, float v)
 {
 	if(_open == 0)
@@ -482,3 +384,4 @@ void SignalNoiseTapedeckGUI::setupMeterUseHold(bool on)
 }
 
 //------------------------------------------------------------------------------------
+*/

@@ -16,14 +16,22 @@ juce_add_plugin(SN03
 	LV2URI "urn:signalsnoise:sn03"
 )
 
-#juce_add_binary_data(SN03_BinaryData
-#    SOURCES
-#        ../graphics/sn06g/sn06g_bk.png
-#        ../graphics/sn06g/sn06g_b1.png
-#        ../graphics/sn01g/sn01g_b1.png
-#)
+juce_add_binary_data(SN03_BinaryData
+    SOURCES
+        ../graphics/sn03g/sn03g_bk.png # background
+        ../graphics/sn01g/sn01g_b1.png # large knob
+        ../graphics/sn01g/sn01g_b2.png # small knob
+#        ../graphics/sn01g/sn01g_s1.png # switch
+#        ../graphics/sn02g/sn02g_v1.png # vu needle
+#        ../graphics/sn02g/sn02g_p1.png # peak needle
+#        ../graphics/sn02g/sn02g_l1.png # peak led
+#        ../graphics/sn03g/sn03g_b1.png # headroom switch
+#        ../graphics/sn03g/sn03g_b2.png # on/off switch
+#        ../graphics/sn03g/sn03g_s1.png # 3-way switch
+#        ../graphics/sn04g/sn04g_s3.png # "A" button
+)
 
-#target_link_libraries(SN03 PRIVATE SN03_BinaryData)
+target_link_libraries(SN03 PRIVATE SN03_BinaryData)
 
 # ----------------------
 # Add plugin source files
@@ -31,7 +39,7 @@ juce_add_plugin(SN03
 target_sources(SN03
     PRIVATE
         SignalNoiseTapedeck.cpp
-#        SignalNoiseTapedeckEditor.cpp
+        SignalNoiseTapedeckGUI.cpp
 )
 
 # ----------------------

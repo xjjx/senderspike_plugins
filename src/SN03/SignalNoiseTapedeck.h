@@ -135,7 +135,7 @@ public:
 	const juce::String getName() const override { return JucePlugin_Name; }
 
 	juce::AudioProcessorEditor* createEditor() override;
-	bool hasEditor() const override { return false; }
+	bool hasEditor() const override { return true; }
 
 	void parameterChanged(const juce::String& parameterID, float newValue) override;
 

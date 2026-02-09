@@ -11,11 +11,7 @@
 
 #include <math.h>
 #include "SignalNoiseTapedeck.h"
-//#include "SignalNoiseTapedeckEditor.h"
-
-#ifdef SN03G
-#include <sn_03g.h>
-#endif
+#include "SignalNoiseTapedeckGUI.h"
 
 //------------------------------------------------------------------------------------
 // class SignalNoiseTapedeck
@@ -237,8 +233,7 @@ void SignalNoiseTapedeck::processBlock(juce::AudioBuffer<double>& buffer, juce::
 // Editor
 juce::AudioProcessorEditor* SignalNoiseTapedeck::createEditor()
 {
-//	return new SignalNoiseOpampEditor (*this);
-	return nullptr;
+	return new SignalNoiseTapedeckGUI(*this);
 }
 
 // ----------------------

@@ -8,14 +8,15 @@
 //
 //------------------------------------------------------------------------------------
 
+#pragma once
 
-#ifndef _SN_03G_H
-#define _SN_03G_H
+#include <juce_gui_basics/juce_gui_basics.h>
+#include "SignalNoiseKnobLookAndFeel.h"
+#include "SignalNoiseKnobPrecise.h"
+#include "SignalNoiseKnob.h"
+#include "SignalNoiseTapedeck.h"
+#include "SignalNoiseSwitchButton.h"
 
-
-//------------------------------------------------------------------------------------
-
-#include <sn_ctrl.h>
 
 //------------------------------------------------------------------------------------
 //knobs
@@ -38,18 +39,30 @@
 // editor
 //------------------------------------------------------------------------------------
 
-class SignalNoiseTapedeckGUI : public AEffGUIEditor, public CControlListener
+class SignalNoiseTapedeckGUI : public juce::AudioProcessorEditor,
+                               private juce::Timer
 {
 private:
-	SignalNoiseKnobP*	_trim;	// input trim
-	SignalNoiseKnobP*	_gain;	// output gain
-	SignalNoiseKnob*	_rclo;	// rec lo
-	SignalNoiseKnob*	_rchi;	// rec hi
-	SignalNoiseKnob*	_rplo;	// rep lo
-	SignalNoiseKnob*	_rphi;	// rep hi
-	SignalNoiseKnob*	_head;	// head Hz
-	SignalNoiseKnob*	_bump;	// head dB
-	SignalNoiseKnob*	_hiss;	// hiss dB
+	SignalNoiseTapedeck& processor;
+	void timerCallback() override;
+
+	juce::Image background;
+
+	SignalNoiseKnobLookAndFeel largeLNF;
+	SignalNoiseKnobLookAndFeel normalLNF;
+
+	std::unique_ptr<SignalNoiseKnobPrecise>	trimKnob;   // input trim
+	std::unique_ptr<SignalNoiseKnobPrecise>	gainKnob;   // output gain
+	std::unique_ptr<SignalNoiseKnob>		rcloKnob;   // rec lo
+	std::unique_ptr<SignalNoiseKnob>		rchiKnob;   // rec hi
+	std::unique_ptr<SignalNoiseKnob>		rploKnob;   // rep lo
+	std::unique_ptr<SignalNoiseKnob>		rphiKnob;   // rep hi
+	std::unique_ptr<SignalNoiseKnob>		headKnob;   // head Hz
+	std::unique_ptr<SignalNoiseKnob>		bumpKnob;   // head dB
+	std::unique_ptr<SignalNoiseKnob>		hissKnob;   // hiss dB
+
+
+/*
 	CHorizontalSwitch*	_mode;	// EQ mode [NAB, IEC, AES]
 	CHorizontalSwitch*	_room;	// 12, 14, 18, 20
 	CHorizontalSwitch*	_hold;	// use peak hold
@@ -62,24 +75,25 @@ private:
 	SignalNoisePeakLed*	_peak;	// sample peak led
 	CTextEdit*			_txti;	// text input
 	CTextEdit*			_txto;	// text output
+*/
 	int					_open;
+
+	virtual std::unique_ptr<SignalNoiseKnobPrecise> setupKnobPrecise(const ParamDesc&, juce::LookAndFeel*);
+	virtual std::unique_ptr<SignalNoiseKnob> setupKnob(const ParamDesc&, juce::LookAndFeel*);
 public:
 //create & destroy
-	SignalNoiseTapedeckGUI(AudioEffect* effect);
+	SignalNoiseTapedeckGUI(SignalNoiseTapedeck&);
 	virtual ~SignalNoiseTapedeckGUI();
+
+	void paint (juce::Graphics&) override;
+	void resized() override;
+
 //runtime - from SDK
-	virtual bool open(void* ptr);
-	virtual void close();
-	virtual void setParameter(VstInt32 at, float v);
-	virtual void valueChanged(CDrawContext* ctx, CControl* ctrl);
+//	virtual void setParameter(VstInt32 at, float v);
+//	virtual void valueChanged(CDrawContext* ctx, CControl* ctrl);
 //runtime - custom
-	void trackMeter(double A);
-	void setupMeterLevel(double nl);
-	void setupMeterFilter(double fs);
-	void setupMeterUseHold(bool on);
+//	void trackMeter(double A);
+//	void setupMeterLevel(double nl);
+//	void setupMeterFilter(double fs);
+//	void setupMeterUseHold(bool on);
 };
-
-//------------------------------------------------------------------------------------
-
-
-#endif // _SN_03G_H
