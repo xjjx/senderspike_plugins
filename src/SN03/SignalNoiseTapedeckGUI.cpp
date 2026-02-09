@@ -66,8 +66,20 @@ SignalNoiseTapedeckGUI::SignalNoiseTapedeckGUI(SignalNoiseTapedeck& p)
 		BinaryData::sn01g_b2_pngSize
 	);
 
+	juce::Image switchImage = juce::ImageCache::getFromMemory(
+		BinaryData::sn03g_b2_png,
+		BinaryData::sn03g_b2_pngSize
+	);
+
+	juce::Image loonImage = juce::ImageCache::getFromMemory(
+		BinaryData::sn04g_s3_png,
+		BinaryData::sn04g_s3_pngSize
+	);
+
 	jassert(!knobLargeImage.isNull());
 	jassert(!knobNormalImage.isNull());
+	jassert(!switchImage.isNull());
+	jassert(!loonImage.isNull());
 
 	// Knobs
 	largeLNF.setImage(knobLargeImage);
@@ -82,6 +94,25 @@ SignalNoiseTapedeckGUI::SignalNoiseTapedeckGUI(SignalNoiseTapedeck& p)
 	headKnob = setupKnob(gParams[SNE_HEAD], &normalLNF);		// head Hz
 	bumpKnob = setupKnob(gParams[SNE_BUMP], &normalLNF);		// head dB
 	hissKnob = setupKnob(gParams[SNE_HISS], &normalLNF);		// hiss dB
+
+	// Switches
+	auto& params = processor.getParameters();
+
+	pathSwitch = std::make_unique<SignalNoiseSwitchButton>("pathSwitch", switchImage); // VU I/O switch
+//	pathSwitch->attachToParameter(params, gParams[SNE_MODE].id);
+	addAndMakeVisible(*pathSwitch);
+
+	hbonSwitch = std::make_unique<SignalNoiseSwitchButton>("hbonSwitch", switchImage); // bump on/off
+	hbonSwitch->attachToParameter(params, gParams[SNE_HBON].id);
+	addAndMakeVisible(*hbonSwitch);
+
+	noisSwitch = std::make_unique<SignalNoiseSwitchButton>("noisSwitch", switchImage); // noise on/off
+	noisSwitch->attachToParameter(params, gParams[SNE_NOIS].id);
+	addAndMakeVisible(*noisSwitch);
+
+	loonSwitch = std::make_unique<SignalNoiseSwitchButton>("loonSwitch", loonImage); // force LO on
+//	loonSwitch->attachToParameter(params, gParams[SNE_LOON].id);
+	addAndMakeVisible(*loonSwitch);
 
 	// Set initial size based on background
 	setSize(background.getWidth(), background.getHeight());
@@ -160,6 +191,9 @@ void SignalNoiseTapedeckGUI::resized()
 */
 
 	// switches --------------------------------------------
+	hbonSwitch->setBounds(94, 401, 40, 30);
+	noisSwitch->setBounds(440, 401, 40, 30);
+	loonSwitch->setBounds(386, 188, 40, 30);
 /*
 	x = 240;
 	y = 230;
@@ -174,29 +208,11 @@ void SignalNoiseTapedeckGUI::resized()
 	_attn = new CVerticalSwitch(rc, this, SNE_ATTN, 3, 84, 3, three, pt);
 	_attn->setValue(effect->getParameter(SNE_ATTN));
 	frm->addView(_attn);
-
-	x = 94;
-	y = 401;
-	rc(x, y, x + 40, y + 30);
-	_hbon = new CHorizontalSwitch(rc, this, SNE_HBON, 2, 30, 2, slide, pt);
-	_hbon->setValue(effect->getParameter(SNE_HBON));
-	frm->addView(_hbon);
-
-	x = 440;
-	rc(x, y, x + 40, y + 30);
-	_nois = new CHorizontalSwitch(rc, this, SNE_NOIS, 2, 30, 2, slide, pt);
-	_nois->setValue(effect->getParameter(SNE_NOIS));
-	frm->addView(_nois);
-
-	x = 386;
-	y = 188;
-	rc(x, y, x + 40, y + 30);
-	_loon = new COnOffButton(rc, this, SNE_LOON, buttn);
-	_loon->setValue(effect->getParameter(SNE_LOON));
-	frm->addView(_loon);
-
+*/
 	// VU switches -----------------------------------------
+	pathSwitch->setBounds(320, 0, 40, 30);
 
+/*
 	x = 160;
 	rc(x, 5, x + 40, 35);
 	_room = new CHorizontalSwitch(rc, this, SNE_ROOM, 4, 30, 4, displ, pt);
@@ -208,12 +224,6 @@ void SignalNoiseTapedeckGUI::resized()
 	_hold = new CHorizontalSwitch(rc, this, SNE_HOLD, 2, 30, 2, slide, pt);
 	_hold->setValue(effect->getParameter(SNE_HOLD));
 	frm->addView(_hold);
-
-	x = 320;
-	rc(x, 0, x + 40, 30);
-	_path = new CHorizontalSwitch(rc, this, SNE_PATH, 2, 30, 2, slide, pt);
-	_path->setValue(effect->getParameter(SNE_PATH));
-	frm->addView(_path);
 
 	// VU meter --------------------------------------------
 

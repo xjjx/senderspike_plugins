@@ -62,15 +62,16 @@ private:
 	std::unique_ptr<SignalNoiseKnob>		hissKnob;   // hiss dB
 
 
+	std::unique_ptr<SignalNoiseSwitchButton>	pathSwitch;	// VU I/O switch
+	std::unique_ptr<SignalNoiseSwitchButton>	hbonSwitch;	// bump on/off
+	std::unique_ptr<SignalNoiseSwitchButton>	noisSwitch;	// noise on/off
+	std::unique_ptr<SignalNoiseSwitchButton>	loonSwitch;	// force LO on
+
 /*
 	CHorizontalSwitch*	_mode;	// EQ mode [NAB, IEC, AES]
 	CHorizontalSwitch*	_room;	// 12, 14, 18, 20
 	CHorizontalSwitch*	_hold;	// use peak hold
-	CHorizontalSwitch*	_path;	// VU I/O switch
 	CVerticalSwitch*	_attn;	// bump attenuator [0,-1,-2]
-	CHorizontalSwitch*	_nois;	// noise on/off
-	CHorizontalSwitch*	_hbon;	// bump on/off
-	COnOffButton*		_loon;	// force LO on
 	SignalNoiseVU*		_vumt;	// VU meter
 	SignalNoisePeakLed*	_peak;	// sample peak led
 	CTextEdit*			_txti;	// text input
