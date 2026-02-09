@@ -27,7 +27,7 @@ juce_add_binary_data(SN01_BinaryData
         ../graphics/sn01g/sn01g_s3.png
 )
 
-#target_link_libraries(SN01 PRIVATE SN01_BinaryData)
+target_link_libraries(SN01 PRIVATE SN01_BinaryData)
 
 # ----------------------
 # Add plugin source files
@@ -35,7 +35,7 @@ juce_add_binary_data(SN01_BinaryData
 target_sources(SN01
     PRIVATE
         SignalNoiseCompressor.cpp
-#        SignalNoiseCompressorEditor.cpp
+        SignalNoiseCompressorGUI.cpp
 )
 
 # ----------------------

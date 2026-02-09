@@ -120,6 +120,7 @@ public:
 	void parameterChanged(const juce::String& parameterID, float newValue) override;
 
 	juce::AudioProcessorEditor* createEditor() override;
+	bool hasEditor() const override { return true; }
 
 //	float getInputLevel()  const noexcept { return inputLevel.load(); }
 //	float getOutputLevel() const noexcept { return outputLevel.load(); }

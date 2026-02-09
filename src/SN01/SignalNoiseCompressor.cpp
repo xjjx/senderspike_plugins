@@ -11,7 +11,7 @@
 
 #include <math.h>
 #include "SignalNoiseCompressor.h"
-//#include "SignalNoiseCompressorEditor.h"
+#include "SignalNoiseCompressorGUI.h"
 
 //------------------------------------------------------------------------------------
 // class SignalNoiseCompressor
@@ -229,8 +229,7 @@ void SignalNoiseCompressor::processBlock(juce::AudioBuffer<double>& buffer, juce
 // Editor
 juce::AudioProcessorEditor* SignalNoiseCompressor::createEditor()
 {
-//	return new SignalNoiseOpampEditor (*this);
-	return nullptr;
+	return new SignalNoiseCompressorGUI (*this);
 }
 
 // ----------------------

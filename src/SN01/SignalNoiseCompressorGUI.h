@@ -8,14 +8,14 @@
 //
 //------------------------------------------------------------------------------------
 
+# pragma once
 
-#ifndef _SN_01G_H
-#define _SN_01G_H
-
-
-//------------------------------------------------------------------------------------
-
-#include <sn_ctrl.h>
+#include <juce_gui_basics/juce_gui_basics.h>
+#include "SignalNoiseKnobLookAndFeel.h"
+#include "SignalNoiseKnobPrecise.h"
+#include "SignalNoiseKnob.h"
+#include "SignalNoiseCompressor.h"
+#include "SignalNoiseSwitchButton.h"
 
 //------------------------------------------------------------------------------------
 // const
@@ -49,37 +49,56 @@
 // editor
 //------------------------------------------------------------------------------------
 
-class SignalNoiseCompressorGUI : public AEffGUIEditor, public CControlListener
+class SignalNoiseCompressorGUI : public juce::AudioProcessorEditor,
+                                 private juce::Timer
 {
 private:
-	CAnimKnob*			_thrs;	// threshold
-	CAnimKnob*			_func;	// ratio
-	CAnimKnob*			_gain;	// gain
-	CAnimKnob*			_attk;	// attack
-	CAnimKnob*			_rels;	// release
-	CAnimKnob*			_kwdt;	// knee width
-	CAnimKnob*			_kprc;	// knee strength
-	CAnimKnob*			_comp;	// dry amount
-	COnOffButton*		_fbck;	// FF/FB switch
-	SignalNoiseGR*		_grdb;	// GR meter
-	CHorizontalSwitch*	_mode;	// mode [flat, A, B]
-	CHorizontalSwitch*	_push;	// 'thrust' [0, +9, +18]
-	int					_open;
+	SignalNoiseCompressor& processor;
+	void timerCallback() override;
+
+	juce::Image background;
+
+	SignalNoiseKnobLookAndFeel largeLNF;
+	SignalNoiseKnobLookAndFeel normalLNF;
+	SignalNoiseKnobLookAndFeel screwLNF;
+
+	std::unique_ptr<SignalNoiseKnobPrecise>	thrsKnob;		// threshold
+	std::unique_ptr<SignalNoiseKnob>		funcKnob;		// ratio
+	std::unique_ptr<SignalNoiseKnobPrecise>	gainKnob;		// gain
+	std::unique_ptr<SignalNoiseKnob>		attkKnob;		// attack
+	std::unique_ptr<SignalNoiseKnob>		relsKnob;		// release
+	std::unique_ptr<SignalNoiseKnob>		kwdtKnob;		// knee width
+	std::unique_ptr<SignalNoiseKnob>		kneeKnob;		// knee strength
+	std::unique_ptr<SignalNoiseKnob>		compKnob;		// dry amount
+//	COnOffButton*	fbckSwitch;	// FF/FB switch
+
+	std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> thrsAttachment;
+	std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> funcAttachment;
+	std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> gainAttachment;
+	std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> attkAttachment;
+	std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> relsAttachment;
+	std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> kwdtAttachment;
+	std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> kprcAttachment;
+	std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> compAttachment;
+
+//	SignalNoiseGR*		_grdb;	// GR meter
+//	CHorizontalSwitch*	_mode;	// mode [flat, A, B]
+//	CHorizontalSwitch*	_push;	// 'thrust' [0, +9, +18]
+	int				_open;
+
+	virtual std::unique_ptr<SignalNoiseKnobPrecise> setupKnobPrecise(const ParamDesc&, juce::LookAndFeel*);
+	virtual std::unique_ptr<SignalNoiseKnob> setupKnob(const ParamDesc&, juce::LookAndFeel*);
+
 public:
-//create & destroy
-	SignalNoiseCompressorGUI(AudioEffect* effect);
+	SignalNoiseCompressorGUI(SignalNoiseCompressor&);
 	virtual ~SignalNoiseCompressorGUI();
-//runtime - from SDK
-	virtual bool open(void* ptr);
-	virtual void close();
-	virtual void setParameter(VstInt32 at, float v);
-	virtual void valueChanged(CDrawContext* ctx, CControl* ctrl);
+
+	void paint (juce::Graphics&) override;
+	void resized() override;
+
+//	virtual void setParameter(VstInt32 at, float v);
+//	virtual void valueChanged(CDrawContext* ctx, CControl* ctrl);
 //runtime - custom
-	void trackMeter(double dB);
-	void setupMeter(double fs);
+//	void trackMeter(double dB);
+//	void setupMeter(double fs);
 };
-
-//------------------------------------------------------------------------------------
-
-
-#endif // _SN_01G_H
