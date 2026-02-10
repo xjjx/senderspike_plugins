@@ -225,12 +225,24 @@ SignalNoiseEqualizerGUI::SignalNoiseEqualizerGUI(SignalNoiseEqualizer& p)
 		BinaryData::sn04g_ld_pngSize
 	);
 
+	juce::Image phaseSwitchImage = juce::ImageCache::getFromMemory(
+		BinaryData::sn04g_s2_png,
+		BinaryData::sn04g_s2_pngSize
+	);
+
+	juce::Image mojoSwitchImage = juce::ImageCache::getFromMemory(
+		BinaryData::sn04g_s3_png,
+		BinaryData::sn04g_s3_pngSize
+	);
+
 	jassert(innerKnobImage.isValid());
 	jassert(rimImage.isValid());
 	jassert(hpfImage.isValid());
 	jassert(lpfImage.isValid());
 	jassert(gainImage.isValid());
 	jassert(onOffSwitchImage.isValid());
+	jassert(phaseSwitchImage.isValid());
+	jassert(mojoSwitchImage.isValid());
 
 	// Knobs
 	innerKnobLNF.setImage(innerKnobImage);
@@ -278,11 +290,11 @@ SignalNoiseEqualizerGUI::SignalNoiseEqualizerGUI(SignalNoiseEqualizer& p)
 	_lp_b->attachToParameter(params, gParams[SNE_LP_B].id);
 	addAndMakeVisible(*_lp_b);
 
-	_iphs = std::make_unique<SignalNoiseSwitchButton>("iphs", onOffSwitchImage);
+	_iphs = std::make_unique<SignalNoiseSwitchButton>("iphs", phaseSwitchImage);
 	_iphs->attachToParameter(params, gParams[SNE_IPHS].id);
 	addAndMakeVisible(*_iphs);
 
-	_mojo = std::make_unique<SignalNoiseSwitchButton>("mojo", onOffSwitchImage);
+	_mojo = std::make_unique<SignalNoiseSwitchButton>("mojo", mojoSwitchImage);
 	_mojo->attachToParameter(params, gParams[SNE_MOJO].id);
 	addAndMakeVisible(*_mojo);
 
@@ -391,6 +403,7 @@ void SignalNoiseEqualizerGUI::resized()
 
 	// push buttons ----------------------------------------
 	_mojo->setBounds(133, 603, 40, 30);
+	_iphs->setBounds(190, 581, 40, 30);
 
 /*
 	x = 190;
@@ -444,13 +457,6 @@ void SignalNoiseEqualizerGUI::resized()
 	_lf_m = new COnOffButton(rc, this, SNE_LF_M, bells);
 	_lf_m->setValue(effect->getParameter(SNE_LF_M));
 	frm->addView(_lf_m);
-
-	x = 190;
-	y = 581;
-	rc(x, y, x + 40, y + 30);
-	_iphs = new COnOffButton(rc, this, SNE_IPHS, phase);
-	_iphs->setValue(effect->getParameter(SNE_IPHS));
-	frm->addView(_iphs);
 
 	// leds & mutes ----------------------------------------
 
