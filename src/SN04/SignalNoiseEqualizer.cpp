@@ -11,12 +11,7 @@
 
 #include <math.h>
 #include "SignalNoiseEqualizer.h"
-//#include "SignalNoiseEqualizerEditor.h"
-
-#ifdef SN04G
-#include <sn_04g.h>
-#endif
-
+#include "SignalNoiseEqualizerGUI.h"
 
 //------------------------------------------------------------------------------------
 // class SignalNoiseEqualizer
@@ -547,8 +542,7 @@ void SignalNoiseEqualizer::processBlock(juce::AudioBuffer<double>& buffer, juce:
 // Editor
 juce::AudioProcessorEditor* SignalNoiseEqualizer::createEditor()
 {
-//	return new SignalNoiseOpampEditor (*this);
-	return nullptr;
+	return new SignalNoiseEqualizerGUI (*this);
 }
 
 // ----------------------

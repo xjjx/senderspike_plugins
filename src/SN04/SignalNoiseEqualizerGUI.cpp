@@ -9,14 +9,16 @@
 //------------------------------------------------------------------------------------
 
 
-#include <sn_04e.h>
-#include <sn_04g.h>
 #include <stdio.h>
 #include <math.h>
-
+#include <stdio.h>
+#include <math.h>
+#include <juce_audio_processors/juce_audio_processors.h>
+#include "SignalNoiseEqualizerGUI.h"
+#include "BinaryData.h"
 
 //------------------------------------------------------------------------------------
-
+/*
 static void snFormatValue18(float val, char* str)
 {
 	sprintf(str, "%2.2f", val * 36 - 18);
@@ -123,9 +125,10 @@ SignalNoiseEqualizerArcSwitch::~SignalNoiseEqualizerArcSwitch()
 }
 
 //------------------------------------------------------------------------------------
+*/
 
-void SignalNoiseEqualizerArcSwitch::draw(CDrawContext* ctx)
-{
+//void SignalNoiseEqualizerArcSwitch::draw(CDrawContext* ctx)
+//{
 	// empty
 
 	/* dbg draw
@@ -134,10 +137,10 @@ void SignalNoiseEqualizerArcSwitch::draw(CDrawContext* ctx)
 	ctx->setFillColor(clr);
 	ctx->drawRect(size);
 	//*/
-}
+//}
 
 //------------------------------------------------------------------------------------
-
+/*
 void SignalNoiseEqualizerArcSwitch::mouse(CDrawContext* ctx, CPoint& pos, long btn)
 {
 	if(!bMouseEnabled)
@@ -168,83 +171,157 @@ void SignalNoiseEqualizerArcSwitch::mouse(CDrawContext* ctx, CPoint& pos, long b
 		flt += 30;
 	}
 
-/* dbg msg
-	char str[32] = {0};
-	sprintf(str, "%2.2f | %2.2f | %i", an, flt, res);
+// dbg msg
+//	char str[32] = {0};
+//	sprintf(str, "%2.2f | %2.2f | %i", an, flt, res);
 	MessageBox(NULL, str, "", 0);
-*/
+//
 	if(res > 5)
 		_eff->setParameter(SNE_LPAS, (res - 6) * 0.2f);
 	else
 		_eff->setParameter(SNE_HPAS, res * 0.2f);
 }
-
+*/
 //------------------------------------------------------------------------------------
 // class SignalNoiseEqualizerGUI
 //------------------------------------------------------------------------------------
 
-SignalNoiseEqualizerGUI::SignalNoiseEqualizerGUI(AudioEffect* fx) : AEffGUIEditor(fx) 
+SignalNoiseEqualizerGUI::SignalNoiseEqualizerGUI(SignalNoiseEqualizer& p)
+: AudioProcessorEditor(&p), processor(p)
 {
-	_hf_f = 0;
-	_hf_g = 0;
-	_hf_w = 0;
-	_hf_t = 0;
-	_hf_m = 0;
-	_hf_b = 0;
-	_hfon = 0;
+	// Load images
+	background = juce::ImageCache::getFromMemory(
+		BinaryData::sn04g_bk_png,
+		BinaryData::sn04g_bk_pngSize
+	);
 
-	_mf_f = 0;
-	_mf_g = 0;
-	_mf_w = 0;
-	_mf_t = 0;
-	_mf_b = 0;
-	_mfon = 0;
+	juce::Image innerKnobImage = juce::ImageCache::getFromMemory(
+		BinaryData::sn04g_b0_png,
+		BinaryData::sn04g_b0_pngSize
+	);
 
-	_lf_f = 0;
-	_lf_g = 0;
-	_lf_w = 0;
-	_lf_t = 0;
-	_lf_m = 0;
-	_lf_b = 0;
-	_lfon = 0;
+	juce::Image rimImage = juce::ImageCache::getFromMemory(
+		BinaryData::sn04g_b1_png,
+		BinaryData::sn04g_b1_pngSize
+	);
 
-	_lpas = 0;
-	_hpas = 0;
-	_loct = 0;
-	_hoct = 0;
-	_lpon = 0;
-	_hpon = 0;
-	_hp_b = 0;
-	_lp_b = 0;
+	juce::Image hpfImage = juce::ImageCache::getFromMemory(
+		BinaryData::sn04g_b2_png,
+		BinaryData::sn04g_b2_pngSize
+	);
 
-	_gain = 0;
-	_iphs = 0;
+	juce::Image lpfImage = juce::ImageCache::getFromMemory(
+		BinaryData::sn04g_b3_png,
+		BinaryData::sn04g_b3_pngSize
+	);
 
-	_thfg = 0;
-	_thfg = 0;
-	_thfg = 0;
-	_thfg = 0;
-	_thfg = 0;
-	_thfg = 0;
-	_tomg = 0;
+	juce::Image gainImage = juce::ImageCache::getFromMemory(
+		BinaryData::sn04g_b4_png,
+		BinaryData::sn04g_b4_pngSize
+	);
 
-	_mojo = 0;
+	juce::Image onOffSwitchImage = juce::ImageCache::getFromMemory(
+		BinaryData::sn04g_ld_png,
+		BinaryData::sn04g_ld_pngSize
+	);
 
-	_hsfc = 0;
-	_msfc = 0;
-	_lsfc = 0;
-	_hplp = 0;
+	jassert(innerKnobImage.isValid());
+	jassert(rimImage.isValid());
+	jassert(hpfImage.isValid());
+	jassert(lpfImage.isValid());
+	jassert(gainImage.isValid());
+	jassert(onOffSwitchImage.isValid());
 
-	_open = 0;
+	// Knobs
+	innerKnobLNF.setImage(innerKnobImage);
+	rimLNF.setImage(rimImage);
+	hpfLNF.setImage(hpfImage);
+	lpfLNF.setImage(lpfImage);
+	gainLNF.setImage(gainImage);
 
-	//init the size of the plugin
-	CBitmap* bk	= new CBitmap(101);
-	rect.left   = 0;
-	rect.top    = 0;
-	rect.right  = (short)bk->getWidth();
-	rect.bottom = (short)bk->getHeight();
-	bk->forget();
+	_hf_f = setupKnob(gParams[SNE_HF_F], &rimLNF);      // HSF freq
+	_hf_g = setupKnobPrecise(gParams[SNE_HF_G], &innerKnobLNF); // HSF gain
+	_hf_w = setupKnobPrecise(gParams[SNE_HF_Q], &gainLNF); // HSF bw
+
+	_mf_f = setupKnob(gParams[SNE_MF_F], &rimLNF);              // PKF freq
+	_mf_g = setupKnobPrecise(gParams[SNE_MF_G], &innerKnobLNF); // PKF gain
+	_mf_w = setupKnobPrecise(gParams[SNE_MF_Q], &gainLNF);     // PKF bw
+
+	_lf_f = setupKnob(gParams[SNE_LF_F], &rimLNF);              // LSF freq
+	_lf_g = setupKnobPrecise(gParams[SNE_LF_G], &innerKnobLNF); // LSF gain
+	_lf_w = setupKnobPrecise(gParams[SNE_LF_Q], &gainLNF);     // LSF bw
+
+	_hpas = setupKnob(gParams[SNE_HPAS], &rimLNF);              // HPF freq
+	_lpas = setupKnob(gParams[SNE_LPAS], &innerKnobLNF);       // LPF freq
+	_gain = setupKnobPrecise(gParams[SNE_GAIN], &gainLNF);     // output
+
+	// Switches
+	auto& params = processor.getParameters();
+
+	_hf_b = std::make_unique<SignalNoiseSwitchButton>("hf_b", onOffSwitchImage);
+	_hf_b->attachToParameter(params, gParams[SNE_HF_B].id);
+	addAndMakeVisible(*_hf_b);
+
+	_mf_b = std::make_unique<SignalNoiseSwitchButton>("mf_b", onOffSwitchImage);
+	_mf_b->attachToParameter(params, gParams[SNE_MF_B].id);
+	addAndMakeVisible(*_mf_b);
+
+	_lf_b = std::make_unique<SignalNoiseSwitchButton>("lf_b", onOffSwitchImage);
+	_lf_b->attachToParameter(params, gParams[SNE_LF_B].id);
+	addAndMakeVisible(*_lf_b);
+
+	_hp_b = std::make_unique<SignalNoiseSwitchButton>("hp_b", onOffSwitchImage);
+	_hp_b->attachToParameter(params, gParams[SNE_HP_B].id);
+	addAndMakeVisible(*_hp_b);
+
+	_lp_b = std::make_unique<SignalNoiseSwitchButton>("lp_b", onOffSwitchImage);
+	_lp_b->attachToParameter(params, gParams[SNE_LP_B].id);
+	addAndMakeVisible(*_lp_b);
+
+	_iphs = std::make_unique<SignalNoiseSwitchButton>("iphs", onOffSwitchImage);
+	_iphs->attachToParameter(params, gParams[SNE_IPHS].id);
+	addAndMakeVisible(*_iphs);
+
+	_mojo = std::make_unique<SignalNoiseSwitchButton>("mojo", onOffSwitchImage);
+	_mojo->attachToParameter(params, gParams[SNE_MOJO].id);
+	addAndMakeVisible(*_mojo);
+
+	// Set initial size based on background
+	setSize(background.getWidth(), background.getHeight());
+
+	startTimerHz(30); // GUI refresh rate
 }
+
+std::unique_ptr<SignalNoiseKnobPrecise> SignalNoiseEqualizerGUI::setupKnobPrecise(
+	const ParamDesc& p,
+	juce::LookAndFeel* lnF)
+{
+	auto& params = processor.getParameters();
+
+	auto knob = std::make_unique<SignalNoiseKnobPrecise>(p.defaultValue);
+
+	knob->setLookAndFeel(lnF);
+	knob->attachToParameter(params, p.id);
+	addAndMakeVisible (*knob);
+
+	return knob;
+}
+
+std::unique_ptr<SignalNoiseKnob> SignalNoiseEqualizerGUI::setupKnob(
+	const ParamDesc& p,
+	juce::LookAndFeel* lnF)
+{
+	auto& params = processor.getParameters();
+
+	auto knob = std::make_unique<SignalNoiseKnob>(p.defaultValue);
+
+	knob->setLookAndFeel(lnF);
+	knob->attachToParameter(params, p.id);
+	addAndMakeVisible (*knob);
+
+	return knob;
+}
+
 
 //------------------------------------------------------------------------------------
 
@@ -255,38 +332,11 @@ SignalNoiseEqualizerGUI::~SignalNoiseEqualizerGUI()
 
 //------------------------------------------------------------------------------------
 
-bool SignalNoiseEqualizerGUI::open(void *ptr)
+void SignalNoiseEqualizerGUI::resized()
 {
-	// always call this first !!!
-	AEffGUIEditor::open(ptr);
-
-	// initialize ------------------------------------------
-
-	CCoord x, y;
-	CPoint pt(0, 0);
-	CBitmap* backg = new CBitmap(101);	// background
-	CBitmap* knob1 = new CBitmap(102);	// inner knob
-	CBitmap* knob2 = new CBitmap(103);	// rim
-	CBitmap* knob3 = new CBitmap(104);	// HPF
-	CBitmap* knob4 = new CBitmap(105);	// LPF
-	CBitmap* knob5 = new CBitmap(106);	// gain knob
-	CBitmap* modes = new CBitmap(107);	// 2-way switch
-	CBitmap* slope = new CBitmap(108);	// 4-way switch
-	CBitmap* bells = new CBitmap(109);	// bell switch
-	CBitmap* phase = new CBitmap(110);	// phase switch
-	CBitmap* onled = new CBitmap(111);	// on/off led
-	CBitmap* pkled = new CBitmap(112);	// peak led
-	CBitmap* round = new CBitmap(113);	// round button
-
-	setKnobMode(kLinearMode);
-
-	// frame -----------------------------------------------
-
-	CRect rc(0, 0, backg->getWidth(), backg->getHeight());
-	CFrame* frm = new CFrame(rc, ptr, this);
-	frm->setBackground(backg);
 
 	// number click switches -------------------------------
+/*
 
 	x = 20;
 	y = 20;
@@ -308,111 +358,41 @@ bool SignalNoiseEqualizerGUI::open(void *ptr)
 	rc(x, y, x + 120, y + 120);
 	_hplp = new SignalNoiseEqualizerArcSwitch(rc, effect);
 	frm->addView(_hplp);
+*/
 
 	// HSF knobs -------------------------------------------
-
-	x = SN04_KNOB_COL_1;
-	y = 40;
-	rc(x, y, x + SN04_KNOB_W, y + SN04_KNOB_W);
-	_hf_f = new SignalNoiseKnob(rc, this, SNE_HF_F, SN04_KNOB2_FRAMES, SN04_KNOB_W, knob2, pt);
-	_hf_f->setValue(effect->getParameter(SNE_HF_F));
-	frm->addView(_hf_f);
-
-	x += 10;
-	y += 10;
-	rc(x, y, x + SN04_KNOB2_W, y + SN04_KNOB2_W);
-	_hf_g = new SignalNoiseKnobP(rc, this, SNE_HF_G, SN04_KNOB1_FRAMES, SN04_KNOB2_W, knob1, pt);
-	_hf_g->setValue(effect->getParameter(SNE_HF_G));
-	frm->addView(_hf_g);
-
-	snSetKnobInnerMouse(_hf_g, x, y);
-
-	x += SN04_KNOB_COL_2;
-	y -= 10;
-	rc(x, y, x + SN04_KNOB_W, y + SN04_KNOB_W);
-	_hf_w = new SignalNoiseKnobP(rc, this, SNE_HF_Q, SN04_KNOB1_FRAMES, SN04_KNOB_W, knob5, pt);
-	_hf_w->setValue(effect->getParameter(SNE_HF_Q));
-	frm->addView(_hf_w);
+	_hf_f->setBounds(40, 40, 80, 80);
+	_hf_g->setBounds(50, 50, 60, 60);
+	_hf_w->setBounds(170, 40, 80, 80);
 
 	// PKF knobs -------------------------------------------
-
-	x = SN04_KNOB_COL_1;
-	y = 180;
-	rc(x, y, x + SN04_KNOB_W, y + SN04_KNOB_W);
-	_mf_f = new SignalNoiseKnob(rc, this, SNE_MF_F, SN04_KNOB2_FRAMES, SN04_KNOB_W, knob2, pt);
-	_mf_f->setValue(effect->getParameter(SNE_MF_F));
-	frm->addView(_mf_f);
-
-	x += 10;
-	y += 10;
-	rc(x, y, x + SN04_KNOB2_W, y + SN04_KNOB2_W);
-	_mf_g = new SignalNoiseKnobP(rc, this, SNE_MF_G, SN04_KNOB1_FRAMES, SN04_KNOB2_W, knob1, pt);
-	_mf_g->setValue(effect->getParameter(SNE_MF_G));
-	frm->addView(_mf_g);
-
-	snSetKnobInnerMouse(_mf_g, x, y);
-
-	x += SN04_KNOB_COL_2;
-	y -= 10;
-	rc(x, y, x + SN04_KNOB_W, y + SN04_KNOB_W);
-	_mf_w = new SignalNoiseKnobP(rc, this, SNE_MF_Q, SN04_KNOB1_FRAMES, SN04_KNOB_W, knob5, pt);
-	_mf_w->setValue(effect->getParameter(SNE_MF_Q));
-	frm->addView(_mf_w);
+	_mf_f->setBounds(40, 180, 80, 80);
+	_mf_g->setBounds(50, 190, 60, 60);
+	_mf_w->setBounds(170, 180, 80, 80);
 
 	// LSF knobs -------------------------------------------
-
-	x = SN04_KNOB_COL_1;
-	y = 320;
-	rc(x, y, x + SN04_KNOB_W, y + SN04_KNOB_W);
-	_lf_f = new SignalNoiseKnob(rc, this, SNE_LF_F, SN04_KNOB2_FRAMES, SN04_KNOB_W, knob2, pt);
-	_lf_f->setValue(effect->getParameter(SNE_LF_F));
-	frm->addView(_lf_f);
-
-	x += 10;
-	y += 10;
-	rc(x, y, x + SN04_KNOB2_W, y + SN04_KNOB2_W);
-	_lf_g = new SignalNoiseKnobP(rc, this, SNE_LF_G, SN04_KNOB1_FRAMES, SN04_KNOB2_W, knob1, pt);
-	_lf_g->setValue(effect->getParameter(SNE_LF_G));
-	frm->addView(_lf_g);
-
-	snSetKnobInnerMouse(_lf_g, x, y);
-
-	x += SN04_KNOB_COL_2;
-	y -= 10;
-	rc(x, y, x + SN04_KNOB_W, y + SN04_KNOB_W);
-	_lf_w = new SignalNoiseKnobP(rc, this, SNE_LF_Q, SN04_KNOB1_FRAMES, SN04_KNOB_W, knob5, pt);
-	_lf_w->setValue(effect->getParameter(SNE_LF_Q));
-	frm->addView(_lf_w);
+	_lf_f->setBounds(40, 320, 80, 80);
+	_lf_g->setBounds(50, 330, 60, 60);
+	_lf_w->setBounds(170, 320, 80, 80);
 
 	// LPF/HPF knobs ---------------------------------------
-
-	x = SN04_KNOB_COL_1;
-	y = 500;
-	rc(x, y, x + SN04_KNOB_W, y + SN04_KNOB_W);
-	_hpas = new SignalNoiseKnob(rc, this, SNE_HPAS, SN04_KNOB3_FRAMES, SN04_KNOB_W, knob3, pt);
-	_hpas->setValue(effect->getParameter(SNE_HPAS));
-	frm->addView(_hpas);
-
-	x += 10;
-	y += 10;
-	rc(x, y, x + SN04_KNOB2_W, y + SN04_KNOB2_W);
-	_lpas = new SignalNoiseKnob(rc, this, SNE_LPAS, SN04_KNOB3_FRAMES, SN04_KNOB2_W, knob4, pt);
-	_lpas->setValue(effect->getParameter(SNE_LPAS));
-	frm->addView(_lpas);
-
-	snSetKnobInnerMouse(_lpas, x, y);
+	_hpas->setBounds(40, 500, 80, 80);
+	_lpas->setBounds(50, 510, 60, 60);
 
 	// volume knob -----------------------------------------
-
-	x += SN04_KNOB_COL_2;
-	y -= 10;
-	rc(x, y, x + SN04_KNOB_W, y + SN04_KNOB_W);
-	_gain = new SignalNoiseKnobP(rc, this, SNE_GAIN, SN04_KNOB1_FRAMES, SN04_KNOB_W, knob5, pt);
-	_gain->setValue(effect->getParameter(SNE_GAIN));
-	frm->addView(_gain);
+	_gain->setBounds(170, 500, 80, 80);
 
 	// switches --------------------------------------------
+	_hf_b->setBounds(131, 80, 28, 28);
+	_mf_b->setBounds(131, 220, 28, 28);
+	_lf_b->setBounds(131, 360, 28, 28);
+	_hp_b->setBounds(12, 592, 28, 28);
+	_lp_b->setBounds(121, 460, 28, 28);
 
+	// push buttons ----------------------------------------
+	_mojo->setBounds(133, 603, 40, 30);
+
+/*
 	x = 190;
 	y = 120;
 	rc(x, y, x + 40, y + 30);
@@ -472,72 +452,7 @@ bool SignalNoiseEqualizerGUI::open(void *ptr)
 	_iphs->setValue(effect->getParameter(SNE_IPHS));
 	frm->addView(_iphs);
 
-	x = 133;
-	y = 603;
-	rc(x, y, x + 40, y + 30);
-	_mojo = new COnOffButton(rc, this, SNE_MOJO, round);
-	_mojo->setValue(effect->getParameter(SNE_MOJO));
-	frm->addView(_mojo);
-
 	// leds & mutes ----------------------------------------
-
-	x = 131;
-	y = 80;
-	rc(x, y, x + SN04_LED_W, y + SN04_LED_W);
-	_hfon = new SignalNoiseOnOffLed(rc, onled);
-	_hfon->setOn(effect->getParameter(SNE_HF_F) >= 0.142);
-	frm->addView(_hfon);
-
-	_hf_b = new COnOffButton(rc, this, SNE_HF_B, 0);
-	_hf_b->setValue(effect->getParameter(SNE_HF_B));
-	_hfon->setBlink(effect->getParameter(SNE_HF_B) >= 0.5);
-	frm->addView(_hf_b);
-
-	y = 220;
-	rc(x, y, x + SN04_LED_W, y + SN04_LED_W);
-	_mfon = new SignalNoiseOnOffLed(rc, onled);
-	_mfon->setOn(effect->getParameter(SNE_MF_F) >= 0.142);
-	frm->addView(_mfon);
-
-	_mf_b = new COnOffButton(rc, this, SNE_MF_B, 0);
-	_mf_b->setValue(effect->getParameter(SNE_MF_B));
-	_mfon->setBlink(effect->getParameter(SNE_MF_B) >= 0.5);
-	frm->addView(_mf_b);
-
-	y = 360;
-	rc(x, y, x + SN04_LED_W, y + SN04_LED_W);
-	_lfon = new SignalNoiseOnOffLed(rc, onled);
-	_lfon->setOn(effect->getParameter(SNE_LF_F) >= 0.142);
-	frm->addView(_lfon);
-
-	_lf_b = new COnOffButton(rc, this, SNE_LF_B, 0);
-	_lf_b->setValue(effect->getParameter(SNE_LF_B));
-	_lfon->setBlink(effect->getParameter(SNE_LF_B) >= 0.5);
-	frm->addView(_lf_b);
-
-	x = 12;
-	y = 592;
-	rc(x, y, x + SN04_LED_W, y + SN04_LED_W);
-	_hpon = new SignalNoiseOnOffLed(rc, onled);
-	_hpon->setOn(effect->getParameter(SNE_HPAS) >= 0.2);
-	frm->addView(_hpon);
-
-	_hp_b = new COnOffButton(rc, this, SNE_HP_B, 0);
-	_hp_b->setValue(effect->getParameter(SNE_HP_B));
-	_hpon->setBlink(effect->getParameter(SNE_HP_B) >= 0.5);
-	frm->addView(_hp_b);
-
-	x = 121;
-	y = 460;
-	rc(x, y, x + SN04_LED_W, y + SN04_LED_W);
-	_lpon = new SignalNoiseOnOffLed(rc, onled);
-	_lpon->setOn(effect->getParameter(SNE_LPAS) >= 0.2);
-	frm->addView(_lpon);
-
-	_lp_b = new COnOffButton(rc, this, SNE_LP_B, 0);
-	_lp_b->setValue(effect->getParameter(SNE_LP_B));
-	_lpon->setBlink(effect->getParameter(SNE_LP_B) >= 0.5);
-	frm->addView(_lp_b);
 
 	x = 230;
 	y = 605;
@@ -585,81 +500,21 @@ bool SignalNoiseEqualizerGUI::open(void *ptr)
 	frm->addView(_tomg);
 
 	// finalize --------------------------------------------
-
-	_lpas->setRange(300);
-	_hpas->setRange(300);
-
-	_hf_f->setRange(400);
-	_mf_f->setRange(400);
-	_lf_f->setRange(400);
-
-	_hf_g->setRangeAbsolute(36);
-	_mf_g->setRangeAbsolute(36);
-	_lf_g->setRangeAbsolute(36);
-
-	_hf_w->setRangeAbsolute(40);
-	_mf_w->setRangeAbsolute(40);
-	_lf_w->setRangeAbsolute(40);
-
-	_gain->setRangeAbsolute(50);
-
-	_hf_f->setDefaultValue(gParam[SNE_HF_F].val);
-	_hf_g->setDefaultValue(gParam[SNE_HF_G].val);
-	_hf_w->setDefaultValue(gParam[SNE_HF_Q].val);
-	_hf_t->setDefaultValue(gParam[SNE_HF_T].val);
-	_hf_m->setDefaultValue(gParam[SNE_HF_M].val);
-	_hf_b->setDefaultValue(gParam[SNE_HF_B].val);
-
-	_mf_f->setDefaultValue(gParam[SNE_MF_F].val);
-	_mf_g->setDefaultValue(gParam[SNE_MF_G].val);
-	_mf_w->setDefaultValue(gParam[SNE_MF_Q].val);
-	_mf_t->setDefaultValue(gParam[SNE_MF_T].val);
-	_mf_b->setDefaultValue(gParam[SNE_MF_B].val);
-
-	_lf_f->setDefaultValue(gParam[SNE_LF_F].val);
-	_lf_g->setDefaultValue(gParam[SNE_LF_G].val);
-	_lf_w->setDefaultValue(gParam[SNE_LF_Q].val);
-	_lf_t->setDefaultValue(gParam[SNE_LF_T].val);
-	_lf_m->setDefaultValue(gParam[SNE_LF_M].val);
-	_lf_b->setDefaultValue(gParam[SNE_LF_B].val);
-
-	_lpas->setDefaultValue(gParam[SNE_LPAS].val);
-	_hpas->setDefaultValue(gParam[SNE_HPAS].val);
-	_loct->setDefaultValue(gParam[SNE_LOCT].val);
-	_hoct->setDefaultValue(gParam[SNE_HOCT].val);
-	_lp_b->setDefaultValue(gParam[SNE_LP_B].val);
-	_hp_b->setDefaultValue(gParam[SNE_HP_B].val);
-
-	_gain->setDefaultValue(gParam[SNE_GAIN].val);
-	_iphs->setDefaultValue(gParam[SNE_IPHS].val);
-	_mojo->setDefaultValue(gParam[SNE_MOJO].val);
-
-	backg->forget();
-	knob1->forget();
-	knob2->forget();
-	knob3->forget();
-	knob4->forget();
-	knob5->forget();
-	modes->forget();
-	slope->forget();
-	bells->forget();
-	phase->forget();
-	onled->forget();
-	pkled->forget();
-	round->forget();
-
-	_time = GetTickCount();
-	_blnk = false;
-
-	frame = frm;
-
-	_open = 1;
-
-	return true;
+*/
 }
 
 //------------------------------------------------------------------------------------
+void SignalNoiseEqualizerGUI::paint(juce::Graphics& g)
+{
+	// Fill background with black if image fails
+	g.fillAll(juce::Colours::black);
 
+	if (background.isValid())
+		g.drawImage(background, getLocalBounds().toFloat(), juce::RectanglePlacement::stretchToFit);
+}
+
+//------------------------------------------------------------------------------------
+/*
 void SignalNoiseEqualizerGUI::idle()
 {
 	// always call this first!!!
@@ -684,66 +539,6 @@ void SignalNoiseEqualizerGUI::idle()
 	if(_lfon && effect->getParameter(SNE_LF_B) > 0.5) _lfon->setBlinkState(_blnk);
 	if(_lpon && effect->getParameter(SNE_LP_B) > 0.5) _lpon->setBlinkState(_blnk);
 	if(_hpon && effect->getParameter(SNE_HP_B) > 0.5) _hpon->setBlinkState(_blnk);
-}
-
-//------------------------------------------------------------------------------------
-
-void SignalNoiseEqualizerGUI::close()
-{
-	_open = 0;
-
-	delete frame; // deletes all attached views
-	frame = 0;
-
-	_hf_f = 0;
-	_hf_g = 0;
-	_hf_w = 0;
-	_hf_t = 0;
-	_hf_m = 0;
-	_hf_b = 0;
-	_hfon = 0;
-
-	_mf_f = 0;
-	_mf_g = 0;
-	_mf_w = 0;
-	_mf_t = 0;
-	_mf_b = 0;
-	_mfon = 0;
-
-	_lf_f = 0;
-	_lf_g = 0;
-	_lf_w = 0;
-	_lf_t = 0;
-	_lf_m = 0;
-	_lf_b = 0;
-	_lfon = 0;
-
-	_lpas = 0;
-	_hpas = 0;
-	_loct = 0;
-	_hoct = 0;
-	_lpon = 0;
-	_hpon = 0;
-	_hp_b = 0;
-	_lp_b = 0;
-
-	_gain = 0;
-	_iphs = 0;
-
-	_thfg = 0;
-	_thfg = 0;
-	_thfg = 0;
-	_thfg = 0;
-	_thfg = 0;
-	_thfg = 0;
-	_tomg = 0;
-
-	_mojo = 0;
-
-	_hsfc = 0;
-	_msfc = 0;
-	_lsfc = 0;
-	_hplp = 0;
 }
 
 //------------------------------------------------------------------------------------
@@ -907,5 +702,13 @@ void SignalNoiseEqualizerGUI::setBlink(band_e b, bool on)
 	case HP: if(_hpon) _hpon->setBlink(on); break;
 	}
 }
-
+*/
 //------------------------------------------------------------------------------------
+void SignalNoiseEqualizerGUI::timerCallback()
+{
+//	inputMeter .setLevel(processor.getInputLevel());
+///	outputMeter.setLevel(processor.getOutputLevel());
+//	peakLed.setLevel(processor.getOutputLevel());
+
+	repaint();
+}

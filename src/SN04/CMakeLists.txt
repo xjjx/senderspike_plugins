@@ -16,14 +16,24 @@ juce_add_plugin(SN04
 	LV2URI "urn:signalsnoise:sn04"
 )
 
-#juce_add_binary_data(SN04_BinaryData
-#    SOURCES
-#        ../graphics/sn06g/sn06g_bk.png
-#        ../graphics/sn06g/sn06g_b1.png
-#        ../graphics/sn01g/sn01g_b1.png
-#)
+juce_add_binary_data(SN04_BinaryData
+    SOURCES
+        ../graphics/sn04g/sn04g_bk.png # background
+        ../graphics/sn04g/sn04g_b0.png # inner knob
+        ../graphics/sn04g/sn04g_b1.png # rim knob
+        ../graphics/sn04g/sn04g_b2.png # HPF knob
+        ../graphics/sn04g/sn04g_b3.png # LPF knob
+        ../graphics/sn04g/sn04g_b4.png # gain knob
+        ../graphics/sn03g/sn03g_b2.png # 2-way sliding switch
+        ../graphics/sn04g/sn04g_b5.png # 4-way sliding switch
+        ../graphics/sn04g/sn04g_s1.png # bell switch button
+        ../graphics/sn04g/sn04g_s2.png # phase switch button
+        ../graphics/sn04g/sn04g_ld.png # on/off led
+        ../graphics/sn04g/sn04g_pk.png # peak led
+        ../graphics/sn04g/sn04g_s3.png # "A" button
+)
 
-#target_link_libraries(SN04 PRIVATE SN04_BinaryData)
+target_link_libraries(SN04 PRIVATE SN04_BinaryData)
 
 # ----------------------
 # Add plugin source files
@@ -31,7 +41,7 @@ juce_add_plugin(SN04
 target_sources(SN04
     PRIVATE
         SignalNoiseEqualizer.cpp
-#        SignalNoiseOpampEditor.cpp
+        SignalNoiseEqualizerGUI.cpp
 )
 
 # ----------------------

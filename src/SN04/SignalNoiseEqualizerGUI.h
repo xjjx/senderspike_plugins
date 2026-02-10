@@ -8,14 +8,15 @@
 //
 //------------------------------------------------------------------------------------
 
+# pragma once
 
-#ifndef _SN_04G_H
-#define _SN_04G_H
-
-
-//------------------------------------------------------------------------------------
-
-#include <sn_ctrl.h>
+#include <juce_gui_basics/juce_gui_basics.h>
+#include "SignalNoiseKnobLookAndFeel.h"
+#include "SignalNoiseKnobPrecise.h"
+#include "SignalNoiseKnob.h"
+#include "SignalNoiseEqualizer.h"
+#include "SignalNoiseSwitchButton.h"
+#include "SwitchLookAndFeel.h"
 
 //------------------------------------------------------------------------------------
 //knobs
@@ -47,6 +48,7 @@ enum band_e { HF = 0, MF, LF, LP, HP };
 // HP/LP circular switch
 //------------------------------------------------------------------------------------
 
+/*
 class SignalNoiseEqualizerArcSwitch : public CControl
 {
 private:
@@ -62,51 +64,65 @@ public:
 //vtable
 	CLASS_METHODS(SignalNoiseEqualizerArcSwitch, CControl)
 };
+*/
 
 //------------------------------------------------------------------------------------
 // editor
 //------------------------------------------------------------------------------------
 
-class SignalNoiseEqualizerGUI : public AEffGUIEditor, public CControlListener
+class SignalNoiseEqualizerGUI : public juce::AudioProcessorEditor,
+                                private juce::Timer
 {
 private:
+	SignalNoiseEqualizer& processor;
+	void timerCallback() override;
+
+	juce::Image background;
+
+	SignalNoiseKnobLookAndFeel innerKnobLNF;
+	SignalNoiseKnobLookAndFeel rimLNF;
+	SignalNoiseKnobLookAndFeel gainLNF;
+	SignalNoiseKnobLookAndFeel lpfLNF;
+	SignalNoiseKnobLookAndFeel hpfLNF;
+
 //HF
-	SignalNoiseKnob*				_hf_f;	// HSF freq
-	SignalNoiseKnobP*				_hf_g;	// HSF gain
-	SignalNoiseKnobP*				_hf_w;	// HSF bw
-	CHorizontalSwitch*				_hf_t;	// HSF type
-	COnOffButton*					_hf_m;	// HSF mode
-	COnOffButton*					_hf_b;	// HSF mute
-	SignalNoiseOnOffLed*			_hfon;	// on/off led
+	std::unique_ptr<SignalNoiseKnob>			_hf_f;	// HSF freq
+	std::unique_ptr<SignalNoiseKnobPrecise>		_hf_g;	// HSF gain
+	std::unique_ptr<SignalNoiseKnobPrecise>		_hf_w;	// HSF bw
+//	CHorizontalSwitch*				_hf_t;	// HSF type
+//	COnOffButton*					_hf_m;	// HSF mode
+	std::unique_ptr<SignalNoiseSwitchButton>	_hf_b;	// HSF mute
+//	SignalNoiseOnOffLed*			_hfon;	// on/off led
 //MF
-	SignalNoiseKnob*				_mf_f;	// PKF freq
-	SignalNoiseKnobP*				_mf_g;	// PKF gain
-	SignalNoiseKnobP*				_mf_w;	// PKF bw
-	CHorizontalSwitch*				_mf_t;	// PKF type
-	COnOffButton*					_mf_b;	// PKF mute
-	SignalNoiseOnOffLed*			_mfon;	// on/off led
+	std::unique_ptr<SignalNoiseKnob>				_mf_f;	// PKF freq
+	std::unique_ptr<SignalNoiseKnobPrecise>				_mf_g;	// PKF gain
+	std::unique_ptr<SignalNoiseKnobPrecise>				_mf_w;	// PKF bw
+//	CHorizontalSwitch*				_mf_t;	// PKF type
+	std::unique_ptr<SignalNoiseSwitchButton>	_mf_b;	// PKF mute
+//	SignalNoiseOnOffLed*			_mfon;	// on/off led
 //LF
-	SignalNoiseKnob*				_lf_f;	// LSF freq
-	SignalNoiseKnobP*				_lf_g;	// LSF gain
-	SignalNoiseKnobP*				_lf_w;	// LSF bw
-	CHorizontalSwitch*				_lf_t;	// LSF type
-	COnOffButton*					_lf_m;	// LSF mode
-	COnOffButton*					_lf_b;	// LSF mute
-	SignalNoiseOnOffLed*			_lfon;	// on/off led
+	std::unique_ptr<SignalNoiseKnob>				_lf_f;	// LSF freq
+	std::unique_ptr<SignalNoiseKnobPrecise>				_lf_g;	// LSF gain
+	std::unique_ptr<SignalNoiseKnobPrecise>				_lf_w;	// LSF bw
+//	CHorizontalSwitch*				_lf_t;	// LSF type
+//	COnOffButton*					_lf_m;	// LSF mode
+	std::unique_ptr<SignalNoiseSwitchButton>	_lf_b;	// LSF mute
+//	SignalNoiseOnOffLed*			_lfon;	// on/off led
 //LPF/HPF
-	SignalNoiseKnob*				_lpas;	// LPF freq
-	SignalNoiseKnob*				_hpas;	// HPF freq
-	CHorizontalSwitch*				_loct;	// LPF dB/oct
-	CHorizontalSwitch*				_hoct;	// HPF dB/oct
-	SignalNoiseOnOffLed*			_lpon;	// on/off led
-	SignalNoiseOnOffLed*			_hpon;	// on/off led
-	COnOffButton*					_hp_b;	// HPF mute
-	COnOffButton*					_lp_b;	// LPF mute
+	std::unique_ptr<SignalNoiseKnob>				_lpas;	// LPF freq
+	std::unique_ptr<SignalNoiseKnob>				_hpas;	// HPF freq
+//	CHorizontalSwitch*				_loct;	// LPF dB/oct
+//	CHorizontalSwitch*				_hoct;	// HPF dB/oct
+//	SignalNoiseOnOffLed*			_lpon;	// on/off led
+//	SignalNoiseOnOffLed*			_hpon;	// on/off led
+	std::unique_ptr<SignalNoiseSwitchButton>	_hp_b;	// HPF mute
+	std::unique_ptr<SignalNoiseSwitchButton>	_lp_b;	// LPF mute
 //output
-	SignalNoiseKnobP*				_gain;	// output
-	COnOffButton*					_iphs;	// invert phase
-	SignalNoisePeakLed*				_pkld;	// output peak
+	std::unique_ptr<SignalNoiseKnobPrecise>		_gain;	// output
+	std::unique_ptr<SignalNoiseSwitchButton>	_iphs;	// invert phase
+//	SignalNoisePeakLed*				_pkld;	// output peak
 //text input
+/*
 	CTextEdit*						_thfg;	// HF gain text
 	CTextEdit*						_thfw;	// HF width text
 	CTextEdit*						_tmfg;	// MF gain text
@@ -114,35 +130,35 @@ private:
 	CTextEdit*						_tlfg;	// LF gain text
 	CTextEdit*						_tlfw;	// LF width text
 	CTextEdit*						_tomg;	// output make-up gain text
+*/
 //"analog" on/off
-	COnOffButton*					_mojo;	// analog on/off switch
+	std::unique_ptr<SignalNoiseSwitchButton> _mojo;	// analog on/off switch
 //number clickers
-	SignalNoiseArcSwitch*			_hsfc;	// HF band
-	SignalNoiseArcSwitch*			_msfc;	// MF band
-	SignalNoiseArcSwitch*			_lsfc;	// LF band
-	SignalNoiseEqualizerArcSwitch*	_hplp;	// HPF/LPF
+//	SignalNoiseArcSwitch*			_hsfc;	// HF band
+//	SignalNoiseArcSwitch*			_msfc;	// MF band
+//	SignalNoiseArcSwitch*			_lsfc;	// LF band
+//	SignalNoiseEqualizerArcSwitch*	_hplp;	// HPF/LPF
 //global blinking timer
 	dword							_time;	// last change time
 	bool							_blnk;	// global blink state (sync)
 //guard
 	int								_open;
+
+	virtual std::unique_ptr<SignalNoiseKnobPrecise> setupKnobPrecise(const ParamDesc&, juce::LookAndFeel*);
+	virtual std::unique_ptr<SignalNoiseKnob> setupKnob(const ParamDesc&, juce::LookAndFeel*);
+
 public:
 //create & destroy
-	SignalNoiseEqualizerGUI(AudioEffect* effect);
+	SignalNoiseEqualizerGUI(SignalNoiseEqualizer&);
 	virtual ~SignalNoiseEqualizerGUI();
-//runtime - from SDK
-	virtual bool open(void* ptr);
-	virtual void idle();
-	virtual void close();
-	virtual void setParameter(VstInt32 at, float v);
-	virtual void valueChanged(CDrawContext* ctx, CControl* ctrl);
+
+	void paint (juce::Graphics&) override;
+	void resized() override;
+
+//	virtual void setParameter(VstInt32 at, float v);
+//	virtual void valueChanged(CDrawContext* ctx, CControl* ctrl);
 //runtime - custom
-	void trackPeaks(double A);
-	void setLed(band_e b, bool on);
-	void setBlink(band_e b, bool on);
+//	void trackPeaks(double A);
+//	void setLed(band_e b, bool on);
+//	void setBlink(band_e b, bool on);
 };
-
-//------------------------------------------------------------------------------------
-
-
-#endif // _SN_04G_H
