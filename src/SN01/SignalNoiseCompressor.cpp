@@ -76,17 +76,6 @@ void SignalNoiseCompressor::parameterChanged (const juce::String& id, float /*ne
 // DSP
 //------------------------------------------------------------------------------------
 
-static int GetSwitch(const float& v)
-{
-	static const float sv = 1.f / 3.f;
-
-	if(v < sv) return 0;
-	if(v > 1 - sv) return 2;
-	return 1;
-}
-
-//------------------------------------------------------------------------------------
-
 void SignalNoiseCompressor::setupEnvelope()
 {
 	double attk = getParamValue(SNE_ATTK);
@@ -101,7 +90,7 @@ void SignalNoiseCompressor::setupEnvelope()
 
 void SignalNoiseCompressor::setupSidechain()
 {
-	switch(GetSwitch(getParamValue(SNE_MODE)))
+	switch(getParamChoice(SNE_MODE))
 	{
 	case 1:
 		_lsL.setup_q(LSF, -14.0, 0.49, 40.0, sampleRate);
@@ -138,11 +127,10 @@ void SignalNoiseCompressor::processImpl(juce::AudioBuffer<Sample>& buffer)
 	const float kneeParam  = getParamNorm(SNE_KNEE);
 	const float kwdtParam  = getParamValue(SNE_KWDT);
 	const float compParam  = getParamNorm(SNE_COMP);
-	const float modeParam  = getParamValue(SNE_MODE);
 
 	const double gain = dB2lin(gainParam);
 	const int fbck = getParamChoice(SNE_FBCK);
-	const int mode = GetSwitch(modeParam);
+	const int mode = getParamChoice(SNE_MODE);
 	const int push = getParamChoice(SNE_PUSH);
 	const double func = sqrt(ratioParam);
 	const double trsh = trshParam - (9.0 * push);

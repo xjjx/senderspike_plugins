@@ -84,9 +84,10 @@ private:
 	std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> compAttachment;
 
 //	SignalNoiseGR*		_grdb;	// GR meter
-	juce::Slider	pushSlider; // mode [flat, A, B]
-//	CHorizontalSwitch*	_push;	// 'thrust' [0, +9, +18]
+	juce::Slider	modeSlider;	// mode [flat, A, B]
+	juce::Slider	pushSlider; // 'thrust' [0, +9, +18]
 
+	std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> modeAttachment;
 	std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> pushAttachment;
 
 	int				_open;

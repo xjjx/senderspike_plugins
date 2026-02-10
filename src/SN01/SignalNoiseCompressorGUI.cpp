@@ -78,7 +78,7 @@ SignalNoiseCompressorGUI::SignalNoiseCompressorGUI(SignalNoiseCompressor& p)
 	fbckSwitch->attachToParameter(params, gParams[SNE_FBCK].id);
 	addAndMakeVisible(*fbckSwitch);
 
-	// Mode switch
+	// Push switch
 	switchLNF.setImage(switch1Image);
 
 	pushSlider.setSliderStyle (juce::Slider::LinearHorizontal); // or LinearHorizontal
@@ -94,6 +94,22 @@ SignalNoiseCompressorGUI::SignalNoiseCompressorGUI(SignalNoiseCompressor& p)
 
 	pushAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
 		params, gParams[SNE_PUSH].id, pushSlider
+	);
+
+	// Mode switch
+	modeSlider.setSliderStyle (juce::Slider::LinearHorizontal); // or LinearHorizontal
+	modeSlider.setTextBoxStyle (juce::Slider::NoTextBox, false, 0, 0);
+
+	modeSlider.setRange (0, 2, 1);
+//	pushSlider.setSnapsToMousePosition (false);
+	modeSlider.setDoubleClickReturnValue (false, 0);
+	modeSlider.setVelocityBasedMode (false);
+	modeSlider.setMouseDragSensitivity (1000);
+	modeSlider.setLookAndFeel (&switchLNF);
+	addAndMakeVisible(modeSlider);
+
+	modeAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
+		params, gParams[SNE_MODE].id, pushSlider
 	);
 
 	// Set initial size based on background
@@ -132,7 +148,6 @@ std::unique_ptr<SignalNoiseKnob> SignalNoiseCompressorGUI::setupKnob(
 	return knob;
 }
 
-
 //------------------------------------------------------------------------------------
 
 SignalNoiseCompressorGUI::~SignalNoiseCompressorGUI()
@@ -166,16 +181,9 @@ void SignalNoiseCompressorGUI::resized()
 	frm->addView(_grdb);
 */
 	// switches --------------------------------------------
+	modeSlider.setBounds(578, 150, 45, 45);
 	pushSlider.setBounds(698, 150, 45, 45);
 
-/*
-	x += SN01_MODES_OFFSET;
-	rc(x, SN01_MODES_Y, x + SN01_MODES_SZ, SN01_MODES_Y + SN01_MODES_SZ);
-	_push = new CHorizontalSwitch(rc, this, SNE_PUSH, 3, SN01_MODES_SZ, 3, modes, pt);
-	_push->setValue(effect->getParameter(SNE_PUSH));
-	frm->addView(_push);
-
-*/
 	fbckSwitch->setBounds(25, 90, 40, 40);
 }
 

@@ -43,7 +43,8 @@ enum
 
 //------------------------------------------------------------------------------------
 
-static const std::vector<const char*> MODE = { "FeedForward", "FeedBack" };
+static const std::vector<const char*> MODE = { "Flat", "Type A", "Type B" };
+static const std::vector<const char*> FBCK = { "FeedForward", "FeedBack" };
 static const std::vector<const char*> PUSH = { "0", "1", "2" };
 static const ParamDesc gParams[] =
 {
@@ -57,11 +58,11 @@ static const ParamDesc gParams[] =
     { ParamType::Decibel,    "kwdt", "Knee dB",  "dB",   0.0f,  24.0f,  9.00f }, // SNE_KWDT knee width
     { ParamType::Percent,    "knee", "Knee %",    "%",   0.0f, 100.0f,  0.00f }, // SNE_KNEE knee strength
 
-    { ParamType::Normalized, "mode", "SC Mode", "typ",   0.0f,   1.0f,  0.00f }, // SNE_MODE sidechain mode
+    { ParamType::Choice,     "mode", "SC Mode", "typ",   0.0f,   1.0f,  0.00f, MODE }, // SNE_MODE sidechain mode
     { ParamType::Choice,     "push", "Push",       "",   0.0f,   1.0f,  0.00f, PUSH }, // SNE_PUSH thrust
 
     { ParamType::Percent,    "comp", "Wet/Dry",   "%",   0.0f, 100.0f,  0.00f }, // SNE_COMP dry/wet
-    { ParamType::Choice,     "fbck",    "Mode",    "",   0.0f,   1.0f,  0.00f, MODE }, // SNE_FBCK feed-forward / feed-back
+    { ParamType::Choice,     "fbck",    "Mode",    "",   0.0f,   1.0f,  0.00f, FBCK }, // SNE_FBCK feed-forward / feed-back
 };
 
 //------------------------------------------------------------------------------------
