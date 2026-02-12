@@ -78,10 +78,15 @@ void SignalNoiseCompressor::parameterChanged (const juce::String& id, float /*ne
 
 void SignalNoiseCompressor::setupEnvelope()
 {
-	double attk = getParamValue(SNE_ATTK);
-	double rels = getParamValue(SNE_RELS);
-	attk = (attk * attk * attk * 29.97) + 0.03;
-	rels = (rels * rels * rels * 1950.0) + 50.0;
+	double attkn = getParamValue(SNE_ATTK);
+	double relsn = getParamValue(SNE_RELS);
+
+	double attk = gParams[SNE_ATTK].normToCubic(attkn);
+	double rels = gParams[SNE_RELS].normToCubic(relsn);
+
+	DBG("Norm Attack: " + juce::String(attkn, 3) + " Release:" + juce::String(relsn, 3));
+	DBG("Val: Attack: " + juce::String(attk, 2) + " Release:" + juce::String(rels, 2));
+	DBG("min;" + juce::String(gParams[SNE_RELS].minValue,3) + " max:" + juce::String(gParams[SNE_RELS].maxValue,3));
 	_atk = exp(-1000.0 / (attk * sampleRate));
 	_rls = exp(-1000.0 / (rels * sampleRate));
 }

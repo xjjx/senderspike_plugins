@@ -39,7 +39,7 @@ SignalNoiseFX::createLayout(const ParamDesc* paramArray, int numParams)
 
 	for (int i = 0; i < numParams; ++i)
 	{
-		const auto& p = paramArray[i];
+		const ParamDesc& p = paramArray[i];
 		float step;
 		juce::NormalisableRange<float> range;
 		switch (p.type)
@@ -54,6 +54,11 @@ SignalNoiseFX::createLayout(const ParamDesc* paramArray, int numParams)
 			break;
 		case ParamType::Normalized:
 			range = juce::NormalisableRange<float>(p.minValue, p.maxValue);
+			break;
+		case ParamType::Cubic:
+			// we cheat a little here, parameter stays normalized, but we treat it differently
+			step = 0.001f;
+			range = juce::NormalisableRange<float>(0.0f, 1.0f, step);
 			break;
 		case ParamType::Choice: // just to please compilier
 			break;
@@ -72,6 +77,27 @@ SignalNoiseFX::createLayout(const ParamDesc* paramArray, int numParams)
 				labels,
 				defaultIndex,
 				p.unit
+			));
+		}
+		else if (p.type == ParamType::Cubic)
+		{
+			layout.add(std::make_unique<juce::AudioParameterFloat>(
+				p.id,
+				p.name,
+				range,
+				p.cubicToNorm(p.defaultValue),
+				p.unit,
+				juce::AudioProcessorParameter::genericParameter,
+				// stringFromValue
+				[p](float value, int) {
+					float ms = p.normToCubic(value);
+					return juce::String(ms, 3) + " ms";
+				},
+				// valueFromString
+				[p](const juce::String& text) {
+					float ms = text.getFloatValue();
+					return p.cubicToNorm(ms);
+				}
 			));
 		}
 		else

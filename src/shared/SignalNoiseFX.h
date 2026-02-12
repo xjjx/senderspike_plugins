@@ -21,6 +21,7 @@ enum class ParamType
 	Normalized,	// legacy 0..1
 	Decibel,	// linear gain in dB
 	Percent,
+	Cubic,
 	Choice		// generic stepped parameter (EQ frequencies, etc)
 };
 
@@ -37,6 +38,16 @@ struct ParamDesc
 
 	float defaultValue = 0.0f;
 	std::vector<const char*> choiceLabels{};	// non-empty -> choice param
+
+	float normToCubic(float normalized) const {
+		float x3 = normalized * normalized * normalized;
+		return minValue + ((maxValue - minValue) * x3);
+	}
+
+	float cubicToNorm(float cubic) const {
+		float norm = std::cbrt((cubic - minValue) / (maxValue - minValue));
+		return juce::jlimit(0.0f, 1.0f, norm);
+	}
 };
 
 //------------------------------------------------------------------------------------

@@ -48,21 +48,21 @@ static const std::vector<const char*> FBCK = { "FeedForward", "FeedBack" };
 static const std::vector<const char*> PUSH = { "0", "1", "2" };
 static const ParamDesc gParams[] =
 {
-    { ParamType::Decibel,    "thrs", "Thresh",   "dB", -40.0f,   0.0f, -20.0f }, // SNE_TRSH threshold
-    { ParamType::Normalized, "ratio","Ratio",   "num",   0.0f,   1.0f,  0.50f }, // SNE_FUNC ratio
-    { ParamType::Decibel,    "gain", "Gain",     "dB",   0.0f,  24.0f,  0.00f }, // SNE_GAIN make-up gain
+    { ParamType::Decibel,    "thrs", "Thresh",  "dB", -40.0f,    0.0f, -20.0f }, // SNE_TRSH threshold
+    { ParamType::Normalized, "ratio","Ratio",  "num",   0.0f,    1.0f,  0.50f }, // SNE_FUNC ratio
+    { ParamType::Decibel,    "gain", "Gain",    "dB",   0.0f,   24.0f,  0.00f }, // SNE_GAIN make-up gain
 
-    { ParamType::Normalized, "attk", "Attack",   "ms",   0.0f,   1.0f, 0.375f }, // SNE_ATTK attack
-    { ParamType::Normalized, "rels", "Release",  "ms",   0.0f,   1.0f,  0.50f }, // SNE_RELS release
+    { ParamType::Cubic,      "attk", "Attack",  "ms",  0.03f,   30.0f,  1.61f }, // SNE_ATTK attack
+    { ParamType::Cubic,      "rels", "Release", "ms",  50.0f, 2000.0f, 293.75f }, // SNE_RELS release
 
-    { ParamType::Decibel,    "kwdt", "Knee dB",  "dB",   0.0f,  24.0f,  9.00f }, // SNE_KWDT knee width
-    { ParamType::Percent,    "knee", "Knee %",    "%",   0.0f, 100.0f,  0.00f }, // SNE_KNEE knee strength
+    { ParamType::Decibel,    "kwdt", "Knee dB", "dB",   0.0f,   24.0f,  9.00f }, // SNE_KWDT knee width
+    { ParamType::Percent,    "knee", "Knee %",   "%",   0.0f,  100.0f,  0.00f }, // SNE_KNEE knee strength
 
-    { ParamType::Choice,     "mode", "SC Mode", "typ",   0.0f,   1.0f,  0.00f, MODE }, // SNE_MODE sidechain mode
-    { ParamType::Choice,     "push", "Push",       "",   0.0f,   1.0f,  0.00f, PUSH }, // SNE_PUSH thrust
+    { ParamType::Choice,     "mode", "SC Mode",   "",   0.0f,    1.0f,  0.00f, MODE }, // SNE_MODE sidechain mode
+    { ParamType::Choice,     "push", "Push",      "",   0.0f,    1.0f,  0.00f, PUSH }, // SNE_PUSH thrust
 
-    { ParamType::Percent,    "comp", "Wet/Dry",   "%",   0.0f, 100.0f,  0.00f }, // SNE_COMP dry/wet
-    { ParamType::Choice,     "fbck",    "Mode",    "",   0.0f,   1.0f,  0.00f, FBCK }, // SNE_FBCK feed-forward / feed-back
+    { ParamType::Percent,    "comp", "Wet/Dry",  "%",   0.0f,  100.0f,  0.00f }, // SNE_COMP dry/wet
+    { ParamType::Choice,     "fbck",    "Mode",   "",   0.0f,    1.0f,  0.00f, FBCK }, // SNE_FBCK feed-forward / feed-back
 };
 
 //------------------------------------------------------------------------------------
