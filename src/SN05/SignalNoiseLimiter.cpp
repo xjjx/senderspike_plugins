@@ -97,12 +97,18 @@ void SignalNoiseLimiter::parameterChanged (const juce::String& id, float /*newVa
 
 void SignalNoiseLimiter::setupLimiter()
 {
-	double attk = getParamValue(SNE_ATKH);
-	double rels = getParamValue(SNE_RELH);
+	float attkn = getParamValue(SNE_ATKH);
+	float relsn = getParamValue(SNE_RELH);
+
+	float attk = gParams[SNE_ATKH].normToCubic(attkn);
+	float rels = gParams[SNE_RELH].normToCubic(relsn);
+
+	DBG("Norm Attack: " + juce::String(attkn, 3) + " Release:" + juce::String(relsn, 3));
+	DBG("Val: Attack: " + juce::String(attk, 2) + " Release:" + juce::String(rels, 2));
+	DBG("min;" + juce::String(gParams[SNE_RELH].minValue,3) + " max:" + juce::String(gParams[SNE_RELH].maxValue,3));
+
 	double t = (1.0 / sampleRate) * -2.2;
 
-	attk = (attk * attk * attk * 249.98) + 0.02;
-	rels = (rels * rels * rels * 1290.0) + 10;
 	_atH = 1 - exp(t / (.001 * attk));
 	_rlH = 1 - exp(t / (.001 * rels));
 }
@@ -111,9 +117,9 @@ void SignalNoiseLimiter::setupLimiter()
 
 void SignalNoiseLimiter::setupClipper()
 {
-	double rels = getParamValue(SNE_RELS);
+	float rels = getParamValue(SNE_RELS);
 
-	if(getParamChoice(SNE_MODE) == 0)
+	if(getParamChoice(SNE_MODE) == 0) // 0 - Limiter
 		rels = (rels * rels * rels * 499.0) + 1.0;
 	else
 		rels = (rels * rels * rels * 49.9) + 0.1;
