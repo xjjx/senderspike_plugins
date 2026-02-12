@@ -263,8 +263,8 @@ SignalNoiseEqualizerGUI::SignalNoiseEqualizerGUI(SignalNoiseEqualizer& p)
 	_lf_g = setupKnobPrecise(gParams[SNE_LF_G], &innerKnobLNF); // LSF gain
 	_lf_w = setupKnobPrecise(gParams[SNE_LF_Q], &gainLNF);     // LSF bw
 
-	_hpas = setupKnob(gParams[SNE_HPAS], &rimLNF);              // HPF freq
-	_lpas = setupKnob(gParams[SNE_LPAS], &innerKnobLNF);       // LPF freq
+	_hpas = setupKnob(gParams[SNE_HPAS], &hpfLNF);              // HPF freq
+	_lpas = setupKnob(gParams[SNE_LPAS], &lpfLNF);       // LPF freq
 	_gain = setupKnobPrecise(gParams[SNE_GAIN], &gainLNF);     // output
 
 	// Switches
@@ -333,7 +333,6 @@ std::unique_ptr<SignalNoiseKnob> SignalNoiseEqualizerGUI::setupKnob(
 
 	return knob;
 }
-
 
 //------------------------------------------------------------------------------------
 
