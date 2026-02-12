@@ -134,7 +134,7 @@ void SignalNoiseTapedeck::setupEqualizer()
 	}
 	else
 	{
-		if(getParamValue(SNE_LOON) < 0.5f)
+		if(getParamChoice(SNE_LOON) == 0) // 0 - off
 		{
 			lo1 = 0;
 			lo2 = 0;

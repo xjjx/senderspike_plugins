@@ -111,7 +111,7 @@ SignalNoiseTapedeckGUI::SignalNoiseTapedeckGUI(SignalNoiseTapedeck& p)
 	addAndMakeVisible(*noisSwitch);
 
 	loonSwitch = std::make_unique<SignalNoiseSwitchButton>("loonSwitch", loonImage); // force LO on
-//	loonSwitch->attachToParameter(params, gParams[SNE_LOON].id);
+	loonSwitch->attachToParameter(params, gParams[SNE_LOON].id);
 	addAndMakeVisible(*loonSwitch);
 
 	// Set initial size based on background

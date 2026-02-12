@@ -71,7 +71,7 @@ static const ParamDesc gParams[] =
 	{ ParamType::Normalized, "attn", "HB Attn",  "dB",   0.0f, 1.0f,    1.00f }, // SNE_ATTN bump attenuator
 	{ ParamType::Choice,     "nois", "Hiss On",    "",   0.0f, 1.0f,    1.00f, On }, // SNE_NOIS noise on/off
 	{ ParamType::Choice,     "hbon", "HB On",      "",   0.0f, 1.0f,    1.00f, On }, // SNE_HBON head bump on/off
-	{ ParamType::Normalized, "loon", "Anarchy",  "n/y",  0.0f, 1.0f,    0.00f }, // SNE_LOON force LO on
+	{ ParamType::Choice,     "loon", "Anarchy",    "",   0.0f, 1.0f,    0.00f, On }, // SNE_LOON force LO on
 };
 
 //------------------------------------------------------------------------------------
