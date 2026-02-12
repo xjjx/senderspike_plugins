@@ -240,6 +240,11 @@ SignalNoiseEqualizerGUI::SignalNoiseEqualizerGUI(SignalNoiseEqualizer& p)
 		BinaryData::sn04g_s3_pngSize
 	);
 
+	juce::Image switch2WayImage = juce::ImageCache::getFromMemory(
+		BinaryData::sn03g_b2_png,
+		BinaryData::sn03g_b2_pngSize
+	);
+
 	jassert(innerKnobImage.isValid());
 	jassert(rimImage.isValid());
 	jassert(hpfImage.isValid());
@@ -248,6 +253,7 @@ SignalNoiseEqualizerGUI::SignalNoiseEqualizerGUI(SignalNoiseEqualizer& p)
 	jassert(onOffSwitchImage.isValid());
 	jassert(phaseSwitchImage.isValid());
 	jassert(mojoSwitchImage.isValid());
+	jassert(switch2WayImage.isValid());
 
 	// Knobs
 	innerKnobLNF.setImage(innerKnobImage);
@@ -283,9 +289,17 @@ SignalNoiseEqualizerGUI::SignalNoiseEqualizerGUI(SignalNoiseEqualizer& p)
 	_hf_m->attachToParameter(params, gParams[SNE_HF_M].id);
 	addAndMakeVisible(*_hf_m);
 
+	_hf_t = std::make_unique<SignalNoiseSwitchButton>("_hf_t", switch2WayImage);
+	_hf_t->attachToParameter(params, gParams[SNE_HF_T].id);
+	addAndMakeVisible(*_hf_t);
+
 	_mf_b = std::make_unique<SignalNoiseSwitchButton>("mf_b", onOffSwitchImage);
 	_mf_b->attachToParameter(params, gParams[SNE_MF_B].id);
 	addAndMakeVisible(*_mf_b);
+
+	_mf_t = std::make_unique<SignalNoiseSwitchButton>("_mf_t", switch2WayImage);
+	_mf_t->attachToParameter(params, gParams[SNE_MF_T].id);
+	addAndMakeVisible(*_mf_t);
 
 	_lf_b = std::make_unique<SignalNoiseSwitchButton>("lf_b", onOffSwitchImage);
 	_lf_b->attachToParameter(params, gParams[SNE_LF_B].id);
@@ -294,6 +308,10 @@ SignalNoiseEqualizerGUI::SignalNoiseEqualizerGUI(SignalNoiseEqualizer& p)
 	_lf_m = std::make_unique<SignalNoiseSwitchButton>("lf_m", bellSwitchImage);
 	_lf_m->attachToParameter(params, gParams[SNE_LF_M].id);
 	addAndMakeVisible(*_lf_m);
+
+	_lf_t = std::make_unique<SignalNoiseSwitchButton>("_lf_t", switch2WayImage);
+	_lf_t->attachToParameter(params, gParams[SNE_LF_T].id);
+	addAndMakeVisible(*_lf_t);
 
 	_hp_b = std::make_unique<SignalNoiseSwitchButton>("hp_b", onOffSwitchImage);
 	_hp_b->attachToParameter(params, gParams[SNE_HP_B].id);
@@ -418,27 +436,11 @@ void SignalNoiseEqualizerGUI::resized()
 	_iphs->setBounds(190, 581, 40, 30);
 	_hf_m->setBounds(60, 120, 40, 30);
 	_lf_m->setBounds(60, 400, 40, 30);
+	_hf_t->setBounds(190, 120, 40, 30);
+	_mf_t->setBounds(190, 260, 40, 30);
+	_lf_t->setBounds(190, 400, 40, 30);
 
 /*
-	x = 190;
-	y = 120;
-	rc(x, y, x + 40, y + 30);
-	_hf_t = new CHorizontalSwitch(rc, this, SNE_HF_T, 2, 30, 2, modes, pt);
-	_hf_t->setValue(effect->getParameter(SNE_HF_T));
-	frm->addView(_hf_t);
-
-	y = 260;
-	rc(x, y, x + 40, y + 30);
-	_mf_t = new CHorizontalSwitch(rc, this, SNE_MF_T, 2, 30, 2, modes, pt);
-	_mf_t->setValue(effect->getParameter(SNE_MF_T));
-	frm->addView(_mf_t);
-
-	y = 400;
-	rc(x, y, x + 40, y + 30);
-	_lf_t = new CHorizontalSwitch(rc, this, SNE_LF_T, 2, 30, 2, modes, pt);
-	_lf_t->setValue(effect->getParameter(SNE_LF_T));
-	frm->addView(_lf_t);
-
 	x = 32;
 	y = 460;
 	rc(x, y, x + 60, y + 30);
@@ -456,9 +458,6 @@ void SignalNoiseEqualizerGUI::resized()
 	frm->addView(_hoct);
 
 	snSetSwitchInnerMouse(_hoct, x, y, -5);
-
-	// push buttons ----------------------------------------
-
 
 	// leds & mutes ----------------------------------------
 

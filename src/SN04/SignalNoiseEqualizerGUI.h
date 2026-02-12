@@ -89,28 +89,28 @@ private:
 	std::unique_ptr<SignalNoiseKnob>			_hf_f;	// HSF freq
 	std::unique_ptr<SignalNoiseKnobPrecise>		_hf_g;	// HSF gain
 	std::unique_ptr<SignalNoiseKnobPrecise>		_hf_w;	// HSF bw
-//	CHorizontalSwitch*				_hf_t;	// HSF type
+	std::unique_ptr<SignalNoiseSwitchButton>	_hf_t;	// HSF type
 	std::unique_ptr<SignalNoiseSwitchButton>	_hf_m;	// HSF mode
 	std::unique_ptr<SignalNoiseSwitchButton>	_hf_b;	// HSF mute
 //	SignalNoiseOnOffLed*			_hfon;	// on/off led
 //MF
-	std::unique_ptr<SignalNoiseKnob>				_mf_f;	// PKF freq
-	std::unique_ptr<SignalNoiseKnobPrecise>				_mf_g;	// PKF gain
-	std::unique_ptr<SignalNoiseKnobPrecise>				_mf_w;	// PKF bw
-//	CHorizontalSwitch*				_mf_t;	// PKF type
+	std::unique_ptr<SignalNoiseKnob>			_mf_f;	// PKF freq
+	std::unique_ptr<SignalNoiseKnobPrecise>		_mf_g;	// PKF gain
+	std::unique_ptr<SignalNoiseKnobPrecise>		_mf_w;	// PKF bw
+	std::unique_ptr<SignalNoiseSwitchButton>	_mf_t;	// PKF type
 	std::unique_ptr<SignalNoiseSwitchButton>	_mf_b;	// PKF mute
 //	SignalNoiseOnOffLed*			_mfon;	// on/off led
 //LF
-	std::unique_ptr<SignalNoiseKnob>				_lf_f;	// LSF freq
-	std::unique_ptr<SignalNoiseKnobPrecise>				_lf_g;	// LSF gain
-	std::unique_ptr<SignalNoiseKnobPrecise>				_lf_w;	// LSF bw
-//	CHorizontalSwitch*				_lf_t;	// LSF type
+	std::unique_ptr<SignalNoiseKnob>			_lf_f;	// LSF freq
+	std::unique_ptr<SignalNoiseKnobPrecise>		_lf_g;	// LSF gain
+	std::unique_ptr<SignalNoiseKnobPrecise>		_lf_w;	// LSF bw
+	std::unique_ptr<SignalNoiseSwitchButton>	_lf_t;	// LSF type
 	std::unique_ptr<SignalNoiseSwitchButton>	_lf_m;	// LSF mode
 	std::unique_ptr<SignalNoiseSwitchButton>	_lf_b;	// LSF mute
 //	SignalNoiseOnOffLed*			_lfon;	// on/off led
 //LPF/HPF
-	std::unique_ptr<SignalNoiseKnob>				_lpas;	// LPF freq
-	std::unique_ptr<SignalNoiseKnob>				_hpas;	// HPF freq
+	std::unique_ptr<SignalNoiseKnob>			_lpas;	// LPF freq
+	std::unique_ptr<SignalNoiseKnob>			_hpas;	// HPF freq
 //	CHorizontalSwitch*				_loct;	// LPF dB/oct
 //	CHorizontalSwitch*				_hoct;	// HPF dB/oct
 //	SignalNoiseOnOffLed*			_lpon;	// on/off led
