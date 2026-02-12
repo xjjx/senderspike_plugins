@@ -90,7 +90,7 @@ private:
 	std::unique_ptr<SignalNoiseKnobPrecise>		_hf_g;	// HSF gain
 	std::unique_ptr<SignalNoiseKnobPrecise>		_hf_w;	// HSF bw
 //	CHorizontalSwitch*				_hf_t;	// HSF type
-//	COnOffButton*					_hf_m;	// HSF mode
+	std::unique_ptr<SignalNoiseSwitchButton>	_hf_m;	// HSF mode
 	std::unique_ptr<SignalNoiseSwitchButton>	_hf_b;	// HSF mute
 //	SignalNoiseOnOffLed*			_hfon;	// on/off led
 //MF
@@ -105,7 +105,7 @@ private:
 	std::unique_ptr<SignalNoiseKnobPrecise>				_lf_g;	// LSF gain
 	std::unique_ptr<SignalNoiseKnobPrecise>				_lf_w;	// LSF bw
 //	CHorizontalSwitch*				_lf_t;	// LSF type
-//	COnOffButton*					_lf_m;	// LSF mode
+	std::unique_ptr<SignalNoiseSwitchButton>	_lf_m;	// LSF mode
 	std::unique_ptr<SignalNoiseSwitchButton>	_lf_b;	// LSF mute
 //	SignalNoiseOnOffLed*			_lfon;	// on/off led
 //LPF/HPF

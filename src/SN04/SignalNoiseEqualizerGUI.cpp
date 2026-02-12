@@ -225,6 +225,11 @@ SignalNoiseEqualizerGUI::SignalNoiseEqualizerGUI(SignalNoiseEqualizer& p)
 		BinaryData::sn04g_ld_pngSize
 	);
 
+	juce::Image bellSwitchImage = juce::ImageCache::getFromMemory(
+		BinaryData::sn04g_s1_png,
+		BinaryData::sn04g_s1_pngSize
+	);
+
 	juce::Image phaseSwitchImage = juce::ImageCache::getFromMemory(
 		BinaryData::sn04g_s2_png,
 		BinaryData::sn04g_s2_pngSize
@@ -274,6 +279,10 @@ SignalNoiseEqualizerGUI::SignalNoiseEqualizerGUI(SignalNoiseEqualizer& p)
 	_hf_b->attachToParameter(params, gParams[SNE_HF_B].id);
 	addAndMakeVisible(*_hf_b);
 
+	_hf_m = std::make_unique<SignalNoiseSwitchButton>("hf_m", bellSwitchImage);
+	_hf_m->attachToParameter(params, gParams[SNE_HF_M].id);
+	addAndMakeVisible(*_hf_m);
+
 	_mf_b = std::make_unique<SignalNoiseSwitchButton>("mf_b", onOffSwitchImage);
 	_mf_b->attachToParameter(params, gParams[SNE_MF_B].id);
 	addAndMakeVisible(*_mf_b);
@@ -281,6 +290,10 @@ SignalNoiseEqualizerGUI::SignalNoiseEqualizerGUI(SignalNoiseEqualizer& p)
 	_lf_b = std::make_unique<SignalNoiseSwitchButton>("lf_b", onOffSwitchImage);
 	_lf_b->attachToParameter(params, gParams[SNE_LF_B].id);
 	addAndMakeVisible(*_lf_b);
+
+	_lf_m = std::make_unique<SignalNoiseSwitchButton>("lf_m", bellSwitchImage);
+	_lf_m->attachToParameter(params, gParams[SNE_LF_M].id);
+	addAndMakeVisible(*_lf_m);
 
 	_hp_b = std::make_unique<SignalNoiseSwitchButton>("hp_b", onOffSwitchImage);
 	_hp_b->attachToParameter(params, gParams[SNE_HP_B].id);
@@ -403,6 +416,8 @@ void SignalNoiseEqualizerGUI::resized()
 	// push buttons ----------------------------------------
 	_mojo->setBounds(133, 603, 40, 30);
 	_iphs->setBounds(190, 581, 40, 30);
+	_hf_m->setBounds(60, 120, 40, 30);
+	_lf_m->setBounds(60, 400, 40, 30);
 
 /*
 	x = 190;
@@ -444,18 +459,6 @@ void SignalNoiseEqualizerGUI::resized()
 
 	// push buttons ----------------------------------------
 
-	x = 60;
-	y = 120;
-	rc(x, y, x + 40, y + 30);
-	_hf_m = new COnOffButton(rc, this, SNE_HF_M, bells);
-	_hf_m->setValue(effect->getParameter(SNE_HF_M));
-	frm->addView(_hf_m);
-
-	y = 400;
-	rc(x, y, x + 40, y + 30);
-	_lf_m = new COnOffButton(rc, this, SNE_LF_M, bells);
-	_lf_m->setValue(effect->getParameter(SNE_LF_M));
-	frm->addView(_lf_m);
 
 	// leds & mutes ----------------------------------------
 
