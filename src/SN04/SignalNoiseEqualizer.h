@@ -54,6 +54,8 @@ enum
 };
 
 static const std::vector<const char*> On = { "Off", "On" };
+static const std::vector<const char*> FType = { "A", "B" };
+static const std::vector<const char*> FMode = { "Shelf", "Bell" };
 static const std::vector<const char*> pHF = { "Disable", "1.1 kHz", "2.2 kHz", "3.9 kHz", "5.8 kHz", "8.2 kHz", "10 kHz", "12 kHz" };
 static const std::vector<const char*> pMF = { "Disable", "220 Hz", "360 Hz", "700 Hz", "1.6 kHz", "3.2 kHz", "4.8 kHz",  "7.2 kHz" };
 static const std::vector<const char*> pLF = { "Disable", "35 Hz", "45 Hz", "60 Hz", "110 Hz", "220 Hz", "300 Hz", "400 Hz" };
@@ -65,24 +67,24 @@ static const std::vector<const char*> pSlope = { "6dB/oct", "12dB/oct", "18dB/oc
 static const ParamDesc gParams[SNE_SIZE] =
 {
 	{ ParamType::Decibel,    "gain",  "Output",   "dB", -25.0f, 25.0f,  0.0f }, // SNE_GAIN
-	{ ParamType::Choice,     "iphs",  "Phase",      "",  0.0f,  1.0f,  0.0f, On }, // SNE_IPHS
+	{ ParamType::Choice,     "iphs",  "Phase",      "",   0.0f,  1.0f,  0.0f, On }, // SNE_IPHS
 
 	{ ParamType::Choice,     "hf_f",  "HF Freq",    "",   0.0f,  1.0f, 0.00f, pHF }, // SNE_HF_F
 	{ ParamType::Decibel,    "hf_g",  "HF Gain",  "dB", -18.0f, 18.0f,  0.0f }, // SNE_HF_G
-	{ ParamType::Normalized, "hf_q",  "HF BW",    "oct",  0.0f,  1.0f, 0.50f }, // SNE_HF_Q
-	{ ParamType::Normalized, "hf_t",  "HF Type",  "typ",  0.0f,  1.0f, 0.00f }, // SNE_HF_T
-	{ ParamType::Normalized, "hf_m",  "HF Mode",  "n/y",  0.0f,  1.0f, 0.00f }, // SNE_HF_M
+	{ ParamType::Normalized, "hf_q",  "HF BW",   "oct",   0.0f,  1.0f, 0.50f }, // SNE_HF_Q
+	{ ParamType::Choice,     "hf_t",  "HF Type",    "",   0.0f,  1.0f, 0.00f, FType }, // SNE_HF_T
+	{ ParamType::Choice,     "hf_m",  "HF Mode",    "",   0.0f,  1.0f, 0.00f, FMode }, // SNE_HF_M
 
 	{ ParamType::Choice,     "mf_f",  "MF Freq",    "",   0.0f,  1.0f, 0.00f, pMF }, // SNE_MF_F
 	{ ParamType::Decibel,    "mf_g",  "MF Gain",  "dB", -18.0f, 18.0f,  0.0f }, // SNE_MF_G
-	{ ParamType::Normalized, "mf_q",  "MF BW",    "oct",  0.0f,  1.0f, 0.50f }, // SNE_MF_Q
-	{ ParamType::Normalized, "mf_t",  "MF Type",  "typ",  0.0f,  1.0f, 0.00f }, // SNE_MF_T
+	{ ParamType::Normalized, "mf_q",  "MF BW",   "oct",   0.0f,  1.0f, 0.50f }, // SNE_MF_Q
+	{ ParamType::Choice,     "mf_t",  "MF Type",    "",   0.0f,  1.0f, 0.00f, FType }, // SNE_MF_T
 
 	{ ParamType::Choice,     "lf_f",  "LF Freq",    "",   0.0f,  1.0f, 0.00f, pLF }, // SNE_LF_F
 	{ ParamType::Decibel,    "lf_g",  "LF Gain",  "dB", -18.0f, 18.0f,  0.0f }, // SNE_LF_G
-	{ ParamType::Normalized, "lf_q",  "LF BW",    "oct",  0.0f,  1.0f, 0.50f }, // SNE_LF_Q
-	{ ParamType::Normalized, "lf_t",  "LF Type",  "typ",  0.0f,  1.0f, 0.00f }, // SNE_LF_T
-	{ ParamType::Normalized, "lf_m",  "LF Mode",  "n/y",  0.0f,  1.0f, 0.00f }, // SNE_LF_M
+	{ ParamType::Normalized, "lf_q",  "LF BW",   "oct",   0.0f,  1.0f, 0.50f }, // SNE_LF_Q
+	{ ParamType::Choice,     "lf_t",  "LF Type",    "",   0.0f,  1.0f, 0.00f, FType }, // SNE_LF_T
+	{ ParamType::Choice,     "lf_m",  "LF Mode",    "",   0.0f,  1.0f, 0.00f, FMode }, // SNE_LF_M
 
 	{ ParamType::Choice,     "lpas",  "Lo-Pass",    "",   0.0f,  1.0f, 0.00f, pLP }, // SNE_LPAS
 	{ ParamType::Choice,     "hpas",  "Hi-Pass",    "",   0.0f,  1.0f, 0.00f, pHP }, // SNE_HPAS
@@ -91,11 +93,11 @@ static const ParamDesc gParams[SNE_SIZE] =
 
 	{ ParamType::Choice,     "mojo",  "Analog",     "",   0.0f,  1.0f, 0.00f, On }, // SNE_MOJO
 
-	{ ParamType::Choice,     "hf_b",  "Mute HF",    "",  0.0f,  1.0f, 0.00f, On }, // SNE_HF_B
-	{ ParamType::Choice,     "mf_b",  "Mute MF",    "",  0.0f,  1.0f, 0.00f, On }, // SNE_MF_B
-	{ ParamType::Choice,     "lf_b",  "Mute LF",    "",  0.0f,  1.0f, 0.00f, On }, // SNE_LF_B
-	{ ParamType::Choice,     "lp_b",  "Mute LPF",   "",  0.0f,  1.0f, 0.00f, On }, // SNE_LP_B
-	{ ParamType::Choice,     "hp_b",  "Mute HPF",   "",  0.0f,  1.0f, 0.00f, On }, // SNE_HP_B
+	{ ParamType::Choice,     "hf_b",  "Mute HF",    "",   0.0f,  1.0f, 0.00f, On }, // SNE_HF_B
+	{ ParamType::Choice,     "mf_b",  "Mute MF",    "",   0.0f,  1.0f, 0.00f, On }, // SNE_MF_B
+	{ ParamType::Choice,     "lf_b",  "Mute LF",    "",   0.0f,  1.0f, 0.00f, On }, // SNE_LF_B
+	{ ParamType::Choice,     "lp_b",  "Mute LPF",   "",   0.0f,  1.0f, 0.00f, On }, // SNE_LP_B
+	{ ParamType::Choice,     "hp_b",  "Mute HPF",   "",   0.0f,  1.0f, 0.00f, On }, // SNE_HP_B
 };
 
 //------------------------------------------------------------------------------------

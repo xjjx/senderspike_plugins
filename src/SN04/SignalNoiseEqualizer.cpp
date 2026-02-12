@@ -152,7 +152,7 @@ void SignalNoiseEqualizer::setupHF()
 	float G = getParamNorm(SNE_HF_G);
 	float Q = getParamValue(SNE_HF_Q);
 	int fi = getParamChoice(SNE_HF_F);
-	biquad_e typ = getParamValue(SNE_HF_M) > 0.5 ? PKF : HSF;
+	biquad_e typ = getParamChoice(SNE_HF_M) == 1 ? PKF : HSF; // 1 - Bell
 
 	if(!fi)
 	{
@@ -168,7 +168,7 @@ void SignalNoiseEqualizer::setupHF()
 
 	if(typ == HSF)
 	{
-		if(getParamValue(SNE_HF_T) < 0.5)
+		if(getParamChoice(SNE_HF_T) == 0) // 0 - A
 		{
 			//API
 			_hf_Lb.setup(v, f, sampleRate);
@@ -190,7 +190,7 @@ void SignalNoiseEqualizer::setupHF()
 	}
 	else
 	{
-		if(getParamValue(SNE_HF_T) > 0.5)
+		if(getParamChoice(SNE_HF_T) == 1) // 1 - B
 			q = snGetBellBW(Q, G, v, gHFs[fi], gHFr[fi]);
 		else
 			q = snGetBellBW(Q, G, 0, gHFs[fi], gHFr[fi]);
@@ -222,7 +222,7 @@ void SignalNoiseEqualizer::setupMF()
 	f = gMF[fi];
 	v = gainDb;
 
-	if(getParamValue(SNE_MF_T) > 0.5)
+	if(getParamChoice(SNE_MF_T) == 1) // 1 - B
 		q = snGetBellBW(fact, gain, v, gMFs[fi], gMFr[fi]);
 	else
 		q = snGetBellBW(fact, gain, 0, gMFs[fi], gMFr[fi]);
@@ -240,7 +240,7 @@ void SignalNoiseEqualizer::setupLF()
 	float G = getParamNorm(SNE_LF_G);
 	float Gdb = getParamValue(SNE_LF_G);
 	int fi = getParamChoice(SNE_LF_F);
-	biquad_e typ = getParamValue(SNE_LF_M) > 0.5 ? PKF : LSF;
+	biquad_e typ = getParamValue(SNE_LF_M) == 1 ? PKF : LSF; // 1 - Bell
 
 	if(!fi)
 	{
@@ -258,7 +258,7 @@ void SignalNoiseEqualizer::setupLF()
 
 	if(typ == LSF)
 	{
-		if(getParamValue(SNE_LF_T) < 0.5)
+		if(getParamChoice(SNE_LF_T) == 0) // 0 - A
 		{
 			//550A
 			_lf_Lc.setup(v, f, sampleRate);
@@ -287,7 +287,7 @@ void SignalNoiseEqualizer::setupLF()
 	}
 	else
 	{
-		if(getParamValue(SNE_LF_T) > 0.5)
+		if(getParamChoice(SNE_LF_T) == 1) // 1 - B
 			q = snGetBellBW(Q, G, v, 4.53, 2.26);
 		else
 			q = snGetBellBW(Q, G, 0, 4.53, 2.26);
