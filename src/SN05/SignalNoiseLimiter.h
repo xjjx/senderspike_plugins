@@ -47,7 +47,7 @@ static const ParamDesc gParams[] =
     { ParamType::Decibel,    "ceil", "Ceiling",  "dB", -24.0f,    0.0f, 0.00f }, // SNE_CEIL ceiling
     { ParamType::Cubic,      "atkh", "Attack",   "ms",  0.02f,  250.0f, 0.02f }, // SNE_ATKH attack - Holters' limiter
     { ParamType::Cubic,      "relh", "Release1", "ms",  10.0f, 1300.0f, 1300.00f }, // SNE_RELH release - Holters' limiter
-    { ParamType::Normalized, "rels", "Release2", "ms",   0.0f,    1.0f, 1.00f }, // SNE_RELS release - brickwall
+    { ParamType::Cubic,      "rels", "Release2", "ms",   1.0f,  500.0f, 500.0f }, // SNE_RELS release - brickwall
     { ParamType::Choice,     "mode", "Mode",       "",   0.0f,    1.0f, 0.00f, LC }, // SNE_MODE mode (limit/clip)
     { ParamType::Choice,     "hpon", "HP On",      "",   0.0f,    1.0f, 0.00f, On }, // SNE_HPON high pass on/off
     { ParamType::Normalized, "hpfc", "HP Freq",  "Hz",   0.0f,    1.0f, 0.50f }, // SNE_HPFC high pass cutoff

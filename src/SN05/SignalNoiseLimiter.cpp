@@ -117,12 +117,11 @@ void SignalNoiseLimiter::setupLimiter()
 
 void SignalNoiseLimiter::setupClipper()
 {
-	float rels = getParamValue(SNE_RELS);
+	float relsn = getParamValue(SNE_RELS);
+	float rels = gParams[SNE_RELS].normToCubic(relsn);
 
-	if(getParamChoice(SNE_MODE) == 0) // 0 - Limiter
-		rels = (rels * rels * rels * 499.0) + 1.0;
-	else
-		rels = (rels * rels * rels * 49.9) + 0.1;
+	if(getParamChoice(SNE_MODE) == 1) // 0 - Clipper
+		rels *= 0.1f;
 
 	_atk = exp(-1000.0 / (.001 * sampleRate));
 	_rls = exp(-1000.0 / (rels * sampleRate));
