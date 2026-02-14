@@ -53,7 +53,7 @@ static const ParamDesc gParams[] =
 	{ ParamType::Decibel,    "trim", "Input",    "dB", -24.0f, 24.0f,    0.0f }, // SNE_TRIM input trim +/-24 dB
 	{ ParamType::Decibel,    "gain", "Output",   "dB", -24.0f, 24.0f,    0.0f }, // SNE_GAIN output gain +/-24 dB
 
-	{ ParamType::Choice,     "eqsc", "EQ Curve",   "",  0.0f,  3.0f,    1.0f, EQSC }, // SNE_EQSC EQ curve [NAB, IEC 15, AES]
+	{ ParamType::Choice,     "eqsc", "EQ Curve",   "",  0.0f,  3.0f,     1.0f, EQSC }, // SNE_EQSC EQ curve [NAB, IEC 15, AES]
 
 	{ ParamType::Decibel,    "rclo", "EQ RecLo", "dB", -14.0f, 14.0f,    0.0f }, // SNE_RCLO rec EQ bass +/-10 dB
 	{ ParamType::Decibel,    "rchi", "EQ RecHi", "dB", -14.0f, 14.0f,    0.0f }, // SNE_RCHI rec EQ high +/-14 dB
@@ -65,9 +65,9 @@ static const ParamDesc gParams[] =
 
 	{ ParamType::Decibel,    "hiss", "Hiss dB",  "dB", -96.0f, -36.0f, -66.0f }, // SNE_HISS hiss gain
 
-	{ ParamType::Normalized, "room", "VU Ref",   "dB",   0.0f, 1.0f,   0.625f }, // SNE_ROOM VU meter headroom
-	{ ParamType::Normalized, "hold", "VU Hold",  "n/y",  0.0f, 1.0f,    0.00f }, // SNE_HOLD VU meter peak hold
-	{ ParamType::Choice,     "path", "VU Path",     "",  0.0f, 1.0f,    1.00f, IO }, // SNE_PATH VU meter path
+	{ ParamType::Normalized, "room", "VU Ref",   "dB",  0.0f, 1.0f,    0.625f }, // SNE_ROOM VU meter headroom
+	{ ParamType::Choice,     "hold", "VU Hold",    "",  0.0f, 1.0f,     0.00f, On }, // SNE_HOLD VU meter peak hold
+	{ ParamType::Choice,     "path", "VU Path",    "",  0.0f, 1.0f,     1.00f, IO }, // SNE_PATH VU meter path
 
 	{ ParamType::Normalized, "attn", "HB Attn",  "dB",   0.0f, 1.0f,    1.00f }, // SNE_ATTN bump attenuator
 	{ ParamType::Choice,     "nois", "Hiss On",    "",   0.0f, 1.0f,    1.00f, On }, // SNE_NOIS noise on/off

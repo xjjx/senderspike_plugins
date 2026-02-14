@@ -63,6 +63,7 @@ private:
 
 
 	std::unique_ptr<SignalNoiseSwitchButton>	pathSwitch;	// VU I/O switch
+	std::unique_ptr<SignalNoiseSwitchButton>	holdSwitch;	// use peak hold
 	std::unique_ptr<SignalNoiseSwitchButton>	hbonSwitch;	// bump on/off
 	std::unique_ptr<SignalNoiseSwitchButton>	noisSwitch;	// noise on/off
 	std::unique_ptr<SignalNoiseSwitchButton>	loonSwitch;	// force LO on

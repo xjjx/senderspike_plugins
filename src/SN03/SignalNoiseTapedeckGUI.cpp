@@ -98,8 +98,12 @@ SignalNoiseTapedeckGUI::SignalNoiseTapedeckGUI(SignalNoiseTapedeck& p)
 	// Switches
 	auto& params = processor.getParameters();
 
+	holdSwitch = std::make_unique<SignalNoiseSwitchButton>("holdSwitch", switchImage); // VU hold peak
+	holdSwitch->attachToParameter(params, gParams[SNE_HOLD].id);
+	addAndMakeVisible(*holdSwitch);
+
 	pathSwitch = std::make_unique<SignalNoiseSwitchButton>("pathSwitch", switchImage); // VU I/O switch
-//	pathSwitch->attachToParameter(params, gParams[SNE_MODE].id);
+	pathSwitch->attachToParameter(params, gParams[SNE_PATH].id);
 	addAndMakeVisible(*pathSwitch);
 
 	hbonSwitch = std::make_unique<SignalNoiseSwitchButton>("hbonSwitch", switchImage); // bump on/off
@@ -210,6 +214,7 @@ void SignalNoiseTapedeckGUI::resized()
 	frm->addView(_attn);
 */
 	// VU switches -----------------------------------------
+	holdSwitch->setBounds(240, 0, 40, 30);
 	pathSwitch->setBounds(320, 0, 40, 30);
 
 /*
@@ -218,12 +223,6 @@ void SignalNoiseTapedeckGUI::resized()
 	_room = new CHorizontalSwitch(rc, this, SNE_ROOM, 4, 30, 4, displ, pt);
 	_room->setValue(effect->getParameter(SNE_ROOM));
 	frm->addView(_room);
-
-	x = 240;
-	rc(x, 0, x + 40, 30);
-	_hold = new CHorizontalSwitch(rc, this, SNE_HOLD, 2, 30, 2, slide, pt);
-	_hold->setValue(effect->getParameter(SNE_HOLD));
-	frm->addView(_hold);
 
 	// VU meter --------------------------------------------
 
