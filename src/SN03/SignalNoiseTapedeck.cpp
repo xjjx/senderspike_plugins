@@ -169,7 +169,6 @@ void SignalNoiseTapedeck::processImpl(juce::AudioBuffer<Sample>& buffer)
 	const float gainParam  = getParamValue(SNE_GAIN);
 	const float trimParam  = getParamValue(SNE_TRIM);
 	const float hissParam  = getParamValue(SNE_HISS);
-	const float pathParam  = getParamValue(SNE_PATH);
 
 	const double iG = dB2lin(trimParam);
 	const double oG = dB2lin(gainParam);
@@ -177,7 +176,7 @@ void SignalNoiseTapedeck::processImpl(juce::AudioBuffer<Sample>& buffer)
 
 	const bool nois = getParamChoice(SNE_NOIS) == 0; // 0 - On
 
-	const int id = pathParam > 0.5 ? 1 : 0;
+	const int id = getParamChoice(SNE_PATH) == 0 ? 0 : 1; // 0 - Input, 1 - Output
 
 	for (int n = 0; n < numSamples; ++n)
 	{

@@ -46,6 +46,7 @@ enum
 //------------------------------------------------------------------------------------
 
 static const std::vector<const char*> On = { "Off", "On" };
+static const std::vector<const char*> IO = { "Input", "Output" };
 static const std::vector<const char*> EQSC = { "NAB", "IEC 15 IPS", "AES 30 IPS" };
 static const ParamDesc gParams[] =
 {
@@ -66,7 +67,7 @@ static const ParamDesc gParams[] =
 
 	{ ParamType::Normalized, "room", "VU Ref",   "dB",   0.0f, 1.0f,   0.625f }, // SNE_ROOM VU meter headroom
 	{ ParamType::Normalized, "hold", "VU Hold",  "n/y",  0.0f, 1.0f,    0.00f }, // SNE_HOLD VU meter peak hold
-	{ ParamType::Normalized, "path", "VU Path",  "I/O",  0.0f, 1.0f,    1.00f }, // SNE_PATH VU meter path
+	{ ParamType::Choice,     "path", "VU Path",     "",  0.0f, 1.0f,    1.00f, IO }, // SNE_PATH VU meter path
 
 	{ ParamType::Normalized, "attn", "HB Attn",  "dB",   0.0f, 1.0f,    1.00f }, // SNE_ATTN bump attenuator
 	{ ParamType::Choice,     "nois", "Hiss On",    "",   0.0f, 1.0f,    1.00f, On }, // SNE_NOIS noise on/off
