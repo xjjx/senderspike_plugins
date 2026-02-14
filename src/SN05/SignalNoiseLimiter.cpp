@@ -131,7 +131,7 @@ void SignalNoiseLimiter::setupClipper()
 
 void SignalNoiseLimiter::setupSidechain()
 {
-	double fc = getParamValue(SNE_HPFC) * 1975 + 15;
+	float fc = getParamValue(SNE_HPFC);
 
 	_hL1.setup_q(HPF, 0, qf18, fc, sampleRate);
 	_hR1.setup_q(HPF, 0, qf18, fc, sampleRate);

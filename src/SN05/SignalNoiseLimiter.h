@@ -43,15 +43,15 @@ static const std::vector<const char*> LC = { "Limiter", "Clipper" };
 static const std::vector<const char*> On = { "Off", "On" };
 static const ParamDesc gParams[] =
 {
-    { ParamType::Decibel,    "gain", "Gain",     "dB",   0.0f,   24.0f, 0.00f }, // SNE_GAIN input gain
-    { ParamType::Decibel,    "ceil", "Ceiling",  "dB", -24.0f,    0.0f, 0.00f }, // SNE_CEIL ceiling
-    { ParamType::Cubic,      "atkh", "Attack",   "ms",  0.02f,  250.0f, 0.02f }, // SNE_ATKH attack - Holters' limiter
-    { ParamType::Cubic,      "relh", "Release1", "ms",  10.0f, 1300.0f, 1300.00f }, // SNE_RELH release - Holters' limiter
-    { ParamType::Cubic,      "rels", "Release2", "ms",   1.0f,  500.0f, 500.0f }, // SNE_RELS release - brickwall
-    { ParamType::Choice,     "mode", "Mode",       "",   0.0f,    1.0f, 0.00f, LC }, // SNE_MODE mode (limit/clip)
-    { ParamType::Choice,     "hpon", "HP On",      "",   0.0f,    1.0f, 0.00f, On }, // SNE_HPON high pass on/off
-    { ParamType::Normalized, "hpfc", "HP Freq",  "Hz",   0.0f,    1.0f, 0.50f }, // SNE_HPFC high pass cutoff
-    { ParamType::Percent,    "clip", "SC",        "%",   0.0f,  100.0f, 0.00f }, // SNE_CLIP clipper % (0% = true bypass)
+    { ParamType::Decibel, "gain", "Gain",     "dB",   0.0f,   24.0f, 0.00f }, // SNE_GAIN input gain
+    { ParamType::Decibel, "ceil", "Ceiling",  "dB", -24.0f,    0.0f, 0.00f }, // SNE_CEIL ceiling
+    { ParamType::Cubic,   "atkh", "Attack",   "ms",  0.02f,  250.0f, 0.02f }, // SNE_ATKH attack - Holters' limiter
+    { ParamType::Cubic,   "relh", "Release1", "ms",  10.0f, 1300.0f, 1300.00f }, // SNE_RELH release - Holters' limiter
+    { ParamType::Cubic,   "rels", "Release2", "ms",   1.0f,  500.0f, 500.0f }, // SNE_RELS release - brickwall
+    { ParamType::Choice,  "mode", "Mode",       "",   0.0f,    1.0f, 0.00f, LC }, // SNE_MODE mode (limit/clip)
+    { ParamType::Choice,  "hpon", "HP On",      "",   0.0f,    1.0f, 0.00f, On }, // SNE_HPON high pass on/off
+    { ParamType::Hertz,   "hpfc", "HP Freq",  "Hz",  15.0f, 1990.0f, 1002.5f }, // SNE_HPFC high pass cutoff
+    { ParamType::Percent, "clip", "SC",        "%",   0.0f,  100.0f, 0.00f }, // SNE_CLIP clipper % (0% = true bypass)
 };
 
 //------------------------------------------------------------------------------------
