@@ -55,6 +55,7 @@ SignalNoiseFX::createLayout(const ParamDesc* paramArray, int numParams)
 			range = juce::NormalisableRange<float>(p.minValue, p.maxValue, step);
 			break;
 		case ParamType::Normalized:
+		case ParamType::Ratio:
 			range = juce::NormalisableRange<float>(p.minValue, p.maxValue);
 			break;
 		case ParamType::Cubic:
@@ -99,6 +100,40 @@ SignalNoiseFX::createLayout(const ParamDesc* paramArray, int numParams)
 				[p](const juce::String& text) {
 					float ms = text.getFloatValue();
 					return p.cubicToNorm(ms);
+				}
+			));
+		}
+		else if (p.type == ParamType::Ratio)
+		{
+			layout.add(std::make_unique<juce::AudioParameterFloat>(
+				p.id,
+				p.name,
+				range,
+				p.defaultValue,
+				p.unit,
+				juce::AudioProcessorParameter::genericParameter,
+				// stringFromValue
+				[p](float value, int) {
+					if (value >= 0.9999f)
+						return juce::String("inf");
+
+					float func  = std::sqrt(value);
+					float ratio = 1.0f / (1.0f - func);
+					return juce::String(ratio, 2) + ":1";
+				},
+				// valueFromString
+				[p](const juce::String& text) {
+					if (text.containsIgnoreCase("inf"))
+						return 1.0f;
+
+					float ratio = text.upToFirstOccurrenceOf(":", false, false).getFloatValue();
+					if (ratio <= 1.0f)
+						return 0.0f;
+
+					float root = 1.0f - (1.0f / ratio);
+					float param = root * root;
+
+					return juce::jlimit(0.0f, 1.0f, param);
 				}
 			));
 		}

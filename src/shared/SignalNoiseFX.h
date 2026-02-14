@@ -22,6 +22,7 @@ enum class ParamType
 	Decibel,	// linear gain in dB
 	Hertz,		// linear frequency in Hz
 	Bandwidth,	// linear in oct
+	Ratio,
 	Percent,
 	Cubic,
 	Choice		// generic stepped parameter (EQ frequencies, etc)
