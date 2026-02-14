@@ -59,7 +59,7 @@ static const ParamDesc gParams[] =
 	{ ParamType::Decibel,    "rplo", "EQ RepLo", "dB", -10.0f, 10.0f,    0.0f }, // SNE_RPLO rep EQ bass +/-10 dB
 	{ ParamType::Decibel,    "rphi", "EQ RepHi", "dB", -14.0f, 14.0f,    0.0f }, // SNE_RPHI rep EQ high +/-14 dB
 
-	{ ParamType::Normalized, "head", "HB Freq",  "Hz",   0.0f, 1.0f,    0.00f }, // SNE_HEAD head bump frequency
+	{ ParamType::Hertz,      "head", "HB Freq",  "Hz",  65.0f, 105.0f,  65.0f }, // SNE_HEAD head bump frequency
 	{ ParamType::Normalized, "bump", "HB Strn",  "dB",   0.0f, 1.0f,    0.00f }, // SNE_BUMP head bump magnitude
 
 	{ ParamType::Decibel,    "hiss", "Hiss dB",  "dB", -96.0f, -36.0f, -66.0f }, // SNE_HISS hiss gain
@@ -112,6 +112,12 @@ private:
 	{
 		auto ptr = getParameters().getRawParameterValue(gParams[idx].id);
 		return ptr->load();
+	}
+
+	inline float getParamNorm (int idx) const noexcept
+	{
+		auto* p = getParameters().getParameter(gParams[idx].id);
+		return p->getValue();
 	}
 
 	inline int getParamChoice(int idx)
