@@ -150,7 +150,7 @@ void SignalNoiseEqualizer::setupHF()
 	double f, v, q;
 	float Gdb = getParamValue(SNE_HF_G);
 	float G = getParamNorm(SNE_HF_G);
-	float Q = getParamValue(SNE_HF_Q);
+	float Q = getParamNorm(SNE_HF_Q);
 	int fi = getParamChoice(SNE_HF_F);
 	biquad_e typ = getParamChoice(SNE_HF_M) == 1 ? PKF : HSF; // 1 - Bell
 
@@ -209,7 +209,7 @@ void SignalNoiseEqualizer::setupMF()
 	double f, v, q;
 	float gainDb = getParamValue(SNE_MF_G);
 	float gain = getParamNorm(SNE_MF_G);
-	float fact = getParamValue(SNE_MF_Q);
+	float fact = getParamNorm(SNE_MF_Q);
 	int fi = getParamChoice(SNE_MF_F);
 
 	if(!fi)
@@ -236,7 +236,7 @@ void SignalNoiseEqualizer::setupMF()
 void SignalNoiseEqualizer::setupLF()
 {
 	double f, v, q, n;
-	float Q = getParamValue(SNE_LF_Q);
+	float Q = getParamNorm(SNE_LF_Q);
 	float G = getParamNorm(SNE_LF_G);
 	float Gdb = getParamValue(SNE_LF_G);
 	int fi = getParamChoice(SNE_LF_F);

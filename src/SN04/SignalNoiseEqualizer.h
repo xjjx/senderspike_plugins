@@ -71,18 +71,18 @@ static const ParamDesc gParams[SNE_SIZE] =
 
 	{ ParamType::Choice,     "hf_f",  "HF Freq",    "",   0.0f,  1.0f, 0.00f, pHF }, // SNE_HF_F
 	{ ParamType::Decibel,    "hf_g",  "HF Gain",  "dB", -18.0f, 18.0f,  0.0f }, // SNE_HF_G
-	{ ParamType::Normalized, "hf_q",  "HF BW",   "oct",   0.0f,  1.0f, 0.50f }, // SNE_HF_Q
+	{ ParamType::Bandwidth,  "hf_q",  "HF BW",   "oct", -20.0f, 20.0f, 0.00f }, // SNE_HF_Q
 	{ ParamType::Choice,     "hf_t",  "HF Type",    "",   0.0f,  1.0f, 0.00f, FType }, // SNE_HF_T
 	{ ParamType::Choice,     "hf_m",  "HF Mode",    "",   0.0f,  1.0f, 0.00f, FMode }, // SNE_HF_M
 
 	{ ParamType::Choice,     "mf_f",  "MF Freq",    "",   0.0f,  1.0f, 0.00f, pMF }, // SNE_MF_F
 	{ ParamType::Decibel,    "mf_g",  "MF Gain",  "dB", -18.0f, 18.0f,  0.0f }, // SNE_MF_G
-	{ ParamType::Normalized, "mf_q",  "MF BW",   "oct",   0.0f,  1.0f, 0.50f }, // SNE_MF_Q
+	{ ParamType::Bandwidth,  "mf_q",  "MF BW",   "oct", -20.0f, 20.0f, 0.00f }, // SNE_MF_Q
 	{ ParamType::Choice,     "mf_t",  "MF Type",    "",   0.0f,  1.0f, 0.00f, FType }, // SNE_MF_T
 
 	{ ParamType::Choice,     "lf_f",  "LF Freq",    "",   0.0f,  1.0f, 0.00f, pLF }, // SNE_LF_F
 	{ ParamType::Decibel,    "lf_g",  "LF Gain",  "dB", -18.0f, 18.0f,  0.0f }, // SNE_LF_G
-	{ ParamType::Normalized, "lf_q",  "LF BW",   "oct",   0.0f,  1.0f, 0.50f }, // SNE_LF_Q
+	{ ParamType::Bandwidth,  "lf_q",  "LF BW",   "oct", -20.0f, 20.0f, 0.00f }, // SNE_LF_Q
 	{ ParamType::Choice,     "lf_t",  "LF Type",    "",   0.0f,  1.0f, 0.00f, FType }, // SNE_LF_T
 	{ ParamType::Choice,     "lf_m",  "LF Mode",    "",   0.0f,  1.0f, 0.00f, FMode }, // SNE_LF_M
 

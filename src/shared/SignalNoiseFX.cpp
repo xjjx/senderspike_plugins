@@ -46,6 +46,7 @@ SignalNoiseFX::createLayout(const ParamDesc* paramArray, int numParams)
 		{
 		case ParamType::Decibel:
 		case ParamType::Hertz:
+		case ParamType::Bandwidth:
 			step = 0.01f;
 			range = juce::NormalisableRange<float>(p.minValue, p.maxValue, step);
 			break;

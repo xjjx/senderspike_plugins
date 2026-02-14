@@ -21,6 +21,7 @@ enum class ParamType
 	Normalized,	// legacy 0..1
 	Decibel,	// linear gain in dB
 	Hertz,		// linear frequency in Hz
+	Bandwidth,	// linear in oct
 	Percent,
 	Cubic,
 	Choice		// generic stepped parameter (EQ frequencies, etc)
