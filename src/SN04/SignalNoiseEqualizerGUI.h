@@ -17,7 +17,6 @@
 #include "SignalNoiseEqualizer.h"
 #include "SignalNoiseSwitchButton.h"
 #include "SignalNoiseFilmstripLNF.h"
-#include "SwitchLookAndFeel.h"
 
 //------------------------------------------------------------------------------------
 //knobs
