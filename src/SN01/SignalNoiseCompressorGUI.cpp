@@ -117,7 +117,7 @@ SignalNoiseCompressorGUI::SignalNoiseCompressorGUI(SignalNoiseCompressor& p)
 	addAndMakeVisible(modeSlider);
 
 	modeAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
-		params, gParams[SNE_MODE].id, pushSlider
+		params, gParams[SNE_MODE].id, modeSlider
 	);
 
 	// GR Meter
