@@ -41,3 +41,15 @@ double SignalNoiseKnobPrecise::snapValue(double attemptedValue, DragMode dragMod
 
 	return db;
 }
+
+double SignalNoiseKnobPrecise::valueToProportionOfLength(double value)
+{
+	auto proportion = juce::Slider::valueToProportionOfLength(value);
+	return isReversed ? (1.0 - proportion) : proportion;
+}
+
+double SignalNoiseKnobPrecise::proportionOfLengthToValue(double proportion)
+{
+	auto p = isReversed ? (1.0 - proportion) : proportion;
+	return juce::Slider::proportionOfLengthToValue(p);
+}

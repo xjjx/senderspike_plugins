@@ -69,6 +69,8 @@ SignalNoiseCompressorGUI::SignalNoiseCompressorGUI(SignalNoiseCompressor& p)
 	screwLNF.setImage(knobScrewImage);
 
 	thrsKnob = setupKnobPrecise(gParams[SNE_TRSH], &largeLNF); // threshold
+	thrsKnob->setReversed(true);
+
 	funcKnob = setupKnob(gParams[SNE_FUNC], &largeLNF); // ratio
 	gainKnob = setupKnobPrecise(gParams[SNE_GAIN], &largeLNF); // make-up gain
 

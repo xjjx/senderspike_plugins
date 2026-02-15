@@ -15,7 +15,13 @@ public:
 		);
 	}
 
+	void setReversed(bool shouldBeReversed) { isReversed = shouldBeReversed; }
+
+	double valueToProportionOfLength(double value) override;
+	double proportionOfLengthToValue(double proportion) override;
+
 private:
 	std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> attachment;
 	double snapValue(double attemptedValue, DragMode) override;
+	bool isReversed = false;
 };
