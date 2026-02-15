@@ -17,6 +17,7 @@
 #include "SignalNoiseEqualizer.h"
 #include "SignalNoiseSwitchButton.h"
 #include "SwitchLookAndFeel.h"
+#include "FilmstripLookAndFeel.h"
 
 //------------------------------------------------------------------------------------
 //knobs
@@ -84,6 +85,7 @@ private:
 	SignalNoiseKnobLookAndFeel gainLNF;
 	SignalNoiseKnobLookAndFeel lpfLNF;
 	SignalNoiseKnobLookAndFeel hpfLNF;
+	std::unique_ptr<FilmstripLookAndFeel> octLNF;
 
 //HF
 	std::unique_ptr<SignalNoiseKnob>			_hf_f;	// HSF freq
@@ -111,8 +113,8 @@ private:
 //LPF/HPF
 	std::unique_ptr<SignalNoiseKnob>			_lpas;	// LPF freq
 	std::unique_ptr<SignalNoiseKnob>			_hpas;	// HPF freq
-//	CHorizontalSwitch*				_loct;	// LPF dB/oct
-//	CHorizontalSwitch*				_hoct;	// HPF dB/oct
+	std::unique_ptr<SignalNoiseKnob>			_loct;	// LPF dB/oct
+	std::unique_ptr<SignalNoiseKnob>			_hoct;	// HPF dB/oct
 //	SignalNoiseOnOffLed*			_lpon;	// on/off led
 //	SignalNoiseOnOffLed*			_hpon;	// on/off led
 	std::unique_ptr<SignalNoiseSwitchButton>	_hp_b;	// HPF mute

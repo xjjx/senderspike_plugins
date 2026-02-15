@@ -220,6 +220,11 @@ SignalNoiseEqualizerGUI::SignalNoiseEqualizerGUI(SignalNoiseEqualizer& p)
 		BinaryData::sn04g_b4_pngSize
 	);
 
+	juce::Image switch4WayImage = juce::ImageCache::getFromMemory(
+		BinaryData::sn04g_b5_png,
+		BinaryData::sn04g_b5_pngSize
+	);
+
 	juce::Image onOffSwitchImage = juce::ImageCache::getFromMemory(
 		BinaryData::sn04g_ld_png,
 		BinaryData::sn04g_ld_pngSize
@@ -261,6 +266,7 @@ SignalNoiseEqualizerGUI::SignalNoiseEqualizerGUI(SignalNoiseEqualizer& p)
 	hpfLNF.setImage(hpfImage);
 	lpfLNF.setImage(lpfImage);
 	gainLNF.setImage(gainImage);
+	octLNF = std::make_unique<FilmstripLookAndFeel>(switch4WayImage, 4);
 
 	_hf_f = setupKnob(gParams[SNE_HF_F], &rimLNF);      // HSF freq
 	_hf_g = setupKnobPrecise(gParams[SNE_HF_G], &innerKnobLNF); // HSF gain
@@ -328,6 +334,12 @@ SignalNoiseEqualizerGUI::SignalNoiseEqualizerGUI(SignalNoiseEqualizer& p)
 	_mojo = std::make_unique<SignalNoiseSwitchButton>("mojo", mojoSwitchImage);
 	_mojo->attachToParameter(params, gParams[SNE_MOJO].id);
 	addAndMakeVisible(*_mojo);
+
+	// Switches filters oct
+	_loct = setupKnob(gParams[SNE_LOCT], octLNF.get());
+	_loct->setSliderStyle(juce::Slider::LinearBar);
+	_hoct = setupKnob(gParams[SNE_HOCT], octLNF.get());
+	_hoct->setSliderStyle(juce::Slider::LinearBar);
 
 	// Set initial size based on background
 	setSize(background.getWidth(), background.getHeight());
@@ -430,6 +442,8 @@ void SignalNoiseEqualizerGUI::resized()
 	_lf_b->setBounds(131, 360, 28, 28);
 	_hp_b->setBounds(12, 592, 28, 28);
 	_lp_b->setBounds(121, 460, 28, 28);
+	_loct->setBounds(32, 460, 60, 30);
+	_hoct->setBounds(68, 590, 60, 30);
 
 	// push buttons ----------------------------------------
 	_mojo->setBounds(133, 603, 40, 30);
@@ -441,24 +455,6 @@ void SignalNoiseEqualizerGUI::resized()
 	_lf_t->setBounds(190, 400, 40, 30);
 
 /*
-	x = 32;
-	y = 460;
-	rc(x, y, x + 60, y + 30);
-	_loct = new CHorizontalSwitch(rc, this, SNE_LOCT, 4, 30, 4, slope, pt);
-	_loct->setValue(effect->getParameter(SNE_LOCT));
-	frm->addView(_loct);
-
-	snSetSwitchInnerMouse(_loct, x, y, 5);
-
-	x = 68;
-	y = 590;
-	rc(x, y, x + 60, y + 30);
-	_hoct = new CHorizontalSwitch(rc, this, SNE_HOCT, 4, 30, 4, slope, pt);
-	_hoct->setValue(effect->getParameter(SNE_HOCT));
-	frm->addView(_hoct);
-
-	snSetSwitchInnerMouse(_hoct, x, y, -5);
-
 	// leds & mutes ----------------------------------------
 
 	x = 230;
