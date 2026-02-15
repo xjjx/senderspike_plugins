@@ -16,7 +16,7 @@
 #include "SignalNoiseKnob.h"
 #include "SignalNoiseTapedeck.h"
 #include "SignalNoiseSwitchButton.h"
-#include "FilmstripLookAndFeel.h"
+#include "SignalNoiseFilmstripLNF.h"
 
 
 //------------------------------------------------------------------------------------
@@ -51,7 +51,7 @@ private:
 
 	SignalNoiseKnobLookAndFeel largeLNF;
 	SignalNoiseKnobLookAndFeel normalLNF;
-	std::unique_ptr<FilmstripLookAndFeel> roomLNF;
+	SignalNoiseFilmstripLNF roomLNF;
 
 	std::unique_ptr<SignalNoiseKnobPrecise>	trimKnob;   // input trim
 	std::unique_ptr<SignalNoiseKnobPrecise>	gainKnob;   // output gain

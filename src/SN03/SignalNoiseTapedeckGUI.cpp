@@ -104,11 +104,11 @@ SignalNoiseTapedeckGUI::SignalNoiseTapedeckGUI(SignalNoiseTapedeck& p)
 	auto& params = processor.getParameters();
 
 	// Room switch
-	roomLNF = std::make_unique<FilmstripLookAndFeel>(roomImage, 4);
+	roomLNF.setImage(roomImage, 4);
 	roomSwitch.setSliderStyle(juce::Slider::LinearBarVertical);
 	roomSwitch.setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
 	roomSwitch.setRange(0.0, 3.0, 1.0);
-	roomSwitch.setLookAndFeel(roomLNF.get());
+	roomSwitch.setLookAndFeel(&roomLNF);
 
 	using Attachment = juce::AudioProcessorValueTreeState::SliderAttachment;
 	std::unique_ptr<Attachment> roomAttachment = std::make_unique<Attachment>(
@@ -178,7 +178,7 @@ std::unique_ptr<SignalNoiseKnob> SignalNoiseTapedeckGUI::setupKnob(
 
 SignalNoiseTapedeckGUI::~SignalNoiseTapedeckGUI()
 {
-	roomSwitch.setLookAndFeel(nullptr);
+	// empty
 }
 
 //------------------------------------------------------------------------------------

@@ -6,6 +6,7 @@ add_library(SN STATIC
     SignalNoiseKnob.cpp
     SignalNoisePeakMeter.cpp
     SignalNoiseKnobLabel.cpp
+    SignalNoiseFilmstripLNF.cpp
 )
 
 juce_add_binary_data(SN_BinaryData

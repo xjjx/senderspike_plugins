@@ -266,7 +266,7 @@ SignalNoiseEqualizerGUI::SignalNoiseEqualizerGUI(SignalNoiseEqualizer& p)
 	hpfLNF.setImage(hpfImage);
 	lpfLNF.setImage(lpfImage);
 	gainLNF.setImage(gainImage);
-	octLNF = std::make_unique<FilmstripLookAndFeel>(switch4WayImage, 4);
+	octLNF.setImage(switch4WayImage, 4);
 
 	_hf_f = setupKnob(gParams[SNE_HF_F], &rimLNF);      // HSF freq
 	_hf_g = setupKnobPrecise(gParams[SNE_HF_G], &innerKnobLNF); // HSF gain
@@ -336,9 +336,9 @@ SignalNoiseEqualizerGUI::SignalNoiseEqualizerGUI(SignalNoiseEqualizer& p)
 	addAndMakeVisible(*_mojo);
 
 	// Switches filters oct
-	_loct = setupKnob(gParams[SNE_LOCT], octLNF.get());
+	_loct = setupKnob(gParams[SNE_LOCT], &octLNF);
 	_loct->setSliderStyle(juce::Slider::LinearBar);
-	_hoct = setupKnob(gParams[SNE_HOCT], octLNF.get());
+	_hoct = setupKnob(gParams[SNE_HOCT], &octLNF);
 	_hoct->setSliderStyle(juce::Slider::LinearBar);
 
 	// Set initial size based on background
