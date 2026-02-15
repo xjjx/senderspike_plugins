@@ -79,9 +79,9 @@ SignalNoiseCompressorGUI::SignalNoiseCompressorGUI(SignalNoiseCompressor& p)
 	addAndMakeVisible(*fbckSwitch);
 
 	// Push switch
-	switchLNF.setImage(switch1Image);
+	switchLNF.setImage(switch1Image, 3);
 
-	pushSlider.setSliderStyle (juce::Slider::LinearHorizontal); // or LinearHorizontal
+	pushSlider.setSliderStyle (juce::Slider::LinearBar);
 	pushSlider.setTextBoxStyle (juce::Slider::NoTextBox, false, 0, 0);
 
 	pushSlider.setRange (0, 2, 1);
@@ -97,7 +97,7 @@ SignalNoiseCompressorGUI::SignalNoiseCompressorGUI(SignalNoiseCompressor& p)
 	);
 
 	// Mode switch
-	modeSlider.setSliderStyle (juce::Slider::LinearHorizontal); // or LinearHorizontal
+	modeSlider.setSliderStyle (juce::Slider::LinearBar);
 	modeSlider.setTextBoxStyle (juce::Slider::NoTextBox, false, 0, 0);
 
 	modeSlider.setRange (0, 2, 1);

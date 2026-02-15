@@ -16,7 +16,7 @@
 #include "SignalNoiseKnob.h"
 #include "SignalNoiseCompressor.h"
 #include "SignalNoiseSwitchButton.h"
-#include "SwitchLookAndFeel.h"
+#include "SignalNoiseFilmstripLNF.h"
 
 //------------------------------------------------------------------------------------
 // const
@@ -62,7 +62,7 @@ private:
 	SignalNoiseKnobLookAndFeel largeLNF;
 	SignalNoiseKnobLookAndFeel normalLNF;
 	SignalNoiseKnobLookAndFeel screwLNF;
-	SwitchLookAndFeel switchLNF;
+	SignalNoiseFilmstripLNF switchLNF;
 
 	std::unique_ptr<SignalNoiseKnobPrecise>	thrsKnob;		// threshold
 	std::unique_ptr<SignalNoiseKnob>		funcKnob;		// ratio
