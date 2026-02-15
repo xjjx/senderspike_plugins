@@ -139,7 +139,7 @@ void SignalNoiseCompressor::processImpl(juce::AudioBuffer<Sample>& buffer)
 	const int push = getParamChoice(SNE_PUSH);
 	const double func = sqrt(ratioParam);
 	const double trsh = trshParam - (9.0 * push);
-	const double knee = kneeParam * kwdtParam * 24.0;
+	const double knee = kneeParam * kwdtParam;
 	const float dry	= compParam;
 	const double wet = (1.0 - dry) * gain;
 	const double kh	= knee / 2.0;
