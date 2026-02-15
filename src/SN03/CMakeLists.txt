@@ -21,7 +21,7 @@ juce_add_binary_data(SN03_BinaryData
         ../graphics/sn03g/sn03g_bk.png # background
         ../graphics/sn01g/sn01g_b1.png # large knob
         ../graphics/sn01g/sn01g_b2.png # small knob
-#        ../graphics/sn01g/sn01g_s1.png # switch
+        ../graphics/sn01g/sn01g_s1.png # switch
 #        ../graphics/sn02g/sn02g_v1.png # vu needle
 #        ../graphics/sn02g/sn02g_p1.png # peak needle
 #        ../graphics/sn02g/sn02g_l1.png # peak led

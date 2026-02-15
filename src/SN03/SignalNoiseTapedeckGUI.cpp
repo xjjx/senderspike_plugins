@@ -71,6 +71,11 @@ SignalNoiseTapedeckGUI::SignalNoiseTapedeckGUI(SignalNoiseTapedeck& p)
 		BinaryData::sn03g_b1_pngSize
 	);
 
+	juce::Image eqscImage = juce::ImageCache::getFromMemory(
+		BinaryData::sn01g_s1_png,
+		BinaryData::sn01g_s1_pngSize
+	);
+
 	juce::Image switchImage = juce::ImageCache::getFromMemory(
 		BinaryData::sn03g_b2_png,
 		BinaryData::sn03g_b2_pngSize
@@ -86,6 +91,7 @@ SignalNoiseTapedeckGUI::SignalNoiseTapedeckGUI(SignalNoiseTapedeck& p)
 	jassert(!roomImage.isNull());
 	jassert(!switchImage.isNull());
 	jassert(!loonImage.isNull());
+	jassert(!eqscImage.isNull());
 
 	// Knobs
 	largeLNF.setImage(knobLargeImage);
@@ -115,6 +121,17 @@ SignalNoiseTapedeckGUI::SignalNoiseTapedeckGUI(SignalNoiseTapedeck& p)
 		params, gParams[SNE_ROOM].id, roomSwitch
 	);
 	addAndMakeVisible(roomSwitch);
+
+	// EQSC Switch
+	eqscLNF.setImage(eqscImage, 3);
+	eqscSwitch.setSliderStyle(juce::Slider::LinearBar);
+	eqscSwitch.setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
+//	roomSwitch.setRange(0.0, 2.0, 1.0);
+	eqscSwitch.setLookAndFeel(&eqscLNF);
+	std::unique_ptr<Attachment> eqscAttachment = std::make_unique<Attachment>(
+		params, gParams[SNE_EQSC].id, eqscSwitch
+	);
+	addAndMakeVisible(eqscSwitch);
 
 	// Switches
 	holdSwitch = std::make_unique<SignalNoiseSwitchButton>("holdSwitch", switchImage); // VU hold peak
@@ -217,14 +234,8 @@ void SignalNoiseTapedeckGUI::resized()
 	hbonSwitch->setBounds(94, 401, 40, 30);
 	noisSwitch->setBounds(440, 401, 40, 30);
 	loonSwitch->setBounds(386, 188, 40, 30);
+	eqscSwitch.setBounds(240, 230, 40, 40);
 /*
-	x = 240;
-	y = 230;
-	rc(x, y, x + SN03_MODES_SZ, y + SN03_MODES_SZ);
-	_mode = new CHorizontalSwitch(rc, this, SNE_EQSC, 3, SN03_MODES_SZ, 3, modes, pt);
-	_mode->setValue(effect->getParameter(SNE_EQSC));
-	frm->addView(_mode);
-
 	x = 212;
 	y = 317;
 	rc(x, y, x + 28, y + 84);
