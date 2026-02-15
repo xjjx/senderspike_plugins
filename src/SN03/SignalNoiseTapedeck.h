@@ -49,6 +49,7 @@ static const std::vector<const char*> On = { "Off", "On" };
 static const std::vector<const char*> IO = { "Input", "Output" };
 static const std::vector<const char*> REF = { "12 dB", "14 dB", "18 dB", "20 dB" };
 static const std::vector<const char*> EQSC = { "NAB", "IEC 15 IPS", "AES 30 IPS" };
+static const std::vector<const char*> ATTN = { "0 dB", "1 dB", "2 dB" };
 static const ParamDesc gParams[] =
 {
 	{ ParamType::Decibel,    "trim", "Input",    "dB", -24.0f, 24.0f,    0.0f }, // SNE_TRIM input trim +/-24 dB
@@ -70,7 +71,7 @@ static const ParamDesc gParams[] =
 	{ ParamType::Choice,     "hold", "VU Hold",    "",  0.0f,  1.0f,    0.00f, On }, // SNE_HOLD VU meter peak hold
 	{ ParamType::Choice,     "path", "VU Path",    "",  0.0f,  1.0f,    1.00f, IO }, // SNE_PATH VU meter path
 
-	{ ParamType::Normalized, "attn", "HB Attn",  "dB",   0.0f, 1.0f,    1.00f }, // SNE_ATTN bump attenuator
+	{ ParamType::Choice,     "attn", "HB Attn",    "",   0.0f, 2.0f,    0.00f, ATTN }, // SNE_ATTN bump attenuator
 	{ ParamType::Choice,     "nois", "Hiss On",    "",   0.0f, 1.0f,    1.00f, On }, // SNE_NOIS noise on/off
 	{ ParamType::Choice,     "hbon", "HB On",      "",   0.0f, 1.0f,    1.00f, On }, // SNE_HBON head bump on/off
 	{ ParamType::Choice,     "loon", "Anarchy",    "",   0.0f, 1.0f,    0.00f, On }, // SNE_LOON force LO on

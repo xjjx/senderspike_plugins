@@ -76,6 +76,11 @@ SignalNoiseTapedeckGUI::SignalNoiseTapedeckGUI(SignalNoiseTapedeck& p)
 		BinaryData::sn01g_s1_pngSize
 	);
 
+	juce::Image attnImage = juce::ImageCache::getFromMemory(
+		BinaryData::sn03g_s1_png,
+		BinaryData::sn03g_s1_pngSize
+	);
+
 	juce::Image switchImage = juce::ImageCache::getFromMemory(
 		BinaryData::sn03g_b2_png,
 		BinaryData::sn03g_b2_pngSize
@@ -92,6 +97,7 @@ SignalNoiseTapedeckGUI::SignalNoiseTapedeckGUI(SignalNoiseTapedeck& p)
 	jassert(!switchImage.isNull());
 	jassert(!loonImage.isNull());
 	jassert(!eqscImage.isNull());
+	jassert(!attnImage.isNull());
 
 	// Knobs
 	largeLNF.setImage(knobLargeImage);
@@ -126,12 +132,25 @@ SignalNoiseTapedeckGUI::SignalNoiseTapedeckGUI(SignalNoiseTapedeck& p)
 	eqscLNF.setImage(eqscImage, 3);
 	eqscSwitch.setSliderStyle(juce::Slider::LinearBar);
 	eqscSwitch.setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
-//	roomSwitch.setRange(0.0, 2.0, 1.0);
+	eqscSwitch.setRange(0.0, 2.0, 1.0);
 	eqscSwitch.setLookAndFeel(&eqscLNF);
 	std::unique_ptr<Attachment> eqscAttachment = std::make_unique<Attachment>(
 		params, gParams[SNE_EQSC].id, eqscSwitch
 	);
 	addAndMakeVisible(eqscSwitch);
+
+	// Attn Switch
+	attnLNF.setImage(attnImage, 3);
+	attnLNF.reverse = true;
+
+	attnSwitch.setSliderStyle(juce::Slider::LinearBarVertical);
+	attnSwitch.setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
+	attnSwitch.setRange(0.0, 2.0, 1.0);
+	attnSwitch.setLookAndFeel(&attnLNF);
+	std::unique_ptr<Attachment> attnAttachment = std::make_unique<Attachment>(
+		params, gParams[SNE_ATTN].id, attnSwitch
+	);
+	addAndMakeVisible(attnSwitch);
 
 	// Switches
 	holdSwitch = std::make_unique<SignalNoiseSwitchButton>("holdSwitch", switchImage); // VU hold peak
@@ -235,14 +254,8 @@ void SignalNoiseTapedeckGUI::resized()
 	noisSwitch->setBounds(440, 401, 40, 30);
 	loonSwitch->setBounds(386, 188, 40, 30);
 	eqscSwitch.setBounds(240, 230, 40, 40);
-/*
-	x = 212;
-	y = 317;
-	rc(x, y, x + 28, y + 84);
-	_attn = new CVerticalSwitch(rc, this, SNE_ATTN, 3, 84, 3, three, pt);
-	_attn->setValue(effect->getParameter(SNE_ATTN));
-	frm->addView(_attn);
-*/
+	attnSwitch.setBounds(212, 317, 28, 84);
+
 	// VU switches -----------------------------------------
 	roomSwitch.setBounds(160, 4, 40, 30);
 	holdSwitch->setBounds(240, 0, 40, 30);

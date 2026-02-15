@@ -53,6 +53,7 @@ private:
 	SignalNoiseKnobLookAndFeel normalLNF;
 	SignalNoiseFilmstripLNF roomLNF;
 	SignalNoiseFilmstripLNF eqscLNF;
+	SignalNoiseFilmstripLNF attnLNF;
 
 	std::unique_ptr<SignalNoiseKnobPrecise>	trimKnob;   // input trim
 	std::unique_ptr<SignalNoiseKnobPrecise>	gainKnob;   // output gain
@@ -65,7 +66,8 @@ private:
 	std::unique_ptr<SignalNoiseKnob>		hissKnob;   // hiss dB
 
 	juce::Slider								eqscSwitch;	// EQ mode [NAB, IEC, AES]
-	juce::Slider								roomSwitch; // 12, 14, 18, 20
+	juce::Slider								roomSwitch;	// 12, 14, 18, 20
+	juce::Slider								attnSwitch;	// bump attenuator [0,-1,-2]
 	std::unique_ptr<SignalNoiseSwitchButton>	pathSwitch;	// VU I/O switch
 	std::unique_ptr<SignalNoiseSwitchButton>	holdSwitch;	// use peak hold
 	std::unique_ptr<SignalNoiseSwitchButton>	hbonSwitch;	// bump on/off
@@ -73,7 +75,6 @@ private:
 	std::unique_ptr<SignalNoiseSwitchButton>	loonSwitch;	// force LO on
 
 /*
-	CVerticalSwitch*	_attn;	// bump attenuator [0,-1,-2]
 	SignalNoiseVU*		_vumt;	// VU meter
 	SignalNoisePeakLed*	_peak;	// sample peak led
 	CTextEdit*			_txti;	// text input

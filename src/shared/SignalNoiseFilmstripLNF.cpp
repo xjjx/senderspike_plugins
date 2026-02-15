@@ -23,6 +23,12 @@ void SignalNoiseFilmstripLNF::drawLinearSlider(
 	// Calculate frame
 	int frameIndex = (int)slider.getValue();
 
+	if (reverse)
+	{
+		int numFrames = filmstrip.getHeight() / frameHeight;
+		frameIndex = (numFrames - 1) - frameIndex;
+	}
+
 	g.drawImage(
 		filmstrip,
 		x, y, width, height,					 // destination

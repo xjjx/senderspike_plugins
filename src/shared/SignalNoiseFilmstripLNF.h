@@ -20,6 +20,8 @@ public:
 
 	virtual void setImage(const juce::Image& filmstripImage, int frames);
 
+	bool reverse = false;
+
 private:
 	juce::Image filmstrip;
 	int frameHeight = 0;
