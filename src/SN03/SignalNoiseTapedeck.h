@@ -52,29 +52,29 @@ static const std::vector<const char*> EQSC = { "NAB", "IEC 15 IPS", "AES 30 IPS"
 static const std::vector<const char*> ATTN = { "0 dB", "1 dB", "2 dB" };
 static const ParamDesc gParams[] =
 {
-	{ ParamType::Decibel,    "trim", "Input",    "dB", -24.0f, 24.0f,    0.0f }, // SNE_TRIM input trim +/-24 dB
-	{ ParamType::Decibel,    "gain", "Output",   "dB", -24.0f, 24.0f,    0.0f }, // SNE_GAIN output gain +/-24 dB
+	{ ParamType::Decibel, "trim", "Input",    "dB", -24.0f, 24.0f,    0.0f }, // SNE_TRIM input trim +/-24 dB
+	{ ParamType::Decibel, "gain", "Output",   "dB", -24.0f, 24.0f,    0.0f }, // SNE_GAIN output gain +/-24 dB
 
-	{ ParamType::Choice,     "eqsc", "EQ Curve",   "",  0.0f,  3.0f,     1.0f, EQSC }, // SNE_EQSC EQ curve [NAB, IEC 15, AES]
+	{ ParamType::Choice,  "eqsc", "EQ Curve",   "",  0.0f,  3.0f,     1.0f, EQSC }, // SNE_EQSC EQ curve [NAB, IEC 15, AES]
 
-	{ ParamType::Decibel,    "rclo", "EQ RecLo", "dB", -14.0f, 14.0f,    0.0f }, // SNE_RCLO rec EQ bass +/-10 dB
-	{ ParamType::Decibel,    "rchi", "EQ RecHi", "dB", -14.0f, 14.0f,    0.0f }, // SNE_RCHI rec EQ high +/-14 dB
-	{ ParamType::Decibel,    "rplo", "EQ RepLo", "dB", -10.0f, 10.0f,    0.0f }, // SNE_RPLO rep EQ bass +/-10 dB
-	{ ParamType::Decibel,    "rphi", "EQ RepHi", "dB", -14.0f, 14.0f,    0.0f }, // SNE_RPHI rep EQ high +/-14 dB
+	{ ParamType::Decibel, "rclo", "EQ RecLo", "dB", -14.0f, 14.0f,    0.0f }, // SNE_RCLO rec EQ bass +/-10 dB
+	{ ParamType::Decibel, "rchi", "EQ RecHi", "dB", -14.0f, 14.0f,    0.0f }, // SNE_RCHI rec EQ high +/-14 dB
+	{ ParamType::Decibel, "rplo", "EQ RepLo", "dB", -10.0f, 10.0f,    0.0f }, // SNE_RPLO rep EQ bass +/-10 dB
+	{ ParamType::Decibel, "rphi", "EQ RepHi", "dB", -14.0f, 14.0f,    0.0f }, // SNE_RPHI rep EQ high +/-14 dB
 
-	{ ParamType::Hertz,      "head", "HB Freq",  "Hz",  65.0f, 105.0f,  65.0f }, // SNE_HEAD head bump frequency
-	{ ParamType::Decibel,    "bump", "HB Strn",  "dB",   2.0f, 6.0f,    2.00f }, // SNE_BUMP head bump magnitude
+	{ ParamType::Hertz,   "head", "HB Freq",  "Hz",  65.0f, 105.0f,  65.0f }, // SNE_HEAD head bump frequency
+	{ ParamType::Decibel, "bump", "HB Strn",  "dB",   2.0f, 6.0f,    2.00f }, // SNE_BUMP head bump magnitude
 
-	{ ParamType::Decibel,    "hiss", "Hiss dB",  "dB", -96.0f, -36.0f, -66.0f }, // SNE_HISS hiss gain
+	{ ParamType::Decibel, "hiss", "Hiss dB",  "dB", -96.0f, -36.0f, -66.0f }, // SNE_HISS hiss gain
 
-	{ ParamType::Choice,     "room", "VU Ref",     "",  0.0f,  3.0f,     2.0f, REF }, // SNE_ROOM VU meter headroom
-	{ ParamType::Choice,     "hold", "VU Hold",    "",  0.0f,  1.0f,    0.00f, On }, // SNE_HOLD VU meter peak hold
-	{ ParamType::Choice,     "path", "VU Path",    "",  0.0f,  1.0f,    1.00f, IO }, // SNE_PATH VU meter path
+	{ ParamType::Choice,  "room", "VU Ref",     "",  0.0f,  3.0f,    2.00f, REF }, // SNE_ROOM VU meter headroom
+	{ ParamType::Choice,  "hold", "VU Hold",    "",  0.0f,  1.0f,    0.00f, On }, // SNE_HOLD VU meter peak hold
+	{ ParamType::Choice,  "path", "VU Path",    "",  0.0f,  1.0f,    1.00f, IO }, // SNE_PATH VU meter path
 
-	{ ParamType::Choice,     "attn", "HB Attn",    "",   0.0f, 2.0f,    0.00f, ATTN }, // SNE_ATTN bump attenuator
-	{ ParamType::Choice,     "nois", "Hiss On",    "",   0.0f, 1.0f,    1.00f, On }, // SNE_NOIS noise on/off
-	{ ParamType::Choice,     "hbon", "HB On",      "",   0.0f, 1.0f,    1.00f, On }, // SNE_HBON head bump on/off
-	{ ParamType::Choice,     "loon", "Anarchy",    "",   0.0f, 1.0f,    0.00f, On }, // SNE_LOON force LO on
+	{ ParamType::Choice,  "attn", "HB Attn",    "",   0.0f, 2.0f,    0.00f, ATTN }, // SNE_ATTN bump attenuator
+	{ ParamType::Choice,  "nois", "Hiss On",    "",   0.0f, 1.0f,    1.00f, On }, // SNE_NOIS noise on/off
+	{ ParamType::Choice,  "hbon", "HB On",      "",   0.0f, 1.0f,    1.00f, On }, // SNE_HBON head bump on/off
+	{ ParamType::Choice,  "loon", "Anarchy",    "",   0.0f, 1.0f,    0.00f, On }, // SNE_LOON force LO on
 };
 
 //------------------------------------------------------------------------------------
