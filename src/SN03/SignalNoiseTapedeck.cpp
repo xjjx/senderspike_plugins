@@ -95,7 +95,7 @@ void SignalNoiseTapedeck::setupTapeheads()
 	double fs = sampleRate;
 	double of = getParamChoice(SNE_ATTN); // 0,1,2
 	double hd = getParamNorm(SNE_HEAD);
-	double hv = getParamValue(SNE_BUMP);
+	double hv = getParamNorm(SNE_BUMP);
 	double sc = 4 - hd;
 	double dB = hv * sc + sc - of;
 	double fc = hd * 40 + 65;

@@ -63,7 +63,7 @@ static const ParamDesc gParams[] =
 	{ ParamType::Decibel,    "rphi", "EQ RepHi", "dB", -14.0f, 14.0f,    0.0f }, // SNE_RPHI rep EQ high +/-14 dB
 
 	{ ParamType::Hertz,      "head", "HB Freq",  "Hz",  65.0f, 105.0f,  65.0f }, // SNE_HEAD head bump frequency
-	{ ParamType::Normalized, "bump", "HB Strn",  "dB",   0.0f, 1.0f,    0.00f }, // SNE_BUMP head bump magnitude
+	{ ParamType::Decibel,    "bump", "HB Strn",  "dB",   2.0f, 6.0f,    2.00f }, // SNE_BUMP head bump magnitude
 
 	{ ParamType::Decibel,    "hiss", "Hiss dB",  "dB", -96.0f, -36.0f, -66.0f }, // SNE_HISS hiss gain
 
