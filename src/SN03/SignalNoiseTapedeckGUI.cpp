@@ -66,6 +66,11 @@ SignalNoiseTapedeckGUI::SignalNoiseTapedeckGUI(SignalNoiseTapedeck& p)
 		BinaryData::sn01g_b2_pngSize
 	);
 
+	juce::Image roomImage = juce::ImageCache::getFromMemory(
+		BinaryData::sn03g_b1_png,
+		BinaryData::sn03g_b1_pngSize
+	);
+
 	juce::Image switchImage = juce::ImageCache::getFromMemory(
 		BinaryData::sn03g_b2_png,
 		BinaryData::sn03g_b2_pngSize
@@ -78,6 +83,7 @@ SignalNoiseTapedeckGUI::SignalNoiseTapedeckGUI(SignalNoiseTapedeck& p)
 
 	jassert(!knobLargeImage.isNull());
 	jassert(!knobNormalImage.isNull());
+	jassert(!roomImage.isNull());
 	jassert(!switchImage.isNull());
 	jassert(!loonImage.isNull());
 
@@ -95,9 +101,22 @@ SignalNoiseTapedeckGUI::SignalNoiseTapedeckGUI(SignalNoiseTapedeck& p)
 	bumpKnob = setupKnob(gParams[SNE_BUMP], &normalLNF);		// head dB
 	hissKnob = setupKnob(gParams[SNE_HISS], &normalLNF);		// hiss dB
 
-	// Switches
 	auto& params = processor.getParameters();
 
+	// Room switch
+	roomLNF = std::make_unique<FilmstripLookAndFeel>(roomImage, 4);
+	roomSwitch.setSliderStyle(juce::Slider::LinearBarVertical);
+	roomSwitch.setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
+	roomSwitch.setRange(0.0, 3.0, 1.0);
+	roomSwitch.setLookAndFeel(roomLNF.get());
+
+	using Attachment = juce::AudioProcessorValueTreeState::SliderAttachment;
+	std::unique_ptr<Attachment> roomAttachment = std::make_unique<Attachment>(
+		params, gParams[SNE_ROOM].id, roomSwitch
+	);
+	addAndMakeVisible(roomSwitch);
+
+	// Switches
 	holdSwitch = std::make_unique<SignalNoiseSwitchButton>("holdSwitch", switchImage); // VU hold peak
 	holdSwitch->attachToParameter(params, gParams[SNE_HOLD].id);
 	addAndMakeVisible(*holdSwitch);
@@ -159,7 +178,7 @@ std::unique_ptr<SignalNoiseKnob> SignalNoiseTapedeckGUI::setupKnob(
 
 SignalNoiseTapedeckGUI::~SignalNoiseTapedeckGUI()
 {
-	// empty
+	roomSwitch.setLookAndFeel(nullptr);
 }
 
 //------------------------------------------------------------------------------------
@@ -214,16 +233,11 @@ void SignalNoiseTapedeckGUI::resized()
 	frm->addView(_attn);
 */
 	// VU switches -----------------------------------------
+	roomSwitch.setBounds(160, 4, 40, 30);
 	holdSwitch->setBounds(240, 0, 40, 30);
 	pathSwitch->setBounds(320, 0, 40, 30);
 
 /*
-	x = 160;
-	rc(x, 5, x + 40, 35);
-	_room = new CHorizontalSwitch(rc, this, SNE_ROOM, 4, 30, 4, displ, pt);
-	_room->setValue(effect->getParameter(SNE_ROOM));
-	frm->addView(_room);
-
 	// VU meter --------------------------------------------
 
 	dword vut[] = {4, 21, 32, 42, 56, 65, 74, 84, 97, 109, 123, 129};	//valid for specific bitmap !!!

@@ -25,7 +25,7 @@ juce_add_binary_data(SN03_BinaryData
 #        ../graphics/sn02g/sn02g_v1.png # vu needle
 #        ../graphics/sn02g/sn02g_p1.png # peak needle
 #        ../graphics/sn02g/sn02g_l1.png # peak led
-#        ../graphics/sn03g/sn03g_b1.png # headroom switch
+        ../graphics/sn03g/sn03g_b1.png # headroom switch
         ../graphics/sn03g/sn03g_b2.png # on/off switch
 #        ../graphics/sn03g/sn03g_s1.png # 3-way switch
         ../graphics/sn04g/sn04g_s3.png # "A" button

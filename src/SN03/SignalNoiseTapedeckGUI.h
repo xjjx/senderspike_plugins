@@ -16,6 +16,7 @@
 #include "SignalNoiseKnob.h"
 #include "SignalNoiseTapedeck.h"
 #include "SignalNoiseSwitchButton.h"
+#include "FilmstripLookAndFeel.h"
 
 
 //------------------------------------------------------------------------------------
@@ -50,6 +51,7 @@ private:
 
 	SignalNoiseKnobLookAndFeel largeLNF;
 	SignalNoiseKnobLookAndFeel normalLNF;
+	std::unique_ptr<FilmstripLookAndFeel> roomLNF;
 
 	std::unique_ptr<SignalNoiseKnobPrecise>	trimKnob;   // input trim
 	std::unique_ptr<SignalNoiseKnobPrecise>	gainKnob;   // output gain
@@ -61,7 +63,7 @@ private:
 	std::unique_ptr<SignalNoiseKnob>		bumpKnob;   // head dB
 	std::unique_ptr<SignalNoiseKnob>		hissKnob;   // hiss dB
 
-
+	juce::Slider								roomSwitch; // 12, 14, 18, 20
 	std::unique_ptr<SignalNoiseSwitchButton>	pathSwitch;	// VU I/O switch
 	std::unique_ptr<SignalNoiseSwitchButton>	holdSwitch;	// use peak hold
 	std::unique_ptr<SignalNoiseSwitchButton>	hbonSwitch;	// bump on/off
@@ -70,7 +72,6 @@ private:
 
 /*
 	CHorizontalSwitch*	_mode;	// EQ mode [NAB, IEC, AES]
-	CHorizontalSwitch*	_room;	// 12, 14, 18, 20
 	CHorizontalSwitch*	_hold;	// use peak hold
 	CVerticalSwitch*	_attn;	// bump attenuator [0,-1,-2]
 	SignalNoiseVU*		_vumt;	// VU meter

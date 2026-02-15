@@ -47,6 +47,7 @@ enum
 
 static const std::vector<const char*> On = { "Off", "On" };
 static const std::vector<const char*> IO = { "Input", "Output" };
+static const std::vector<const char*> REF = { "12 dB", "14 dB", "18 dB", "20 dB" };
 static const std::vector<const char*> EQSC = { "NAB", "IEC 15 IPS", "AES 30 IPS" };
 static const ParamDesc gParams[] =
 {
@@ -65,9 +66,9 @@ static const ParamDesc gParams[] =
 
 	{ ParamType::Decibel,    "hiss", "Hiss dB",  "dB", -96.0f, -36.0f, -66.0f }, // SNE_HISS hiss gain
 
-	{ ParamType::Normalized, "room", "VU Ref",   "dB",  0.0f, 1.0f,    0.625f }, // SNE_ROOM VU meter headroom
-	{ ParamType::Choice,     "hold", "VU Hold",    "",  0.0f, 1.0f,     0.00f, On }, // SNE_HOLD VU meter peak hold
-	{ ParamType::Choice,     "path", "VU Path",    "",  0.0f, 1.0f,     1.00f, IO }, // SNE_PATH VU meter path
+	{ ParamType::Choice,     "room", "VU Ref",     "",  0.0f,  3.0f,     2.0f, REF }, // SNE_ROOM VU meter headroom
+	{ ParamType::Choice,     "hold", "VU Hold",    "",  0.0f,  1.0f,    0.00f, On }, // SNE_HOLD VU meter peak hold
+	{ ParamType::Choice,     "path", "VU Path",    "",  0.0f,  1.0f,    1.00f, IO }, // SNE_PATH VU meter path
 
 	{ ParamType::Normalized, "attn", "HB Attn",  "dB",   0.0f, 1.0f,    1.00f }, // SNE_ATTN bump attenuator
 	{ ParamType::Choice,     "nois", "Hiss On",    "",   0.0f, 1.0f,    1.00f, On }, // SNE_NOIS noise on/off
