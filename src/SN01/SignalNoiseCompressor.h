@@ -80,6 +80,8 @@ private:
 	biquad	_hsL;	// SC high shelf L
 	biquad	_lsR;	// SC low shelf R
 	biquad	_hsR;	// SC high shelf R
+
+	std::atomic<float> gainReduction { 0.0f };
 private:
 	void setupEnvelope();
 	void setupSidechain();
@@ -123,6 +125,5 @@ public:
 	juce::AudioProcessorEditor* createEditor() override;
 	bool hasEditor() const override { return true; }
 
-//	float getInputLevel()  const noexcept { return inputLevel.load(); }
-//	float getOutputLevel() const noexcept { return outputLevel.load(); }
+	float getGainReduction() const noexcept { return gainReduction.load(); }
 };

@@ -17,6 +17,7 @@
 #include "SignalNoiseCompressor.h"
 #include "SignalNoiseSwitchButton.h"
 #include "SignalNoiseFilmstripLNF.h"
+#include "SignalNoiseGR.h"
 
 //------------------------------------------------------------------------------------
 // const
@@ -83,7 +84,7 @@ private:
 	std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> kprcAttachment;
 	std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> compAttachment;
 
-//	SignalNoiseGR*		_grdb;	// GR meter
+	std::unique_ptr<SignalNoiseGR>	grMeter; // GR meter
 	juce::Slider	modeSlider;	// mode [flat, A, B]
 	juce::Slider	pushSlider; // 'thrust' [0, +9, +18]
 

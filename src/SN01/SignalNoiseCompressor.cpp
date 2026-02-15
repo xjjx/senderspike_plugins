@@ -203,9 +203,7 @@ void SignalNoiseCompressor::processImpl(juce::AudioBuffer<Sample>& buffer)
 		if (!mono)
 			(*outR++) = static_cast<Sample>((_fbR * wet) + (dry * R));
 
-#ifdef SN01G
-		((SignalNoiseCompressorGUI*)editor)->trackMeter(dB);
-#endif
+		gainReduction.store(dB);
 	}
 }
 

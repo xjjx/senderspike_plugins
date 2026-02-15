@@ -22,7 +22,7 @@ juce_add_binary_data(SN01_BinaryData
         ../graphics/sn01g/sn01g_b1.png
         ../graphics/sn01g/sn01g_b2.png
         ../graphics/sn01g/sn01g_b3.png
-#        ../graphics/sn01g/sn01g_gr.png
+        ../graphics/sn01g/sn01g_gr.png # needle
         ../graphics/sn01g/sn01g_s1.png
         ../graphics/sn01g/sn01g_s3.png
 )

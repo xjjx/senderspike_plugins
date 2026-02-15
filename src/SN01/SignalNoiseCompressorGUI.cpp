@@ -51,11 +51,17 @@ SignalNoiseCompressorGUI::SignalNoiseCompressorGUI(SignalNoiseCompressor& p)
 		BinaryData::sn01g_s3_pngSize
 	);
 
+	juce::Image needleImage = juce::ImageCache::getFromMemory(
+		BinaryData::sn01g_gr_png,
+		BinaryData::sn01g_gr_pngSize
+	);
+
 	jassert(!knobLargeImage.isNull());
 	jassert(!knobNormalImage.isNull());
 	jassert(!knobScrewImage.isNull());
 	jassert(!switch1Image.isNull());
 	jassert(!switch3Image.isNull());
+	jassert(!needleImage.isNull());
 
 	// Knobs
 	largeLNF.setImage(knobLargeImage);
@@ -111,6 +117,10 @@ SignalNoiseCompressorGUI::SignalNoiseCompressorGUI(SignalNoiseCompressor& p)
 	modeAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
 		params, gParams[SNE_MODE].id, pushSlider
 	);
+
+	// GR Meter
+	grMeter = std::make_unique<SignalNoiseGR>(needleImage, 100);
+	addAndMakeVisible(*grMeter);
 
 	// Set initial size based on background
 	setSize(background.getWidth(), background.getHeight());
@@ -173,13 +183,9 @@ void SignalNoiseCompressorGUI::resized()
 	// screw knob ------------------------------------------
 	compKnob->setBounds(640, 140, 40, 40);
 
-/*
 	// GR meter --------------------------------------------
+	grMeter->setBounds(570, 20, 180, 80);
 
-	rc(SN01_NEEDL_X, SN01_NEEDL_Y, SN01_NEEDL_W, SN01_NEEDL_H);
-	_grdb = new SignalNoiseGR(rc, needl, SN01_NEEDL_FRAMES, effect->getSampleRate());
-	frm->addView(_grdb);
-*/
 	// switches --------------------------------------------
 	modeSlider.setBounds(578, 150, 45, 45);
 	pushSlider.setBounds(698, 150, 45, 45);
@@ -272,7 +278,7 @@ void SignalNoiseCompressorGUI::timerCallback()
 {
 //	inputMeter .setLevel(processor.getInputLevel());
 ///	outputMeter.setLevel(processor.getOutputLevel());
-//	peakLed.setLevel(processor.getOutputLevel());
+	grMeter->setLevel(processor.getGainReduction());
 
 	repaint();
 }
