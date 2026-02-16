@@ -91,6 +91,16 @@ SignalNoiseTapedeckGUI::SignalNoiseTapedeckGUI(SignalNoiseTapedeck& p)
 		BinaryData::sn04g_s3_pngSize
 	);
 
+	juce::Image vuNeedleImage = juce::ImageCache::getFromMemory(
+		BinaryData::sn02g_v1_png,
+		BinaryData::sn02g_v1_pngSize
+	);
+
+	juce::Image peakNeedleImage = juce::ImageCache::getFromMemory(
+		BinaryData::sn02g_p1_png,
+		BinaryData::sn02g_p1_pngSize
+	);
+
 	jassert(!knobLargeImage.isNull());
 	jassert(!knobNormalImage.isNull());
 	jassert(!roomImage.isNull());
@@ -98,6 +108,8 @@ SignalNoiseTapedeckGUI::SignalNoiseTapedeckGUI(SignalNoiseTapedeck& p)
 	jassert(!loonImage.isNull());
 	jassert(!eqscImage.isNull());
 	jassert(!attnImage.isNull());
+	jassert(!vuNeedleImage.isNull());
+	jassert(!peakNeedleImage.isNull());
 
 	// Knobs
 	largeLNF.setImage(knobLargeImage);
@@ -171,6 +183,10 @@ SignalNoiseTapedeckGUI::SignalNoiseTapedeckGUI(SignalNoiseTapedeck& p)
 	loonSwitch = std::make_unique<SignalNoiseSwitchButton>("loonSwitch", loonImage); // force LO on
 	loonSwitch->attachToParameter(params, gParams[SNE_LOON].id);
 	addAndMakeVisible(*loonSwitch);
+
+	// VU Meter
+	vuMeter = std::make_unique<SignalNoiseVU>(vuNeedleImage, peakNeedleImage, 130);
+	addAndMakeVisible(*vuMeter);
 
 	// Set initial size based on background
 	setSize(background.getWidth(), background.getHeight());
@@ -260,9 +276,10 @@ void SignalNoiseTapedeckGUI::resized()
 	holdSwitch->setBounds(240, 0, 40, 30);
 	pathSwitch->setBounds(320, 0, 40, 30);
 
-/*
 	// VU meter --------------------------------------------
+	vuMeter->setBounds(165, 62, 190, 90);
 
+/*
 	dword vut[] = {4, 21, 32, 42, 56, 65, 74, 84, 97, 109, 123, 129};	//valid for specific bitmap !!!
 
 	x = 165;
@@ -308,6 +325,7 @@ void SignalNoiseTapedeckGUI::timerCallback()
 //	inputMeter .setLevel(processor.getInputLevel());
 ///	outputMeter.setLevel(processor.getOutputLevel());
 //	peakLed.setLevel(processor.getOutputLevel());
+	vuMeter->setLevel(processor.getVuLevel());
 
 	repaint();
 }

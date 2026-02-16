@@ -148,6 +148,5 @@ public:
 
 	void parameterChanged(const juce::String& parameterID, float newValue) override;
 
-//	float getInputLevel()  const noexcept { return inputLevel.load(); }
-//	float getOutputLevel() const noexcept { return outputLevel.load(); }
+	float getVuLevel() const noexcept { return vuLevel.load(); }
 };

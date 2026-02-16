@@ -17,6 +17,7 @@
 #include "SignalNoiseTapedeck.h"
 #include "SignalNoiseSwitchButton.h"
 #include "SignalNoiseFilmstripLNF.h"
+#include "SignalNoiseVU.h"
 
 
 //------------------------------------------------------------------------------------
@@ -78,8 +79,8 @@ private:
 	std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> roomAttachment;
 	std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> attnAttachment;
 
+	std::unique_ptr<SignalNoiseVU>				vuMeter;	// VU meter
 /*
-	SignalNoiseVU*		_vumt;	// VU meter
 	SignalNoisePeakLed*	_peak;	// sample peak led
 	CTextEdit*			_txti;	// text input
 	CTextEdit*			_txto;	// text output
