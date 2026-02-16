@@ -55,7 +55,7 @@ static const ParamDesc gParams[] =
 	{ ParamType::Decibel, "trim", "Input",    "dB", -24.0f, 24.0f,    0.0f }, // SNE_TRIM input trim +/-24 dB
 	{ ParamType::Decibel, "gain", "Output",   "dB", -24.0f, 24.0f,    0.0f }, // SNE_GAIN output gain +/-24 dB
 
-	{ ParamType::Choice,  "eqsc", "EQ Curve",   "",  0.0f,  3.0f,     1.0f, EQSC }, // SNE_EQSC EQ curve [NAB, IEC 15, AES]
+	{ ParamType::Choice,  "eqsc", "EQ Curve",   "",  0.0f,  2.0f,     1.0f, EQSC }, // SNE_EQSC EQ curve [NAB, IEC 15, AES]
 
 	{ ParamType::Decibel, "rclo", "EQ RecLo", "dB", -14.0f, 14.0f,    0.0f }, // SNE_RCLO rec EQ bass +/-10 dB
 	{ ParamType::Decibel, "rchi", "EQ RecHi", "dB", -14.0f, 14.0f,    0.0f }, // SNE_RCHI rec EQ high +/-14 dB

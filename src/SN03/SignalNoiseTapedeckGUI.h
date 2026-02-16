@@ -74,6 +74,10 @@ private:
 	std::unique_ptr<SignalNoiseSwitchButton>	noisSwitch;	// noise on/off
 	std::unique_ptr<SignalNoiseSwitchButton>	loonSwitch;	// force LO on
 
+	std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> eqscAttachment;
+	std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> roomAttachment;
+	std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> attnAttachment;
+
 /*
 	SignalNoiseVU*		_vumt;	// VU meter
 	SignalNoisePeakLed*	_peak;	// sample peak led

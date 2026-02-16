@@ -122,8 +122,7 @@ SignalNoiseTapedeckGUI::SignalNoiseTapedeckGUI(SignalNoiseTapedeck& p)
 	roomSwitch.setRange(0.0, 3.0, 1.0);
 	roomSwitch.setLookAndFeel(&roomLNF);
 
-	using Attachment = juce::AudioProcessorValueTreeState::SliderAttachment;
-	std::unique_ptr<Attachment> roomAttachment = std::make_unique<Attachment>(
+	roomAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
 		params, gParams[SNE_ROOM].id, roomSwitch
 	);
 	addAndMakeVisible(roomSwitch);
@@ -134,7 +133,7 @@ SignalNoiseTapedeckGUI::SignalNoiseTapedeckGUI(SignalNoiseTapedeck& p)
 	eqscSwitch.setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
 	eqscSwitch.setRange(0.0, 2.0, 1.0);
 	eqscSwitch.setLookAndFeel(&eqscLNF);
-	std::unique_ptr<Attachment> eqscAttachment = std::make_unique<Attachment>(
+	eqscAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
 		params, gParams[SNE_EQSC].id, eqscSwitch
 	);
 	addAndMakeVisible(eqscSwitch);
@@ -147,7 +146,7 @@ SignalNoiseTapedeckGUI::SignalNoiseTapedeckGUI(SignalNoiseTapedeck& p)
 	attnSwitch.setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
 	attnSwitch.setRange(0.0, 2.0, 1.0);
 	attnSwitch.setLookAndFeel(&attnLNF);
-	std::unique_ptr<Attachment> attnAttachment = std::make_unique<Attachment>(
+	attnAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
 		params, gParams[SNE_ATTN].id, attnSwitch
 	);
 	addAndMakeVisible(attnSwitch);
