@@ -322,12 +322,7 @@ void SignalNoiseTapedeckGUI::paint(juce::Graphics& g)
 
 void SignalNoiseTapedeckGUI::timerCallback()
 {
-//	inputMeter .setLevel(processor.getInputLevel());
-///	outputMeter.setLevel(processor.getOutputLevel());
-//	peakLed.setLevel(processor.getOutputLevel());
 	vuMeter->setLevel(processor.getVuLevel());
-
-	repaint();
 }
 
 //------------------------------------------------------------------------------------

@@ -709,9 +709,5 @@ void SignalNoiseEqualizerGUI::setBlink(band_e b, bool on)
 //------------------------------------------------------------------------------------
 void SignalNoiseEqualizerGUI::timerCallback()
 {
-//	inputMeter .setLevel(processor.getInputLevel());
-///	outputMeter.setLevel(processor.getOutputLevel());
-//	peakLed.setLevel(processor.getOutputLevel());
-
-	repaint();
+	// empty
 }

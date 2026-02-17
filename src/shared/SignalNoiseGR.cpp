@@ -9,7 +9,7 @@ SignalNoiseGR::SignalNoiseGR(const juce::Image& needleImage, int numFrames_)
 void SignalNoiseGR::setLevel(float dB)
 {
 	level = juce::jlimit(0.0f, 20.0f, dB);
-//	repaint();
+	repaint();
 }
 
 void SignalNoiseGR::paint(juce::Graphics& g)

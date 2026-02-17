@@ -13,6 +13,7 @@ public:
 	void setLevel(float newLevel)
 	{
 		level = std::max(level * 0.90f, newLevel);
+		repaint();
 	}
 
 	void paint (juce::Graphics& g) override

@@ -278,9 +278,5 @@ void SignalNoiseCompressorGUI::setupMeter(double fs)
 
 void SignalNoiseCompressorGUI::timerCallback()
 {
-//	inputMeter .setLevel(processor.getInputLevel());
-///	outputMeter.setLevel(processor.getOutputLevel());
 	grMeter->setLevel(processor.getGainReduction());
-
-	repaint();
 }

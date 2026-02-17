@@ -22,6 +22,8 @@ void SignalNoisePeakMeter::setLevel(float val)
 	// clamp 0..1
 	level = juce::jlimit(0.0f, 1.0f, level);
 //	DBG("new max val meter =" + juce::String(val, 4));
+
+	repaint();
 }
 
 void SignalNoisePeakMeter::setRange(float dB)
