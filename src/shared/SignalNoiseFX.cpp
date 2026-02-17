@@ -94,7 +94,7 @@ SignalNoiseFX::createLayout(const ParamDesc* paramArray, int numParams)
 				// stringFromValue
 				[p](float value, int) {
 					float ms = p.normToCubic(value);
-					return juce::String(ms, 3) + " ms";
+					return juce::String(ms, 3);
 				},
 				// valueFromString
 				[p](const juce::String& text) {
