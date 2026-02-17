@@ -49,37 +49,8 @@ static CTextEdit* snCreateTextEdit(CCoord x, CCoord y, CControlListener* cl, lon
 	
 	return tx;
 }
-
-//------------------------------------------------------------------------------------
-// GR meter
-//------------------------------------------------------------------------------------
-
-SignalNoiseLimiterGR::SignalNoiseLimiterGR(const CRect& rc, CBitmap* map, float fs) : CControl(rc, 0, 0)
-{
-	_val = 0;
-	_map = map;
-
-	if(_map)
-		_map->remember();
-}
-
-//------------------------------------------------------------------------------------
-
-SignalNoiseLimiterGR::~SignalNoiseLimiterGR()
-{
-	if(_map)
-		_map->forget();
-}
-
-//------------------------------------------------------------------------------------
-
-void SignalNoiseLimiterGR::setVal(double dB)
-{
-	if(dB > _val)
-		_val = dB;
-	setDirty(true);
-}
 */
+
 //------------------------------------------------------------------------------------
 // GUI
 //------------------------------------------------------------------------------------
@@ -91,6 +62,12 @@ SignalNoiseLimiterGUI::SignalNoiseLimiterGUI(SignalNoiseLimiter& p)
 	background = juce::ImageCache::getFromMemory(
 		BinaryData::sn05g_bk_png,
 		BinaryData::sn05g_bk_pngSize
+	);
+
+	// GR meter image
+	juce::Image meterImage = juce::ImageCache::getFromMemory(
+		BinaryData::sn05g_gr_png,
+		BinaryData::sn05g_gr_pngSize
 	);
 
 	// Knobs
@@ -114,6 +91,7 @@ SignalNoiseLimiterGUI::SignalNoiseLimiterGUI(SignalNoiseLimiter& p)
 		BinaryData::sn04g_ld_pngSize
 	);
 
+	jassert(!meterImage.isNull());
 	jassert(!knobLargeImage.isNull());
 	jassert(!knobNormalImage.isNull());
 	jassert(!switchImage.isNull());
@@ -139,6 +117,12 @@ SignalNoiseLimiterGUI::SignalNoiseLimiterGUI(SignalNoiseLimiter& p)
 	hponSwitch = std::make_unique<SignalNoiseSwitchButton>("hponSwitch", hponImage);
 	hponSwitch->attachToParameter(params, gParams[SNE_HPON].id);
 	addAndMakeVisible(*hponSwitch);
+
+	meterLimiter = std::make_unique<SignalNoiseLimiterGR>(meterImage);
+	addAndMakeVisible(*meterLimiter);
+
+	meterClipper = std::make_unique<SignalNoiseLimiterGR>(meterImage);
+	addAndMakeVisible(*meterClipper);
 
 	// Set initial size based on background
 	setSize(background.getWidth(), background.getHeight());
@@ -198,6 +182,9 @@ void SignalNoiseLimiterGUI::resized()
 
 	hponSwitch->setBounds(121, 8, 28, 28);
 	modeSwitch->setBounds(235, 93, 40, 40);
+
+	meterLimiter->setBounds(55, 179, 400, 10);
+	meterClipper->setBounds(55, 191, 400, 10);
 }
 
 //------------------------------------------------------------------------------------
@@ -272,22 +259,10 @@ void SignalNoiseLimiterGUI::valueChanged(CDrawContext* ctx, CControl* ctrl)
 		break;
 	}
 }
-
-//------------------------------------------------------------------------------------
-
-void SignalNoiseLimiterGUI::trackMeter(double lim, double clp)
-{
-	if(_open == 0)
-		return;
-	_grHL->setVal(lim);
-	_grHC->setVal(clp);
-}
-
-//------------------------------------------------------------------------------------
 */
+//------------------------------------------------------------------------------------
 void SignalNoiseLimiterGUI::timerCallback()
 {
-//	inputMeter .setLevel(processor.getInputLevel());
-///	outputMeter.setLevel(processor.getOutputLevel());
-//	peakLed.setLevel(processor.getOutputLevel());
+	meterLimiter->setValue(processor.getLimiterGR());
+	meterClipper->setValue(processor.getClipperGR());
 }

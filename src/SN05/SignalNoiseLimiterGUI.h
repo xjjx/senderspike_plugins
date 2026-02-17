@@ -16,6 +16,7 @@
 #include "SignalNoiseKnob.h"
 #include "SignalNoiseLimiter.h"
 #include "SignalNoiseSwitchButton.h"
+#include "SignalNoiseLimiterGR.h"
 
 //------------------------------------------------------------------------------------
 //text fields
@@ -24,26 +25,6 @@
 #define IDC_TX_GAIN				1001
 #define IDC_TX_CEIL				1002
 
-//------------------------------------------------------------------------------------
-/*
-class SignalNoiseLimiterGR : public CControl
-{
-private:
-	double		_val;	// current value
-	CBitmap*	_map;	// bitmap
-public:
-//create & destroy
-	SignalNoiseLimiterGR(const CRect& rc, CBitmap* map, float fs);
-	virtual ~SignalNoiseLimiterGR();	
-//from SDK
-	virtual void draw(CDrawContext* ctx);
-	virtual void setDirty(const bool val = true);
-//custom
-	void setVal(double dB);
-//vtable
-	CLASS_METHODS(SignalNoiseLimiterGR, CControl)
-};
-*/
 //------------------------------------------------------------------------------------
 // editor
 //------------------------------------------------------------------------------------
@@ -57,8 +38,8 @@ private:
 
 	juce::Image background;
 
-//	SignalNoiseLimiterGR*	_grHL;	// GR meter limiter
-//	SignalNoiseLimiterGR*	_grHC;	// GR meter clipper
+	std::unique_ptr<SignalNoiseLimiterGR>	meterLimiter;	// GR meter limiter
+	std::unique_ptr<SignalNoiseLimiterGR>	meterClipper;	// GR meter clipper
 
 	SignalNoiseKnobLookAndFeel largeLNF;
 	SignalNoiseKnobLookAndFeel normalLNF;

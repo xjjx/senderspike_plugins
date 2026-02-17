@@ -104,7 +104,8 @@ private:
 	}
 
 	// ================= METERS =================
-	std::atomic<float> gainReduction  { 0.0f };
+	std::atomic<float> limiterGR  { 0.0f };
+	std::atomic<float> clipperGR  { 0.0f };
 
 public:
 	SignalNoiseLimiter();
@@ -123,6 +124,7 @@ public:
 
 	void parameterChanged(const juce::String& parameterID, float newValue) override;
 
-//	float getInputLevel()  const noexcept { return inputLevel.load(); }
-//	float getOutputLevel() const noexcept { return outputLevel.load(); }
+	float getLimiterGR() { return limiterGR.load(); }
+	float getClipperGR() { return clipperGR.load(); }
+
 };

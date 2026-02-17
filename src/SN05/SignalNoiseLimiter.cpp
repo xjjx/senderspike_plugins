@@ -252,8 +252,8 @@ void SignalNoiseLimiter::processImpl(juce::AudioBuffer<Sample>& buffer)
 		(*outL++) = static_cast<Sample>(L * gr);
 		(*outR++) = static_cast<Sample>(R * gr);
 
-		gainReduction.store(grh);
-// TODO: store dB
+		limiterGR.store(grh);
+		clipperGR.store(dB);
 	}
 }
 
