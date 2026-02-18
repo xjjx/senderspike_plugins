@@ -1,8 +1,8 @@
 #include <juce_audio_processors/juce_audio_processors.h>
-#include "SignalNoiseOpampEditor.h"
+#include "SignalNoiseOpampGUI.h"
 #include "BinaryData.h"
 
-SignalNoiseOpampEditor::SignalNoiseOpampEditor(SignalNoiseOpamp& p)
+SignalNoiseOpampGUI::SignalNoiseOpampGUI(SignalNoiseOpamp& p)
 	: AudioProcessorEditor(&p),
 	  processor(p)
 {
@@ -49,7 +49,7 @@ SignalNoiseOpampEditor::SignalNoiseOpampEditor(SignalNoiseOpamp& p)
 	startTimerHz(30); // GUI refresh rate
 }
 
-SignalNoiseOpampEditor::~SignalNoiseOpampEditor()
+SignalNoiseOpampGUI::~SignalNoiseOpampGUI()
 {
 	trimKnob->setLookAndFeel(nullptr);
 	gainKnob->setLookAndFeel(nullptr);
@@ -57,7 +57,7 @@ SignalNoiseOpampEditor::~SignalNoiseOpampEditor()
 }
 
 //---------------------------------------------------------
-std::unique_ptr<SignalNoiseKnobPrecise> SignalNoiseOpampEditor::setupKnobAndLabel(
+std::unique_ptr<SignalNoiseKnobPrecise> SignalNoiseOpampGUI::setupKnobAndLabel(
 	const ParamDesc& p,
 	juce::LookAndFeel* lnF,
 	SignalNoiseKnobLabel& label)
@@ -83,7 +83,7 @@ std::unique_ptr<SignalNoiseKnobPrecise> SignalNoiseOpampEditor::setupKnobAndLabe
 }
 
 //---------------------------------------------------------
-void SignalNoiseOpampEditor::paint(juce::Graphics& g)
+void SignalNoiseOpampGUI::paint(juce::Graphics& g)
 {
 	// Fill background with black if image fails
 	g.fillAll(juce::Colours::black);
@@ -93,7 +93,7 @@ void SignalNoiseOpampEditor::paint(juce::Graphics& g)
 }
 
 //---------------------------------------------------------
-void SignalNoiseOpampEditor::resized()
+void SignalNoiseOpampGUI::resized()
 {
 	// Reference size (original editor background)
 	const float refWidth  = (float)background.getWidth();
@@ -139,7 +139,7 @@ void SignalNoiseOpampEditor::resized()
 	peakLed.setBounds(scaledRect(180, 307, 10, 10));
 }
 
-void SignalNoiseOpampEditor::timerCallback()
+void SignalNoiseOpampGUI::timerCallback()
 {
 	inputMeter .setLevel(processor.getInputLevel());
 	outputMeter.setLevel(processor.getOutputLevel());

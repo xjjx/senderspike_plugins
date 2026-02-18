@@ -8,12 +8,12 @@
 #include "SignalNoiseKnobLabel.h"
 #include "SignalNoiseOpamp.h"
 
-class SignalNoiseOpampEditor : public juce::AudioProcessorEditor,
+class SignalNoiseOpampGUI : public juce::AudioProcessorEditor,
                                private juce::Timer
 {
 public:
-	explicit SignalNoiseOpampEditor (SignalNoiseOpamp&);
-	~SignalNoiseOpampEditor() override;
+	explicit SignalNoiseOpampGUI (SignalNoiseOpamp&);
+	~SignalNoiseOpampGUI() override;
 
 	void paint (juce::Graphics&) override;
 	void resized() override;
@@ -45,5 +45,5 @@ private:
 		SignalNoiseKnobLabel& label
 	);
 
-	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SignalNoiseOpampEditor)
+	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SignalNoiseOpampGUI)
 };

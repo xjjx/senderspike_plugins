@@ -10,7 +10,7 @@
 //------------------------------------------------------------------------------------
 
 #include "SignalNoiseOpamp.h"
-#include "SignalNoiseOpampEditor.h"
+#include "SignalNoiseOpampGUI.h"
 
 // ----------------------
 // Constructor
@@ -162,7 +162,7 @@ void SignalNoiseOpamp::setStateInformation(const void* data, int sizeInBytes)
 // Editor
 juce::AudioProcessorEditor* SignalNoiseOpamp::createEditor()
 {
-	return new SignalNoiseOpampEditor (*this);
+	return new SignalNoiseOpampGUI (*this);
 }
 
 // ----------------------
