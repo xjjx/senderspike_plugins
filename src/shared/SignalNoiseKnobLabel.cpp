@@ -8,15 +8,19 @@ SignalNoiseKnobLabel::SignalNoiseKnobLabel()
 	setEditable(true, true, false);
 }
 
-void SignalNoiseKnobLabel::attachKnob(SignalNoiseKnobPrecise& knob)
+void SignalNoiseKnobLabel::attachKnob(juce::Slider* k)
 {
 	// Set initial value
-	const float db = (float) knob.getValue();
+	knob = k;
+	const float db = (float) knob->getValue();
 	setText(juce::String(db, 2), juce::dontSendNotification);
+}
 
-	this->onTextChange = [this, &knob]
-	{
-		float db = getText().getFloatValue();
-		knob.setValue(db);
-	};
+void SignalNoiseKnobLabel::textWasEdited()
+{
+	if (!knob)
+		return;
+
+	float db = getText().getFloatValue();
+	knob->setValue(db);
 }

@@ -42,6 +42,16 @@ double SignalNoiseKnobPrecise::snapValue(double attemptedValue, DragMode dragMod
 	return db;
 }
 
+//==================================================
+void SignalNoiseKnobPrecise::valueChanged()
+{
+	if (!label)
+		return;
+
+	const float db = (float) getValue();
+	label->setText(juce::String(db, 2), juce::dontSendNotification);
+};
+
 double SignalNoiseKnobPrecise::valueToProportionOfLength(double value)
 {
 	auto proportion = juce::Slider::valueToProportionOfLength(value);

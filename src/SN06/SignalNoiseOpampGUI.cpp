@@ -71,13 +71,8 @@ std::unique_ptr<SignalNoiseKnobPrecise> SignalNoiseOpampGUI::setupKnobAndLabel(
 	addAndMakeVisible(label);
 
 	knob->attachToParameter(params, p.id);
-	label.attachKnob(*knob);
-
-	knob->onValueChange = [&label, knobPtr = knob.get()]
-	{
-		const float db = (float) knobPtr->getValue();
-		label.setText(juce::String(db, 2), juce::dontSendNotification);
-    };
+	knob->attachLabel(&label);
+	label.attachKnob(knob.get());
 
     return knob;
 }

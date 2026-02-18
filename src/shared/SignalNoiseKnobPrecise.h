@@ -8,6 +8,7 @@ class SignalNoiseKnobPrecise : public juce::Slider
 public:
 	explicit SignalNoiseKnobPrecise (float defaultDb);
 	void mouseDown (const juce::MouseEvent&) override;
+	void valueChanged () override;
 
 	void attachToParameter(juce::AudioProcessorValueTreeState& params, const juce::String& paramId) {
 		attachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
@@ -16,6 +17,7 @@ public:
 	}
 
 	void setReversed(bool shouldBeReversed) { isReversed = shouldBeReversed; }
+	void attachLabel(juce::Label* l) { label = l; }
 
 	double valueToProportionOfLength(double value) override;
 	double proportionOfLengthToValue(double proportion) override;
@@ -24,4 +26,5 @@ private:
 	std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> attachment;
 	double snapValue(double attemptedValue, DragMode) override;
 	bool isReversed = false;
+    juce::Label* label = nullptr;
 };
