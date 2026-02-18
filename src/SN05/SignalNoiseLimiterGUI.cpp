@@ -100,8 +100,8 @@ SignalNoiseLimiterGUI::SignalNoiseLimiterGUI(SignalNoiseLimiter& p)
 	largeLNF.setImage(knobLargeImage);
 	normalLNF.setImage(knobNormalImage);
 
-	gainKnob = setupKnobPrecise(gParams[SNE_GAIN], &largeLNF);
-	ceilKnob = setupKnobPrecise(gParams[SNE_CEIL], &largeLNF);
+	gainKnob = setupKnobPrecise(gParams[SNE_GAIN], &largeLNF, gainLabel);
+	ceilKnob = setupKnobPrecise(gParams[SNE_CEIL], &largeLNF, ceilLabel);
 	hpfcKnob = setupKnob(gParams[SNE_HPFC], &normalLNF);
 	atkhKnob = setupKnob(gParams[SNE_ATKH], &normalLNF);
 	relhKnob = setupKnob(gParams[SNE_RELH], &normalLNF);
@@ -132,7 +132,8 @@ SignalNoiseLimiterGUI::SignalNoiseLimiterGUI(SignalNoiseLimiter& p)
 
 std::unique_ptr<SignalNoiseKnobPrecise> SignalNoiseLimiterGUI::setupKnobPrecise(
 	const ParamDesc& p,
-	juce::LookAndFeel* lnF)
+	juce::LookAndFeel* lnF,
+	SignalNoiseKnobLabel& label)
 {
 	auto& params = processor.getParameters();
 
@@ -140,7 +141,10 @@ std::unique_ptr<SignalNoiseKnobPrecise> SignalNoiseLimiterGUI::setupKnobPrecise(
 
 	knob->setLookAndFeel(lnF);
 	knob->attachToParameter(params, p.id);
+	knob->attachLabel(&label);
+	label.attachKnob(knob.get());
 	addAndMakeVisible (*knob);
+	addAndMakeVisible(label);
 
 	return knob;
 }
@@ -185,6 +189,9 @@ void SignalNoiseLimiterGUI::resized()
 
 	meterLimiter->setBounds(55, 179, 400, 10);
 	meterClipper->setBounds(55, 191, 400, 10);
+
+	gainLabel.setBounds(55, 135, 30, 14);
+	ceilLabel.setBounds(425, 135, 30, 14);
 }
 
 //------------------------------------------------------------------------------------

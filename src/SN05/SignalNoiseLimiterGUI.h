@@ -13,6 +13,7 @@
 #include <juce_gui_basics/juce_gui_basics.h>
 #include "SignalNoiseKnobLookAndFeel.h"
 #include "SignalNoiseKnobPrecise.h"
+#include "SignalNoiseKnobLabel.h"
 #include "SignalNoiseKnob.h"
 #include "SignalNoiseLimiter.h"
 #include "SignalNoiseSwitchButton.h"
@@ -61,11 +62,15 @@ private:
 	std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> relsAttachment;
 	std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> clipAttachment;
 
-//	CTextEdit*				_txtg;	// gain text
-//	CTextEdit*				_txtc;	// ceil text
+    SignalNoiseKnobLabel gainLabel;
+    SignalNoiseKnobLabel ceilLabel;
 	int						_open;
 
-	virtual std::unique_ptr<SignalNoiseKnobPrecise> setupKnobPrecise(const ParamDesc&, juce::LookAndFeel*);
+	virtual std::unique_ptr<SignalNoiseKnobPrecise> setupKnobPrecise(
+		const ParamDesc&,
+		juce::LookAndFeel*,
+		SignalNoiseKnobLabel& label
+	);
 	virtual std::unique_ptr<SignalNoiseKnob> setupKnob(const ParamDesc&, juce::LookAndFeel*);
 
 public:
