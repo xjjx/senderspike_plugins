@@ -125,6 +125,14 @@ SignalNoiseTapedeckGUI::SignalNoiseTapedeckGUI(SignalNoiseTapedeck& p)
 	bumpKnob = setupKnob(gParams[SNE_BUMP], &normalLNF);		// head dB
 	hissKnob = setupKnob(gParams[SNE_HISS], &normalLNF);		// hiss dB
 
+	trimLabel.attachKnob(trimKnob.get());
+	trimKnob->attachLabel(&trimLabel);
+	addAndMakeVisible(trimLabel);
+
+	gainLabel.attachKnob(gainKnob.get());
+	gainKnob->attachLabel(&gainLabel);
+	addAndMakeVisible(gainLabel);
+
 	auto& params = processor.getParameters();
 
 	// Room switch
@@ -249,20 +257,8 @@ void SignalNoiseTapedeckGUI::resized()
 	bumpKnob->setBounds(140, 330, 60, 60);
 	hissKnob->setBounds(430, 330, 60, 60);
 
-/*
-	// text edits ------------------------------------------
-
-	x = 110;
-	y = 149;
-	_txti = snCreateTextEdit(x, y, this, IDC_TX_TRIM);
-	_txti->setValue(effect->getParameter(SNE_TRIM));
-	frm->addView(_txti);
-
-	x = 380;
-	_txto = snCreateTextEdit(x, y, this, IDC_TX_GAIN);
-	_txto->setValue(effect->getParameter(SNE_GAIN));
-	frm->addView(_txto);
-*/
+	trimLabel.setBounds(110, 149, 30, 14);
+	gainLabel.setBounds(380, 149, 30, 14);
 
 	// switches --------------------------------------------
 	hbonSwitch->setBounds(94, 401, 40, 30);

@@ -13,6 +13,7 @@
 #include <juce_gui_basics/juce_gui_basics.h>
 #include "SignalNoiseKnobLookAndFeel.h"
 #include "SignalNoiseKnobPrecise.h"
+#include "SignalNoiseKnobLabel.h"
 #include "SignalNoiseKnob.h"
 #include "SignalNoiseTapedeck.h"
 #include "SignalNoiseSwitchButton.h"
@@ -82,9 +83,10 @@ private:
 	std::unique_ptr<SignalNoiseVU>				vuMeter;	// VU meter
 /*
 	SignalNoisePeakLed*	_peak;	// sample peak led
-	CTextEdit*			_txti;	// text input
-	CTextEdit*			_txto;	// text output
 */
+    SignalNoiseKnobLabel trimLabel;
+    SignalNoiseKnobLabel gainLabel;
+
 	int					_open;
 
 	virtual std::unique_ptr<SignalNoiseKnobPrecise> setupKnobPrecise(const ParamDesc&, juce::LookAndFeel*);
