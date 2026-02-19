@@ -161,8 +161,6 @@ public:
 	void paint (juce::Graphics&) override;
 	void resized() override;
 
-//	virtual void setParameter(VstInt32 at, float v);
-//	virtual void valueChanged(CDrawContext* ctx, CControl* ctrl);
 //runtime - custom
 //	void trackPeaks(double A);
 //	void setLed(band_e b, bool on);
