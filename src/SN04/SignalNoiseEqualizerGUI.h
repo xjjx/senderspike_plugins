@@ -13,6 +13,7 @@
 #include <juce_gui_basics/juce_gui_basics.h>
 #include "SignalNoiseKnobLookAndFeel.h"
 #include "SignalNoiseKnobPrecise.h"
+#include "SignalNoiseKnobLabel.h"
 #include "SignalNoiseKnob.h"
 #include "SignalNoiseEqualizer.h"
 #include "SignalNoiseSwitchButton.h"
@@ -122,16 +123,16 @@ private:
 	std::unique_ptr<SignalNoiseKnobPrecise>		_gain;	// output
 	std::unique_ptr<SignalNoiseSwitchButton>	_iphs;	// invert phase
 //	SignalNoisePeakLed*				_pkld;	// output peak
-//text input
-/*
-	CTextEdit*						_thfg;	// HF gain text
-	CTextEdit*						_thfw;	// HF width text
-	CTextEdit*						_tmfg;	// MF gain text
-	CTextEdit*						_tmfw;	// MF width text
-	CTextEdit*						_tlfg;	// LF gain text
-	CTextEdit*						_tlfw;	// LF width text
-	CTextEdit*						_tomg;	// output make-up gain text
-*/
+
+// text input
+	SignalNoiseKnobLabel						_thfg;	// HF gain text
+	SignalNoiseKnobLabel						_thfw;	// HF width text
+	SignalNoiseKnobLabel						_tmfg;	// MF gain text
+	SignalNoiseKnobLabel						_tmfw;	// MF width text
+	SignalNoiseKnobLabel						_tlfg;	// LF gain text
+	SignalNoiseKnobLabel						_tlfw;	// LF width text
+	SignalNoiseKnobLabel						_tomg;	// output make-up gain text
+
 //"analog" on/off
 	std::unique_ptr<SignalNoiseSwitchButton> _mojo;	// analog on/off switch
 //number clickers
@@ -145,7 +146,11 @@ private:
 //guard
 	int								_open;
 
-	virtual std::unique_ptr<SignalNoiseKnobPrecise> setupKnobPrecise(const ParamDesc&, juce::LookAndFeel*);
+	virtual std::unique_ptr<SignalNoiseKnobPrecise> setupKnobPrecise(
+		const ParamDesc&,
+		juce::LookAndFeel*,
+		SignalNoiseKnobLabel& label
+	);
 	virtual std::unique_ptr<SignalNoiseKnob> setupKnob(const ParamDesc&, juce::LookAndFeel*);
 
 public:

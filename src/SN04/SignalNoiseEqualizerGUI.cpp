@@ -18,99 +18,9 @@
 #include "BinaryData.h"
 
 //------------------------------------------------------------------------------------
-/*
-static void snFormatValue18(float val, char* str)
-{
-	sprintf(str, "%2.2f", val * 36 - 18);
-}
-
-//------------------------------------------------------------------------------------
-
-static void snFormatValue25(float val, char* str)
-{
-	sprintf(str, "%2.2f", val * 50 - 25);
-}
-
-//------------------------------------------------------------------------------------
-
-static void snFormatValue20(float val, char* str)
-{
-	sprintf(str, "%2.2f", val * 40 - 20);
-}
-
-//------------------------------------------------------------------------------------
-// helpers
-//------------------------------------------------------------------------------------
-
-static void snSetKnobInnerMouse(CControl* ctrl, CCoord x, CCoord y)
-{
-	x += 8;
-	y += 8;
-	CCoord s = SN04_KNOB2_W - 16;
-	CRect rc(x, y, x + s, y + s);
-	ctrl->setMouseableArea(rc);
-}
-
-//------------------------------------------------------------------------------------
-
-static void snSetSwitchInnerMouse(CControl* ctrl, CCoord x, CCoord y, int off)
-{
-	CCoord s;
-
-	if(off < 0)
-	{
-		y -= off;
-		s = 30 + off;
-	}
-	else
-	{
-		s = 30 - off;
-	}
-	CRect rc(x, y, x + 60, y + s);
-	ctrl->setMouseableArea(rc);
-}
-
-//------------------------------------------------------------------------------------
-
-static CTextEdit* snCreateTextEdit(CCoord x, CCoord y, CControlListener* cl, long id)
-{
-	CColor clr = {168, 168, 168, 255};
-	CRect rc(x, y, x + SN04_TEXT_W, y + SN04_TEXT_H);
-	CTextEdit* tx = new CTextEdit(rc, cl, id);
-	tx->setFont(kNormalFontVerySmall);
-	tx->setTransparency(true);
-	tx->setFontColor(clr);
-	switch(id)
-	{
-	case IDC_TX_GAIN: tx->setStringConvert(snFormatValue25); break;
-	case IDC_TX_HF_G:
-	case IDC_TX_MF_G:
-	case IDC_TX_LF_G: tx->setStringConvert(snFormatValue18); break;
-	case IDC_TX_HF_W:
-	case IDC_TX_MF_W:
-	case IDC_TX_LF_W: tx->setStringConvert(snFormatValue20); break;
-	}
-	
-	return tx;
-}
-
-//------------------------------------------------------------------------------------
-
-static void snSetValueFromText(CTextEdit* tx, SignalNoiseEqualizerGUI* gui, VstInt32 at, float rng)
-{
-	char* c = 0;
-	char t[256] = {0};
-
-	tx->getText(t);
-	float v = (strtof(t, &c) + rng) / (rng * 2);
-
-	gui->getEffect()->setParameter(at, clampf(v));
-}
-
-//------------------------------------------------------------------------------------
 // arc switch
 //------------------------------------------------------------------------------------
-
+/*
 SignalNoiseEqualizerArcSwitch::SignalNoiseEqualizerArcSwitch(const CRect& rc, AudioEffect* eff) : CControl(rc)
 {
 	_eff = eff;
@@ -269,20 +179,20 @@ SignalNoiseEqualizerGUI::SignalNoiseEqualizerGUI(SignalNoiseEqualizer& p)
 	octLNF.setImage(switch4WayImage, 4);
 
 	_hf_f = setupKnob(gParams[SNE_HF_F], &rimLNF);      // HSF freq
-	_hf_g = setupKnobPrecise(gParams[SNE_HF_G], &innerKnobLNF); // HSF gain
-	_hf_w = setupKnobPrecise(gParams[SNE_HF_Q], &gainLNF); // HSF bw
+	_hf_g = setupKnobPrecise(gParams[SNE_HF_G], &innerKnobLNF, _thfg); // HSF gain
+	_hf_w = setupKnobPrecise(gParams[SNE_HF_Q], &gainLNF, _thfw); // HSF bw
 
 	_mf_f = setupKnob(gParams[SNE_MF_F], &rimLNF);              // PKF freq
-	_mf_g = setupKnobPrecise(gParams[SNE_MF_G], &innerKnobLNF); // PKF gain
-	_mf_w = setupKnobPrecise(gParams[SNE_MF_Q], &gainLNF);     // PKF bw
+	_mf_g = setupKnobPrecise(gParams[SNE_MF_G], &innerKnobLNF, _tmfg); // PKF gain
+	_mf_w = setupKnobPrecise(gParams[SNE_MF_Q], &gainLNF, _tmfw);     // PKF bw
 
 	_lf_f = setupKnob(gParams[SNE_LF_F], &rimLNF);              // LSF freq
-	_lf_g = setupKnobPrecise(gParams[SNE_LF_G], &innerKnobLNF); // LSF gain
-	_lf_w = setupKnobPrecise(gParams[SNE_LF_Q], &gainLNF);     // LSF bw
+	_lf_g = setupKnobPrecise(gParams[SNE_LF_G], &innerKnobLNF, _tlfg); // LSF gain
+	_lf_w = setupKnobPrecise(gParams[SNE_LF_Q], &gainLNF, _tlfw);     // LSF bw
 
 	_hpas = setupKnob(gParams[SNE_HPAS], &hpfLNF);              // HPF freq
 	_lpas = setupKnob(gParams[SNE_LPAS], &lpfLNF);       // LPF freq
-	_gain = setupKnobPrecise(gParams[SNE_GAIN], &gainLNF);     // output
+	_gain = setupKnobPrecise(gParams[SNE_GAIN], &gainLNF, _tomg);     // output
 
 	// Switches
 	auto& params = processor.getParameters();
@@ -349,7 +259,8 @@ SignalNoiseEqualizerGUI::SignalNoiseEqualizerGUI(SignalNoiseEqualizer& p)
 
 std::unique_ptr<SignalNoiseKnobPrecise> SignalNoiseEqualizerGUI::setupKnobPrecise(
 	const ParamDesc& p,
-	juce::LookAndFeel* lnF)
+	juce::LookAndFeel* lnF,
+	SignalNoiseKnobLabel& label)
 {
 	auto& params = processor.getParameters();
 
@@ -357,7 +268,10 @@ std::unique_ptr<SignalNoiseKnobPrecise> SignalNoiseEqualizerGUI::setupKnobPrecis
 
 	knob->setLookAndFeel(lnF);
 	knob->attachToParameter(params, p.id);
+	knob->attachLabel(&label);
+	label.attachKnob(knob.get());
 	addAndMakeVisible (*knob);
+	addAndMakeVisible(label);
 
 	return knob;
 }
@@ -462,48 +376,16 @@ void SignalNoiseEqualizerGUI::resized()
 	rc(x, y, x + SN04_LED_W, y + SN04_LED_W);
 	_pkld = new SignalNoisePeakLed(rc, pkled);
 	frm->addView(_pkld);
+*/
 
 	// text edits ------------------------------------------
-
-	x = 105;
-	y = 117;
-	_thfg = snCreateTextEdit(x, y, this, IDC_TX_HF_G);
-	_thfg->setValue(effect->getParameter(SNE_HF_G));
-	frm->addView(_thfg);
-
-	y = 257;
-	_tmfg = snCreateTextEdit(x, y, this, IDC_TX_MF_G);
-	_tmfg->setValue(effect->getParameter(SNE_MF_G));
-	frm->addView(_tmfg);
-
-	y = 397;
-	_tlfg = snCreateTextEdit(x, y, this, IDC_TX_LF_G);
-	_tlfg->setValue(effect->getParameter(SNE_LF_G));
-	frm->addView(_tlfg);
-
-	x = 245;
-	y = 40;
-	_thfw = snCreateTextEdit(x, y, this, IDC_TX_HF_W);
-	_thfw->setValue(effect->getParameter(SNE_HF_Q));
-	frm->addView(_thfw);
-
-	y = 180;
-	_tmfw = snCreateTextEdit(x, y, this, IDC_TX_MF_W);
-	_tmfw->setValue(effect->getParameter(SNE_MF_Q));
-	frm->addView(_tmfw);
-
-	y = 320;
-	_tlfw = snCreateTextEdit(x, y, this, IDC_TX_LF_W);
-	_tlfw->setValue(effect->getParameter(SNE_LF_Q));
-	frm->addView(_tlfw);
-
-	y = 500;
-	_tomg = snCreateTextEdit(x, y, this, IDC_TX_GAIN);
-	_tomg->setValue(effect->getParameter(SNE_GAIN));
-	frm->addView(_tomg);
-
-	// finalize --------------------------------------------
-*/
+	_thfg.setBounds(105, 117, 30, 14);
+	_tmfg.setBounds(105, 257, 30, 14);
+	_tlfg.setBounds(105, 397, 30, 14);
+	_thfw.setBounds(245, 40, 30, 14);
+	_tmfw.setBounds(245, 180, 30, 14);
+	_tlfw.setBounds(245, 320, 30, 14);
+	_tomg.setBounds(245, 500, 30, 14);
 }
 
 //------------------------------------------------------------------------------------
