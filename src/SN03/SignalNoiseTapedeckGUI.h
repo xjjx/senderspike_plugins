@@ -22,23 +22,6 @@
 
 
 //------------------------------------------------------------------------------------
-//knobs
-#define SN03_KNOB1_W			80
-#define SN03_KNOB2_W			60
-#define SN03_KNOB1_FRAMES		97
-#define SN03_KNOB2_FRAMES		97
-//EQ switch
-#define SN03_MODES_SZ			40
-//VU meter
-#define SN03_METER_W			190
-#define SN03_METER_H			90
-//text fields
-#define SN03_TEXT_W				30
-#define SN03_TEXT_H				12
-#define IDC_TX_TRIM				1001
-#define IDC_TX_GAIN				1002
-
-//------------------------------------------------------------------------------------
 // editor
 //------------------------------------------------------------------------------------
 
@@ -98,13 +81,4 @@ public:
 
 	void paint (juce::Graphics&) override;
 	void resized() override;
-
-//runtime - from SDK
-//	virtual void setParameter(VstInt32 at, float v);
-//	virtual void valueChanged(CDrawContext* ctx, CControl* ctrl);
-//runtime - custom
-//	void trackMeter(double A);
-//	void setupMeterLevel(double nl);
-//	void setupMeterFilter(double fs);
-//	void setupMeterUseHold(bool on);
 };
