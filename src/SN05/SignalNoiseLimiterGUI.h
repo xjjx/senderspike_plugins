@@ -20,13 +20,6 @@
 #include "SignalNoiseLimiterGR.h"
 
 //------------------------------------------------------------------------------------
-//text fields
-#define SN05_TEXT_W				30
-#define SN05_TEXT_H				12
-#define IDC_TX_GAIN				1001
-#define IDC_TX_CEIL				1002
-
-//------------------------------------------------------------------------------------
 // editor
 //------------------------------------------------------------------------------------
 
@@ -79,10 +72,4 @@ public:
 
 	void paint (juce::Graphics&) override;
 	void resized() override;
-
-//runtime - from SDK
-//	virtual void setParameter(VstInt32 at, float v);
-//	virtual void valueChanged(CDrawContext* ctx, CControl* ctrl);
-//runtime - custom
-//	void trackMeter(double lim, double clp);
 };

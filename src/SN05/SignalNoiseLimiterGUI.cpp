@@ -16,42 +16,6 @@
 #include "BinaryData.h"
 
 //------------------------------------------------------------------------------------
-/*
-static void snFormatValueGain(float val, char* str)
-{
-	sprintf(str, "%2.2f", val * 24);
-}
-
-//------------------------------------------------------------------------------------
-
-static void snFormatValueCeil(float val, char* str)
-{
-	sprintf(str, "%2.2f", (1 - val) * -24);
-}
-
-//------------------------------------------------------------------------------------
-// helpers
-//------------------------------------------------------------------------------------
-
-static CTextEdit* snCreateTextEdit(CCoord x, CCoord y, CControlListener* cl, long id)
-{
-	CColor clr = {168, 168, 168, 255};
-	CRect rc(x, y, x + SN05_TEXT_W, y + SN05_TEXT_H);
-	CTextEdit* tx = new CTextEdit(rc, cl, id);
-	tx->setFont(kNormalFontVerySmall);
-	tx->setTransparency(true);
-	tx->setFontColor(clr);
-	switch(id)
-	{
-	case IDC_TX_GAIN: tx->setStringConvert(snFormatValueGain); break;
-	case IDC_TX_CEIL: tx->setStringConvert(snFormatValueCeil); break;
-	}
-	
-	return tx;
-}
-*/
-
-//------------------------------------------------------------------------------------
 // GUI
 //------------------------------------------------------------------------------------
 
@@ -206,68 +170,7 @@ void SignalNoiseLimiterGUI::paint(juce::Graphics& g)
 }
 
 //------------------------------------------------------------------------------------
-/*
-void SignalNoiseLimiterGUI::setParameter(VstInt32 at, float v)
-{
-	if(_open == 0)
-		return;
 
-	//called from fx edit
-	switch(at)
-	{
-	case SNE_GAIN:	if(_gain) _gain->setValue(effect->getParameter(at));
-					if(_txtg) _txtg->setValue(effect->getParameter(at)); break;
-	case SNE_CEIL:	if(_ceil) _ceil->setValue(effect->getParameter(at)); 
-					if(_txtc) _txtc->setValue(effect->getParameter(at)); break;
-	case SNE_HPFC:	if(_hpfc) _hpfc->setValue(effect->getParameter(at)); break;
-	case SNE_ATKH:	if(_atkh) _atkh->setValue(effect->getParameter(at)); break;
-	case SNE_RELH:	if(_relh) _relh->setValue(effect->getParameter(at)); break;
-	case SNE_RELS:	if(_rels) _rels->setValue(effect->getParameter(at)); break;
-	case SNE_CLIP:	if(_clip) _clip->setValue(effect->getParameter(at)); break;
-	case SNE_MODE:	if(_mode) _mode->setValue(effect->getParameter(at)); break;
-	case SNE_HPON:	if(_hpon) _hpon->setValue(effect->getParameter(at)); break;
-	}
-}
-
-//------------------------------------------------------------------------------------
-
-void SignalNoiseLimiterGUI::valueChanged(CDrawContext* ctx, CControl* ctrl)
-{
-	if(_open == 0)
-		return;
-
-	float v;
-	char* c = 0;
-	char t[256] = {0};
-	long tag = ctrl->getTag();
-	switch(tag)
-	{
-	case SNE_GAIN:
-	case SNE_CEIL:
-	case SNE_ATKH:
-	case SNE_RELH:
-	case SNE_RELS:
-	case SNE_MODE:
-	case SNE_HPON:
-	case SNE_HPFC:
-	case SNE_CLIP:
-		effect->setParameterAutomated(tag, ctrl->getValue());
-		ctrl->setDirty();
-		break;
-	case IDC_TX_GAIN:
-		_txtg->getText(t);
-		v = strtof(t, &c) / 24.f;
-		effect->setParameter(SNE_GAIN, clampf(v));
-		break;
-	case IDC_TX_CEIL: 
-		_txtc->getText(t);
-		v = (strtof(t, &c) + 24) / 24.f;
-		effect->setParameter(SNE_CEIL, clampf(v));
-		break;
-	}
-}
-*/
-//------------------------------------------------------------------------------------
 void SignalNoiseLimiterGUI::timerCallback()
 {
 	meterLimiter->setValue(processor.getLimiterGR());
