@@ -35,11 +35,6 @@ typedef unsigned long dword;
 // helpers
 //------------------------------------------------------------------------------------
 
-#define clampf( v )			((v) < 0.f ? 0.f : ((v) > 1.f ? 1.f : (v)))
-#define clampd( v )			((v) < 0.0 ? 0.0 : ((v) > 1.0 ? 1.0 : (v)))
-#define trunc_f( v )		((v) < -1.f ? -1.f : ((v) > 1.f ? 1.f : (v)))
-#define trunc_d( v )		((v) < -1.0 ? -1.0 : ((v) > 1.0 ? 1.0 : (v)))
-#define getmax( v1, v2 )	((v1) > (v2) ? (v1) : (v2))
 #define lin2dB( v )			(20.0 * log10((v)))
 #define dB2lin( v )			(exp((v) * M_LN10_20))
 #define dB2lsq( v )			(exp((v) * M_LN10_40))	// = sqrt(dB2lin(v))

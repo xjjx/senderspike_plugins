@@ -195,7 +195,7 @@ void SignalNoiseLimiter::processImpl(juce::AudioBuffer<Sample>& buffer)
 			//limiter
 			fL = fabs(fL);
 			fR = fabs(fR);
-			gr = getmax(fL, fR) + DC_OFFSET;
+			gr = juce::jmax(fL, fR) + DC_OFFSET;
 			ec = gr > _max ? _atH : _rlH;
 			_max = (1 - ec) * _max + ec * gr;
 
@@ -235,7 +235,7 @@ void SignalNoiseLimiter::processImpl(juce::AudioBuffer<Sample>& buffer)
 		//brickwall (hard clip)
 		fL = fabs(L);
 		fR = fabs(R);
-		gr = lin2dB(getmax(fL, fR) + DC_OFFSET);
+		gr = lin2dB(juce::jmax(fL, fR) + DC_OFFSET);
 		double dB = gr - trsh;
 
 		if(dB < 0.0) dB = 0.0;
