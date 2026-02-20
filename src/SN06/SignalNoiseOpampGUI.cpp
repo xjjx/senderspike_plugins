@@ -131,7 +131,7 @@ void SignalNoiseOpampGUI::resized()
 	outputMeter.setBounds(scaledRect(112, 52, 100, 5));
 
 	// Peak LED
-	peakLed.setBounds(scaledRect(180, 307, 10, 10));
+	peakLed.setBounds(scaledRect(190, 316, 10, 10));
 }
 
 void SignalNoiseOpampGUI::timerCallback()
