@@ -140,6 +140,7 @@ void SignalNoiseCompressor::processImpl(juce::AudioBuffer<Sample>& buffer)
 	const float dry	= compParam;
 	const double wet = (1.0 - dry) * gain;
 	const double kh	= knee / 2.0;
+	float maxMeterGr = 0.0f;
 
 	for (int n = 0; n < numSamples; ++n)
 	{
@@ -200,8 +201,9 @@ void SignalNoiseCompressor::processImpl(juce::AudioBuffer<Sample>& buffer)
 		if (!mono)
 			(*outR++) = static_cast<Sample>((_fbR * wet) + (dry * R));
 
-		gainReduction.store(dB);
+		maxMeterGr = std::max(maxMeterGr, (float)dB);
 	}
+	gainReduction.store(maxMeterGr);
 }
 
 void SignalNoiseCompressor::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer&)
