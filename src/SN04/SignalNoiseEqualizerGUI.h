@@ -18,6 +18,7 @@
 #include "SignalNoiseEqualizer.h"
 #include "SignalNoiseSwitchButton.h"
 #include "SignalNoiseFilmstripLNF.h"
+#include "SignalNoisePeakLed.h"
 
 //------------------------------------------------------------------------------------
 //knobs
@@ -122,7 +123,7 @@ private:
 //output
 	std::unique_ptr<SignalNoiseKnobPrecise>		_gain;	// output
 	std::unique_ptr<SignalNoiseSwitchButton>	_iphs;	// invert phase
-//	SignalNoisePeakLed*				_pkld;	// output peak
+	SignalNoisePeakLed							_pkld;	// output peak
 
 // text input
 	SignalNoiseKnobLabel						_thfg;	// HF gain text

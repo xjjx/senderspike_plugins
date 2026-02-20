@@ -251,6 +251,9 @@ SignalNoiseEqualizerGUI::SignalNoiseEqualizerGUI(SignalNoiseEqualizer& p)
 	_hoct = setupKnob(gParams[SNE_HOCT], &octLNF);
 	_hoct->setSliderStyle(juce::Slider::LinearBar);
 
+	// Peak Led
+	addAndMakeVisible(_pkld);
+
 	// Set initial size based on background
 	setSize(background.getWidth(), background.getHeight());
 
@@ -368,15 +371,8 @@ void SignalNoiseEqualizerGUI::resized()
 	_mf_t->setBounds(190, 260, 40, 30);
 	_lf_t->setBounds(190, 400, 40, 30);
 
-/*
 	// leds & mutes ----------------------------------------
-
-	x = 230;
-	y = 605;
-	rc(x, y, x + SN04_LED_W, y + SN04_LED_W);
-	_pkld = new SignalNoisePeakLed(rc, pkled);
-	frm->addView(_pkld);
-*/
+	_pkld.setBounds(240, 614, 10, 10);
 
 	// text edits ------------------------------------------
 	_thfg.setBounds(105, 117, 30, 14);
@@ -472,5 +468,5 @@ void SignalNoiseEqualizerGUI::setBlink(band_e b, bool on)
 //------------------------------------------------------------------------------------
 void SignalNoiseEqualizerGUI::timerCallback()
 {
-	// empty
+	_pkld.setLevel(processor.getOutputLevel());
 }

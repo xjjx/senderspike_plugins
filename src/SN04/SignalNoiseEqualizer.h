@@ -141,6 +141,9 @@ private:
 
 	int paramIdToIndex (const juce::String& id);
 
+	// ================= METERS =================
+	std::atomic<float> outputLevel { 0.0f };
+
 	inline float getParamValue (int idx) const noexcept
 	{
 		auto ptr = getParameters().getRawParameterValue(gParams[idx].id);
@@ -176,6 +179,5 @@ public:
 
 	void parameterChanged(const juce::String& parameterID, float newValue) override;
 
-//	float getInputLevel()  const noexcept { return inputLevel.load(); }
-//	float getOutputLevel() const noexcept { return outputLevel.load(); }
+	float getOutputLevel() const noexcept { return outputLevel.load(); }
 };

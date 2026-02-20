@@ -427,6 +427,7 @@ void SignalNoiseEqualizer::processImpl(juce::AudioBuffer<Sample>& buffer)
 
 	const int hi = getParamChoice(SNE_HOCT);
 	const int li = getParamChoice(SNE_LOCT);
+	float meterOut = 0.0f;
 
 	_norm = -_norm;
 
@@ -514,19 +515,16 @@ void SignalNoiseEqualizer::processImpl(juce::AudioBuffer<Sample>& buffer)
 			const Sample m = static_cast<Sample>(L * ph);
 			(*outL++) = m;
 			(*outR++) = m;
-#ifdef SN04G
-			((SignalNoiseEqualizerGUI*)editor)->trackPeaks(fabs(L));
-#endif
+			meterOut = std::max(meterOut, (float) fabs(L));
 		}
 		else
 		{
 			(*outL++) = static_cast<Sample>(L * ph);
 			(*outR++) = static_cast<Sample>(R * ph);
-#ifdef SN04G
-			((SignalNoiseEqualizerGUI*)editor)->trackPeaks((fabs(L) + fabs(R)) * 0.5);
-#endif
+			meterOut = std::max(meterOut, (float)(fabs(L) + fabs(R)) * 0.5f);
 		}
 	}
+	outputLevel.store(meterOut);
 }
 
 void SignalNoiseEqualizer::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer&)
