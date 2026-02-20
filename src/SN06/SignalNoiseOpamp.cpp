@@ -78,6 +78,8 @@ void SignalNoiseOpamp::processImpl(juce::AudioBuffer<Sample>& buffer)
 	invf *= drive;
 
 	double L, R, eL, eR, iL, iR;
+	float meterIn = 0.0f;
+	float meterOut = 0.0f;
 
 	_norm = -_norm;
 
@@ -114,22 +116,21 @@ void SignalNoiseOpamp::processImpl(juce::AudioBuffer<Sample>& buffer)
 		// Write output
 		(*outL++) = static_cast<Sample>(L);
 
-		float inAbs, outAbs;
 		if(mono)
 		{
-			inAbs  = std::abs(iL);
-			outAbs = std::abs(L);
+			meterIn  = std::max(meterIn, (float)std::abs(iL));
+			meterOut = std::max(meterOut, (float)std::abs(L));
 		}
 		else
 		{
 			(*outR++) = static_cast<Sample>(R);
-			inAbs  = (std::abs(iL) + std::abs(iR)) * 0.5;
-			outAbs = (std::abs(L) + std::abs(L)) * 0.5;
+			meterIn  = std::max(meterIn, (float)(std::abs(iL) + std::abs(iR)) * 0.5f);
+			meterOut = std::max(meterOut, (float)(std::abs(L) + std::abs(L)) * 0.5f);
 		}
-
-		inputLevel.store(inAbs);
-		outputLevel.store(outAbs);
 	}
+
+	inputLevel.store(meterIn);
+	outputLevel.store(meterOut);
 }
 
 void SignalNoiseOpamp::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer&)
