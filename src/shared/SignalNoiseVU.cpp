@@ -18,6 +18,7 @@ SignalNoiseVU::SignalNoiseVU(const juce::Image& vuNeedleImage,
 
 void SignalNoiseVU::setLevel(float level)
 {
+	level = std::max(level * 0.90f, level);
 	level = juce::jlimit(0.0f, 1.0f, level);
 
     // --- VU level
@@ -42,6 +43,8 @@ void SignalNoiseVU::setLevel(float level)
 				peakLevel = level;
 		}
 	}
+
+	repaint();
 }
 
 void SignalNoiseVU::paint(juce::Graphics& g)
