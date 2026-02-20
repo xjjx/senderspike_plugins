@@ -24,6 +24,6 @@ void SignalNoiseGR::paint(juce::Graphics& g)
 	g.drawImage(map,
 		0, 0, getWidth(), getHeight(),// destination
 		0, frame * frameHeight, map.getWidth(), frameHeight, // source
-		true // optional: fillAlphaChannelWithCurrentBrush
+		false // optional: fillAlphaChannelWithCurrentBrush
 	);
 }
