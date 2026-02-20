@@ -44,7 +44,7 @@ void foLPF::reset()
 
 void foLPF::setup(double Fc, double Fs)
 {
-	double A = 1 / tan(M_PI * Fc / Fs);
+	double A = 1 / tan(juce::MathConstants<double>::pi * Fc / Fs);
 	b0 = 1 / (1 + A);
 	a1 = (1 - A) / (1 + A);
 	b1 = b0;
@@ -54,7 +54,7 @@ void foLPF::setup(double Fc, double Fs)
 
 void foLPF::invrs(double Fc, double Fs)
 {
-	double A = 1 / tan(M_PI * Fc / Fs);
+	double A = 1 / tan(juce::MathConstants<double>::pi * Fc / Fs);
 	b0 = 1;
 	a1 = 1 / (1 + A);
 	b1 = (1 - A) / (1 + A);
@@ -88,7 +88,7 @@ void foHPF::reset()
 
 void foHPF::setup(double Fc, double Fs)
 {
-	double A = 1 / tan(M_PI * Fc / Fs);
+	double A = 1 / tan(juce::MathConstants<double>::pi * Fc / Fs);
 	b0 = A / (1 + A);
 	a1 = (1 - A) / (1 + A);
 	b1 = -b0;
@@ -98,7 +98,7 @@ void foHPF::setup(double Fc, double Fs)
 
 void foHPF::invrs(double Fc, double Fs)
 {
-	double w = M_PI * Fc / Fs;
+	double w = juce::MathConstants<double>::pi * Fc / Fs;
 	double A = 1 / tan(w);
 	b0 = 1 + w;
 	a1 = -(A / (1 + A));
@@ -132,7 +132,7 @@ void foLSF::reset()
 
 void foLSF::setup(double g, double Fc, double Fs)
 {
-	double wc = tan(M_PI * Fc / Fs);
+	double wc = tan(juce::MathConstants<double>::pi * Fc / Fs);
 	double v0 = dB2lin(g);
 	double h0 = v0 - 1;
 
@@ -167,7 +167,7 @@ void foHSF::reset()
 
 void foHSF::setup(double g, double Fc, double Fs)
 {
-	double wc = tan(M_PI * Fc / Fs);
+	double wc = tan(juce::MathConstants<double>::pi * Fc / Fs);
 	double v0 = dB2lin(g);
 	double h0 = v0 - 1;
 
@@ -204,7 +204,7 @@ void biquad::reset()
 
 double biquad::getmag(double Fc, double Fs)
 {
-	double w = 2 * M_PI * Fc / Fs;
+	double w = juce::MathConstants<double>::twoPi * Fc / Fs;
 
 	double c1 = cos(-1 * w);
 	double c2 = cos(-2 * w);
@@ -350,7 +350,7 @@ void biquad::setup_hsf(double A, double cw0, double alf)
 void biquad::setup_q(biquad_e ft, double dB, double q, double Fc, double Fs)
 {
 	double A = dB2lsq(dB);
-	double w0 = 2 * M_PI * Fc / Fs;
+	double w0 = juce::MathConstants<double>::twoPi * Fc / Fs;
 	double cw0 = cos(w0);
 	double alf = sin(w0) / (2 * q);
 
@@ -380,7 +380,7 @@ void biquad::setup_q(biquad_e ft, double dB, double q, double Fc, double Fs)
 void biquad::setup_s(biquad_e ft, double dB, double s, double Fc, double Fs)
 {
 	double A = dB2lsq(dB);
-	double w0 = 2 * M_PI * Fc / Fs;
+	double w0 = juce::MathConstants<double>::twoPi * Fc / Fs;
 	double cw0 = cos(w0);
 	double alf = sin(w0) / 2 * sqrt((A + 1 / A) * (1 / s - 1) + 2);
 
@@ -410,7 +410,7 @@ void biquad::setup_s(biquad_e ft, double dB, double s, double Fc, double Fs)
 void biquad::setup_bw(biquad_e ft, double dB, double bw, double Fc, double Fs)
 {
 	double A = dB2lsq(dB);
-	double w0 = 2 * M_PI * Fc / Fs;
+	double w0 = juce::MathConstants<double>::twoPi * Fc / Fs;
 	double sw0 = sin(w0);
 	double cw0 = cos(w0);
 	double alf = sw0 * sinh(M_LN_2 / 2 * bw * w0 / sw0);
