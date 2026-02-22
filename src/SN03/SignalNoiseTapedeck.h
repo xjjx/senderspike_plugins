@@ -17,6 +17,7 @@
 #include <atomic>
 #include <juce_audio_processors/juce_audio_processors.h>
 #include <sn_core.h>
+#include "VUFilter.h"
 #include "SignalNoiseFX.h"
 
 //------------------------------------------------------------------------------------
@@ -84,6 +85,8 @@ class SignalNoiseTapedeck : public SignalNoiseFX
 private:
 //vu meter
 	std::atomic<float> vuLevel  { 0.0f };
+	std::atomic<float> peakLevel  { 0.0f };
+	VUFilter vuFilter;
 
 //repro head
 	foHPF	_rep0L;		// repro - LF roll-off
@@ -149,4 +152,5 @@ public:
 	void parameterChanged(const juce::String& parameterID, float newValue) override;
 
 	float getVuLevel() const noexcept { return vuLevel.load(); }
+	float getPeakLevel() const noexcept { return peakLevel.load(); }
 };

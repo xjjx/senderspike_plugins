@@ -40,10 +40,7 @@ void SignalNoiseTapedeck::prepareToPlay(double newSampleRate, int /*samplesPerBl
 
 	setupTapeheads();
 	setupEqualizer();
-
-#ifdef SN03G
-	((SignalNoiseTapedeckGUI*)editor)->setupMeterFilter(fs);
-#endif
+	vuFilter.prepare(sampleRate);
 }
 
 //------------------------------------------------------------------------------------
@@ -178,6 +175,7 @@ void SignalNoiseTapedeck::processImpl(juce::AudioBuffer<Sample>& buffer)
 
 	const int id = getParamChoice(SNE_PATH) == 0 ? 0 : 1; // 0 - Input, 1 - Output
 	float vuMaxLevel = 0.0f;
+	float lastFiltered = 0.0f;
 
 	for (int n = 0; n < numSamples; ++n)
 	{
@@ -216,9 +214,12 @@ void SignalNoiseTapedeck::processImpl(juce::AudioBuffer<Sample>& buffer)
 		(*outR++) = vuR[1] = static_cast<Sample>(R * oG);
 
 		float vuAbs = mono ? std::abs(vuL[id]) : (std::abs(vuL[id]) + std::abs(vuR[id])) * 0.5;
+
+		lastFiltered = (float) vuFilter.process(vuAbs);
 		vuMaxLevel = std::max(vuMaxLevel, vuAbs);
 	}
-	vuLevel.store(vuMaxLevel);
+	vuLevel.store(lastFiltered);
+	peakLevel.store(vuMaxLevel);
 }
 
 void SignalNoiseTapedeck::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer&)
