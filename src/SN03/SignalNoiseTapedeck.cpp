@@ -23,13 +23,21 @@ SignalNoiseTapedeck::SignalNoiseTapedeck()
 	_rand.seed();
 
 	for (int i = 0; i < SNE_SIZE; ++i)
+	{
+		if (i == SNE_HOLD || i == SNE_ROOM)
+			continue;
 		parameters.addParameterListener (gParams[i].id, this);
+	}
 }
 
 SignalNoiseTapedeck::~SignalNoiseTapedeck()
 {
 	for (int i = 0; i < SNE_SIZE; ++i)
+	{
+		if (i == SNE_HOLD || i == SNE_ROOM)
+			continue;
 		parameters.removeParameterListener (gParams[i].id, this);
+	}
 }
 
 //------------------------------------------------------------------------------------
@@ -71,15 +79,6 @@ void SignalNoiseTapedeck::parameterChanged (const juce::String& id, float /*newV
 	case SNE_BUMP:
 	case SNE_ATTN:
 	case SNE_HBON: setupTapeheads(); break;
-#ifdef SN03G
-	case SNE_ROOM:
-		if(v < .25f)		((SignalNoiseTapedeckGUI*)editor)->setupMeterLevel(-12);
-		else if(v < .5f)	((SignalNoiseTapedeckGUI*)editor)->setupMeterLevel(-14);
-		else if(v < .75f)	((SignalNoiseTapedeckGUI*)editor)->setupMeterLevel(-18);
-		else				((SignalNoiseTapedeckGUI*)editor)->setupMeterLevel(-20);
-		break;
-	case SNE_HOLD: ((SignalNoiseTapedeckGUI*)editor)->setupMeterUseHold(v > 0.5); break;
-#endif
 	}
 }
 

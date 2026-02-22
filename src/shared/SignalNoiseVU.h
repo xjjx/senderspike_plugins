@@ -11,6 +11,7 @@ public:
 
 	void setLevel(float level);
 	void setCalibration(int c);
+	void enableHold(bool enable) { showHold = enable; }
 
 	void paint(juce::Graphics& g) override;
 
@@ -24,6 +25,7 @@ private:
 	int holdFrame   = 0;
 	int holdCounter = 0;
 	int holdFrames  = 30; // ~1 second at 30Hz
+	bool showHold = true;
 
 	static constexpr int VU_MAX_TICKS = 12;
 

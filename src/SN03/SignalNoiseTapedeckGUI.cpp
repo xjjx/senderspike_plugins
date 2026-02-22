@@ -167,6 +167,9 @@ SignalNoiseTapedeckGUI::SignalNoiseTapedeckGUI(SignalNoiseTapedeck& p)
 	vuMeter = std::make_unique<SignalNoiseVU>(vuNeedleImage, peakNeedleImage, 130);
 	addAndMakeVisible(*vuMeter);
 
+	params.addParameterListener (gParams[SNE_HOLD].id, this);
+	params.addParameterListener (gParams[SNE_ROOM].id, this);
+
 	// Set initial size based on background
 	setSize(background.getWidth(), background.getHeight());
 
@@ -209,6 +212,24 @@ std::unique_ptr<SignalNoiseKnob> SignalNoiseTapedeckGUI::setupKnob(
 SignalNoiseTapedeckGUI::~SignalNoiseTapedeckGUI()
 {
 	// empty
+}
+
+//------------------------------------------------------------------------------------
+
+static int vuRef[] = { 12, 14, 18, 20 };
+void SignalNoiseTapedeckGUI::parameterChanged (const juce::String& id, float v)
+{
+	if ( id == gParams[SNE_ROOM].id )
+	{
+		int c = static_cast<int>(v);
+		vuMeter->setCalibration(vuRef[c]);
+	}
+	else if ( id == gParams[SNE_HOLD].id )
+	{
+		int c = static_cast<int>(v);
+		bool enable = c == 1; // 1 - enable
+		vuMeter->enableHold(enable);
+	}
 }
 
 //------------------------------------------------------------------------------------

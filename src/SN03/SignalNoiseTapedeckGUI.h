@@ -26,6 +26,7 @@
 //------------------------------------------------------------------------------------
 
 class SignalNoiseTapedeckGUI : public juce::AudioProcessorEditor,
+                               public juce::AudioProcessorValueTreeState::Listener,
                                private juce::Timer
 {
 private:
@@ -81,4 +82,5 @@ public:
 
 	void paint (juce::Graphics&) override;
 	void resized() override;
+	void parameterChanged(const juce::String& parameterID, float newValue) override;
 };

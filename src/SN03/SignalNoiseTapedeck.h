@@ -69,7 +69,7 @@ static const ParamDesc gParams[] =
 	{ ParamType::Decibel, "hiss", "Hiss dB",  "dB", -96.0f, -36.0f, -66.0f }, // SNE_HISS hiss gain
 
 	{ ParamType::Choice,  "room", "VU Ref",     "",  0.0f,  3.0f,    2.00f, REF }, // SNE_ROOM VU meter headroom
-	{ ParamType::Choice,  "hold", "VU Hold",    "",  0.0f,  1.0f,    0.00f, On }, // SNE_HOLD VU meter peak hold
+	{ ParamType::Choice,  "hold", "VU Hold",    "",  0.0f,  1.0f,    1.00f, On }, // SNE_HOLD VU meter peak hold
 	{ ParamType::Choice,  "path", "VU Path",    "",  0.0f,  1.0f,    1.00f, IO }, // SNE_PATH VU meter path
 
 	{ ParamType::Choice,  "attn", "HB Attn",    "",   0.0f, 2.0f,    0.00f, ATTN }, // SNE_ATTN bump attenuator

@@ -114,6 +114,9 @@ void SignalNoiseVU::paint(juce::Graphics& g)
 		false
 	);
 
+	if (!showHold)
+		return;
+
 	// --- Peak frame
 	int peakFrame = juce::jlimit(0, numFrames - 1, int(peakLevel * (numFrames - 1)));
 
