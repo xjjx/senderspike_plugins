@@ -97,7 +97,7 @@ void SignalNoiseTapedeck::setupTapeheads()
 	double fc = hd * 40 + 65;
 	double lf = hd * 10 + 10;
 	
-	if(getParamChoice(SNE_HBON) == 0) // 0 - On
+	if(getParamChoice(SNE_HBON) == 1) // 1 - On
 	{
 		_rep0L.setup(lf, fs);
 		_rep0R.setup(lf, fs);
@@ -170,7 +170,7 @@ void SignalNoiseTapedeck::processImpl(juce::AudioBuffer<Sample>& buffer)
 	const double oG = dB2lin(gainParam);
 	const double hG = dB2lin(hissParam);
 
-	const bool nois = getParamChoice(SNE_NOIS) == 0; // 0 - On
+	const bool nois = getParamChoice(SNE_NOIS) == 1; // 1 - On
 
 	const int id = getParamChoice(SNE_PATH) == 0 ? 0 : 1; // 0 - Input, 1 - Output
 	float vuMaxLevel = 0.0f;
