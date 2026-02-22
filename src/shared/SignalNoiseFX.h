@@ -60,12 +60,14 @@ class SignalNoiseFX
 {
 public:
 	SignalNoiseFX(
-		juce::AudioProcessorValueTreeState::ParameterLayout layout)
+		juce::AudioProcessorValueTreeState::ParameterLayout layout, const ParamDesc* params, int numParams)
 		: AudioProcessor(
 			BusesProperties()
 				.withInput	("Input",  juce::AudioChannelSet::stereo(), true)
 				.withOutput ("Output", juce::AudioChannelSet::stereo(), true)
 		  ),
+		  mParams(params),
+		  mNumParams(numParams),
 		  parameters(*this, nullptr, "PARAMS", std::move(layout))
 	{}
 
@@ -95,7 +97,36 @@ public:
 	void getStateInformation(juce::MemoryBlock& destData) override;
 	void setStateInformation(const void* data, int sizeInBytes) override;
 
+	int paramIdToIndex (const juce::String& id)
+	{
+		for (int i = 0; i < mNumParams; ++i)
+			if (id == mParams[i].id)
+				return i;
+
+		return -1;
+	}
+
+	inline float getParamValue (int idx) const noexcept
+	{
+		auto ptr = parameters.getRawParameterValue(mParams[idx].id);
+		return ptr->load();
+	}
+
+	inline float getParamNorm (int idx) const noexcept
+	{
+		auto* p = parameters.getParameter(mParams[idx].id);
+		return p->getValue();
+	}
+
+	inline int getParamChoice(int idx)
+	{
+		auto ptr = parameters.getRawParameterValue(mParams[idx].id);
+		return static_cast<int>(ptr->load());
+	}
+
 protected:
+    const ParamDesc* mParams;
+    int mNumParams;
 	double sampleRate = 44100.0;
 	juce::AudioProcessorValueTreeState parameters;
 

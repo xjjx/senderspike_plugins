@@ -18,7 +18,7 @@
 //------------------------------------------------------------------------------------
 
 SignalNoiseEqualizer::SignalNoiseEqualizer()
-	: SignalNoiseFX(createLayout(gParams, SNE_SIZE))
+	: SignalNoiseFX(createLayout(gParams, SNE_SIZE), gParams, SNE_SIZE)
 {
 	_norm = 1e-15;
 	_mojo.seed();
@@ -49,14 +49,6 @@ void SignalNoiseEqualizer::prepareToPlay(double newSampleRate, int /*samplesPerB
 }
 
 //------------------------------------------------------------------------------------
-int SignalNoiseEqualizer::paramIdToIndex (const juce::String& id)
-{
-	for (int i = 0; i < SNE_SIZE; ++i)
-		if (id == gParams[i].id)
-			return i;
-
-	return -1;
-}
 
 void SignalNoiseEqualizer::parameterChanged (const juce::String& id,
                                                       float /*newValue*/)

@@ -23,7 +23,7 @@
 //------------------------------------------------------------------------------------
 
 SignalNoiseLimiter::SignalNoiseLimiter()
-    : SignalNoiseFX(createLayout(gParams, SNE_SIZE))
+    : SignalNoiseFX(createLayout(gParams, SNE_SIZE), gParams, SNE_SIZE)
 {
 	for(int i = 0; i < 5; i++)
 	{
@@ -59,15 +59,6 @@ void SignalNoiseLimiter::prepareToPlay(double newSampleRate, int /*samplesPerBlo
 }
 
 //------------------------------------------------------------------------------------
-int SignalNoiseLimiter::paramIdToIndex (const juce::String& id)
-{
-	for (int i = 0; i < SNE_SIZE; ++i)
-		if (id == gParams[i].id)
-			return i;
-
-	return -1;
-}
-
 void SignalNoiseLimiter::parameterChanged (const juce::String& id, float /*newValue*/)
 {
 	const int at = paramIdToIndex (id);

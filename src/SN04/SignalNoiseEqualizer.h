@@ -139,28 +139,8 @@ private:
 	static juce::AudioProcessorValueTreeState::ParameterLayout
 	createParameterLayout();
 
-	int paramIdToIndex (const juce::String& id);
-
 	// ================= METERS =================
 	std::atomic<float> outputLevel { 0.0f };
-
-	inline float getParamValue (int idx) const noexcept
-	{
-		auto ptr = getParameters().getRawParameterValue(gParams[idx].id);
-		return ptr->load();
-	}
-
-	inline float getParamNorm (int idx) const noexcept
-	{
-		auto* p = getParameters().getParameter(gParams[idx].id);
-		return p->getValue();
-	}
-
-	inline int getParamChoice(int idx)
-	{
-		auto ptr = getParameters().getRawParameterValue(gParams[idx].id);
-		return static_cast<int>(ptr->load());
-	}
 
 public:
 	SignalNoiseEqualizer();

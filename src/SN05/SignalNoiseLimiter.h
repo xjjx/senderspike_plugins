@@ -83,26 +83,6 @@ private:
 	template <typename Sample>
 	void processImpl(juce::AudioBuffer<Sample>& buffer);
 
-	int paramIdToIndex (const juce::String& id);
-
-	inline float getParamValue (int idx) const noexcept
-	{
-		auto ptr = getParameters().getRawParameterValue(gParams[idx].id);
-		return ptr->load();
-	}
-
-	inline float getParamNorm (int idx) const noexcept
-	{
-		auto* p = getParameters().getParameter(gParams[idx].id);
-		return p->getValue();
-	}
-
-	inline int getParamChoice(int idx)
-	{
-		auto ptr = getParameters().getRawParameterValue(gParams[idx].id);
-		return static_cast<int>(ptr->load());
-	}
-
 	// ================= METERS =================
 	std::atomic<float> limiterGR  { 0.0f };
 	std::atomic<float> clipperGR  { 0.0f };

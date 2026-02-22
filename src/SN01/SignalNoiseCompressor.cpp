@@ -18,7 +18,7 @@
 //------------------------------------------------------------------------------------
 
 SignalNoiseCompressor::SignalNoiseCompressor()
-    : SignalNoiseFX(createLayout(gParams, SNE_SIZE))
+    : SignalNoiseFX(createLayout(gParams, SNE_SIZE), gParams, SNE_SIZE)
 {
 	_TdB = DC_OFFSET;
 	_atk = 0;
@@ -49,14 +49,6 @@ void SignalNoiseCompressor::prepareToPlay(double newSampleRate, int /*samplesPer
 }
 
 //------------------------------------------------------------------------------------
-int SignalNoiseCompressor::paramIdToIndex (const juce::String& id)
-{
-	for (int i = 0; i < SNE_SIZE; ++i)
-		if (id == gParams[i].id)
-			return i;
-
-	return -1;
-}
 
 void SignalNoiseCompressor::parameterChanged (const juce::String& id, float /*newValue*/)
 {

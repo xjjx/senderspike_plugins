@@ -18,7 +18,7 @@
 //------------------------------------------------------------------------------------
 
 SignalNoiseTapedeck::SignalNoiseTapedeck()
-    : SignalNoiseFX(createLayout(gParams, SNE_SIZE))
+    : SignalNoiseFX(createLayout(gParams, SNE_SIZE), gParams, SNE_SIZE)
 {
 	_rand.seed();
 
@@ -52,14 +52,6 @@ void SignalNoiseTapedeck::prepareToPlay(double newSampleRate, int /*samplesPerBl
 }
 
 //------------------------------------------------------------------------------------
-int SignalNoiseTapedeck::paramIdToIndex (const juce::String& id)
-{
-	for (int i = 0; i < SNE_SIZE; ++i)
-		if (id == gParams[i].id)
-			return i;
-
-	return -1;
-}
 
 void SignalNoiseTapedeck::parameterChanged (const juce::String& id, float /*newValue*/)
 {
