@@ -29,7 +29,7 @@ void SignalNoiseVU::setCalibration(int calibration)
 	};
 
 	// 0 VU = -18 dBFS
-	static constexpr float kNominalOffset = 2.92f;
+	static constexpr float kNominalOffset = 3.92f;
 	float kNominalLevel = calibration + kNominalOffset;
 
 	for (int i = 0; i < VU_MAX_TICKS; ++i)
