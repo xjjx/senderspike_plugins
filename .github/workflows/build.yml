@@ -30,7 +30,7 @@ jobs:
           libfontconfig1-dev
 
     - name: Checkout code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v6
       with:
         submodules: recursive
 
@@ -50,7 +50,7 @@ jobs:
         mv build/LV2/*.lv2 release/
 
     - name: Upload Artifacts
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v6
       with:
         name: linux-plugins
         path: release/**
@@ -60,7 +60,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v6
         with:
           submodules: recursive
   
@@ -90,7 +90,7 @@ jobs:
             Move-Item -Destination release\
 
       - name: Upload Artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: windows-plugins
           path: release/**
@@ -100,16 +100,16 @@ jobs:
     needs: [build-linux, build-windows]
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v6
 
     - name: Download Linux artifacts
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v8
       with:
         name: linux-plugins
         path: linux_build
 
     - name: Download Linux artifacts
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v8
       with:
         name: windows-plugins
         path: windows_build
