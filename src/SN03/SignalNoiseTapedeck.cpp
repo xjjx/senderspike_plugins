@@ -81,7 +81,7 @@ void SignalNoiseTapedeck::parameterChanged (const juce::String& id, float /*newV
 void SignalNoiseTapedeck::setupTapeheads()
 {
 	double fs = sampleRate;
-	double of = getParamChoice(SNE_ATTN); // 0,1,2
+	int of = getParamChoice(SNE_ATTN); // 0,1,2
 	double hd = getParamNorm(SNE_HEAD);
 	double hv = getParamNorm(SNE_BUMP);
 	double sc = 4 - hd;
