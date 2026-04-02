@@ -11,10 +11,6 @@
 
 #include <math.h>
 #include <sn_core.h>
-#ifdef _WIN32
-#include <windows.h>
-#endif //_WIN32
-
 
 //------------------------------------------------------------------------------------
 // first-order LPF
@@ -465,9 +461,7 @@ int noise::CTZ(int num)
 
 void noise::seed(dword s)
 {
-#ifdef _WIN32
-	_seed = s ? s : GetTickCount();
-#endif //_WIN32
+	_seed = s ? s : juce::Time::getMillisecondCounter();
 }
 
 //------------------------------------------------------------------------------------
