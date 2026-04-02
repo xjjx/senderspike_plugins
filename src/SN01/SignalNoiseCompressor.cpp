@@ -160,7 +160,7 @@ void SignalNoiseCompressor::processImpl(juce::AudioBuffer<Sample>& buffer)
 		//rectifier -> thresh + push
 		double rL = std::abs(fL);
 		double rR = std::abs(fR);
-		double kB = lin2dB(juce::jmax(rL, rR) + DC_OFFSET);
+		double kB = juce::Decibels::gainToDecibels(juce::jmax(rL, rR) + DC_OFFSET);
 		double dB = kB - trsh;
 		if(push) dB += _rnd.pink() * 2.0 * push;
 

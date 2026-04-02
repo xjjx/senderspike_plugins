@@ -341,7 +341,7 @@ void SignalNoisePeakMeter::draw(CDrawContext* ctx)
 
 	//draw value
 	pt.v = 0;
-	double dB = lin2dB(_val);
+	double dB = juce::Decibels::gainToDecibels(_val);
 	dB = ((dB < -_rng ? -_rng : dB) + _rng) / _rng;
 	CRect rc(size.left, size.top, size.right, size.bottom);
 	CCoord cc = CCoord(w * dB);

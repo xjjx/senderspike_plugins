@@ -33,7 +33,6 @@ typedef unsigned long dword;
 // helpers
 //------------------------------------------------------------------------------------
 
-#define lin2dB( v )			(20.0 * log10((v)))
 #define dB2lin( v )			(exp((v) * M_LN10_20))
 #define dB2lsq( v )			(exp((v) * M_LN10_40))	// = sqrt(dB2lin(v))
 

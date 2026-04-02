@@ -213,7 +213,7 @@ void SignalNoiseLimiter::processImpl(juce::AudioBuffer<Sample>& buffer)
 			L = fL;
 			R = fR;
 
-			grh = -lin2dB(_grH);
+			grh = -juce::Decibels::gainToDecibels(_grH);
 		}
 
 		//soft clipper
@@ -226,7 +226,7 @@ void SignalNoiseLimiter::processImpl(juce::AudioBuffer<Sample>& buffer)
 		//brickwall (hard clip)
 		fL = fabs(L);
 		fR = fabs(R);
-		gr = lin2dB(juce::jmax(fL, fR) + DC_OFFSET);
+		gr = juce::Decibels::gainToDecibels(juce::jmax(fL, fR) + DC_OFFSET);
 		double dB = gr - trsh;
 
 		if(dB < 0.0) dB = 0.0;
