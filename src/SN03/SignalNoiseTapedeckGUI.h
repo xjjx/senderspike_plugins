@@ -5,6 +5,7 @@
 //	purpose:	SN03 tape recorder emulator GUI
 //
 //  authors:	2019 - 2021 Oto Spál
+//				2026 -      Pawel ,Xj' Piatek (JUCE port)
 //
 //------------------------------------------------------------------------------------
 

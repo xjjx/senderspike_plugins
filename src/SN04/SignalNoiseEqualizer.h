@@ -5,14 +5,11 @@
 //	purpose:	SN04 Channel EQ effect
 //
 //	authors:	2019 - 2021 Oto Spál
+//				2026 -      Pawel ,Xj' Piatek (JUCE port)
 //
 //------------------------------------------------------------------------------------
 
-
 #pragma once
-
-
-//------------------------------------------------------------------------------------
 
 #include <juce_audio_processors/juce_audio_processors.h>
 #include <sn_core.h>

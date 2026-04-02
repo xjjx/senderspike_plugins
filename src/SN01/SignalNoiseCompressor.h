@@ -9,14 +9,11 @@
 //				'Digital Dynamic Range Compressor Design—A Tutorial and Analysis'
 //				original paper @ https://www.eecs.qmul.ac.uk/~josh/documents/2012/
 //				GiannoulisMassbergReiss-dynamicrangecompression-JAES2012.pdf
+//				2026 -      Pawel ,Xj' Piatek (JUCE port)
 //
 //------------------------------------------------------------------------------------
 
-
 #pragma once
-
-
-//------------------------------------------------------------------------------------
 
 #include <atomic>
 #include <juce_audio_processors/juce_audio_processors.h>

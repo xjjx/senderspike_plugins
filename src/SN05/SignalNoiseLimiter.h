@@ -6,14 +6,11 @@
 //
 //  authors:	2019 - 2021 Oto Spál
 //				uses c++ adaptation of original code by (c) 2011 M. Holters
+//				2026 -      Pawel ,Xj' Piatek (JUCE port)
 //
 //------------------------------------------------------------------------------------
 
-
 #pragma once
-
-
-//------------------------------------------------------------------------------------
 
 #include <atomic>
 #include <juce_audio_processors/juce_audio_processors.h>

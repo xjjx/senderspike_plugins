@@ -5,6 +5,7 @@
 //	purpose:	SignalNoiseOpamp op-amp effect
 //
 //	authors:	2020 Oto Spál
+//				2026 -      Pawel ,Xj' Piatek (JUCE port)
 //
 //------------------------------------------------------------------------------------
 
