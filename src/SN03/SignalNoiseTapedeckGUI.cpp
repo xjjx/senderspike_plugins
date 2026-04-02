@@ -14,6 +14,8 @@
 #include "SignalNoiseTapedeckGUI.h"
 #include "BinaryData.h"
 
+static int vuRef[] = { 12, 14, 18, 20 };
+
 //------------------------------------------------------------------------------------
 // tape deck editor
 //------------------------------------------------------------------------------------
@@ -165,10 +167,13 @@ SignalNoiseTapedeckGUI::SignalNoiseTapedeckGUI(SignalNoiseTapedeck& p)
 
 	// VU Meter
 	vuMeter = std::make_unique<SignalNoiseVU>(vuNeedleImage, peakNeedleImage, 130);
-	addAndMakeVisible(*vuMeter);
+	vuMeter->setCalibration(vuRef[p.getParamChoice(SNE_ROOM)]);
+	vuMeter->enableHold(p.getParamChoice(SNE_HOLD));
 
 	params.addParameterListener (gParams[SNE_HOLD].id, this);
 	params.addParameterListener (gParams[SNE_ROOM].id, this);
+
+	addAndMakeVisible(*vuMeter);
 
 	// Set initial size based on background
 	setSize(background.getWidth(), background.getHeight());
@@ -206,17 +211,17 @@ std::unique_ptr<SignalNoiseKnob> SignalNoiseTapedeckGUI::setupKnob(
 	return knob;
 }
 
-
 //------------------------------------------------------------------------------------
 
 SignalNoiseTapedeckGUI::~SignalNoiseTapedeckGUI()
 {
-	// empty
+	auto& params = processor.getParameters();
+	params.removeParameterListener (gParams[SNE_HOLD].id, this);
+	params.removeParameterListener (gParams[SNE_ROOM].id, this);
 }
 
 //------------------------------------------------------------------------------------
 
-static int vuRef[] = { 12, 14, 18, 20 };
 void SignalNoiseTapedeckGUI::parameterChanged (const juce::String& id, float v)
 {
 	if ( id == gParams[SNE_ROOM].id )
