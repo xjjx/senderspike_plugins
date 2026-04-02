@@ -35,8 +35,8 @@ private:
     SignalNoiseKnobLabel trimLabel;
     SignalNoiseKnobLabel volumeLabel;
 
-	SignalNoisePeakMeter inputMeter;
-	SignalNoisePeakMeter outputMeter;
+	std::unique_ptr<SignalNoisePeakMeter> inputMeter;
+	std::unique_ptr<SignalNoisePeakMeter> outputMeter;
 	SignalNoisePeakLed peakLed;
 
 	std::unique_ptr<SignalNoiseKnobPrecise> setupKnobAndLabel(

@@ -6,7 +6,8 @@
 class SignalNoisePeakMeter : public juce::Component
 {
 public:
-	SignalNoisePeakMeter();
+	SignalNoisePeakMeter(const juce::Image& image);
+	~SignalNoisePeakMeter() = default;
 
 	void setLevel(float val);
 	void setRange(float dB);

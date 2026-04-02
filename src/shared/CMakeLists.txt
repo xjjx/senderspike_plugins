@@ -12,14 +12,6 @@ add_library(SN STATIC
     SignalNoiseLimiterGR.cpp
 )
 
-juce_add_binary_data(SN_BinaryData
-    NAMESPACE SN
-    SOURCES
-        ../graphics/sn06g/sn06g_vu.png
-)
-
-target_link_libraries(SN PRIVATE SN_BinaryData)
-
 set_target_properties(SN PROPERTIES POSITION_INDEPENDENT_CODE ON)
 
 # Add include directories (so #include <juce_xxx/juce_xxx.h> works)

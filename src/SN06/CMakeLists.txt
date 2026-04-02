@@ -20,6 +20,7 @@ juce_add_binary_data(SN06_BinaryData
     SOURCES
         ../graphics/sn06g/sn06g_bk.png
         ../graphics/sn06g/sn06g_b1.png
+        ../graphics/sn06g/sn06g_vu.png
         ../graphics/sn01g/sn01g_b1.png
 )
 

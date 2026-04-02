@@ -1,13 +1,8 @@
 #include "SignalNoisePeakMeter.h"
-#include "BinaryData.h"
 
-SignalNoisePeakMeter::SignalNoisePeakMeter()
+SignalNoisePeakMeter::SignalNoisePeakMeter(const juce::Image& image)
 {
-	// Load bitmap once
-	ledImage = juce::ImageCache::getFromMemory(
-		SN::sn06g_vu_png,
-		SN::sn06g_vu_pngSize
-	);
+	ledImage = image;
 }
 
 void SignalNoisePeakMeter::setLevel(float val)

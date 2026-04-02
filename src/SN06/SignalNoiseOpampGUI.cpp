@@ -12,6 +12,19 @@ SignalNoiseOpampGUI::SignalNoiseOpampGUI(SignalNoiseOpamp& p)
 		BinaryData::sn06g_bk_pngSize
 	);
 
+	// Peak Meter
+	juce::Image ledImage = juce::ImageCache::getFromMemory(
+		BinaryData::sn06g_vu_png,
+		BinaryData::sn06g_vu_pngSize
+	);
+
+	inputMeter = std::make_unique<SignalNoisePeakMeter>(ledImage);
+	outputMeter = std::make_unique<SignalNoisePeakMeter>(ledImage);
+
+	addAndMakeVisible(*inputMeter);
+	addAndMakeVisible(*outputMeter);
+	addAndMakeVisible(peakLed);
+
 	// Knobs
 	juce::Image knobLargeImage = juce::ImageCache::getFromMemory(
 		BinaryData::sn01g_b1_png,
@@ -32,10 +45,6 @@ SignalNoiseOpampGUI::SignalNoiseOpampGUI(SignalNoiseOpamp& p)
 	gainKnob   = setupKnobAndLabel(gParams[SNE_GAIN], &largeLNF, gainLabel);
 	trimKnob   = setupKnobAndLabel(gParams[SNE_TRIM], &screwLNF, trimLabel);
 	volumeKnob = setupKnobAndLabel(gParams[SNE_VOLU], &largeLNF, volumeLabel);
-
-	addAndMakeVisible(inputMeter);
-	addAndMakeVisible(outputMeter);
-	addAndMakeVisible(peakLed);
 
 	// Set initial size based on background
 	setSize(background.getWidth(), background.getHeight());
@@ -127,8 +136,8 @@ void SignalNoiseOpampGUI::resized()
 	volumeLabel.setBounds(scaledRect(30, 314, 30, 14));
 
 	// Meters
-	inputMeter.setBounds(scaledRect(112, 42, 100, 5));
-	outputMeter.setBounds(scaledRect(112, 52, 100, 5));
+	inputMeter->setBounds(scaledRect(112, 42, 100, 5));
+	outputMeter->setBounds(scaledRect(112, 52, 100, 5));
 
 	// Peak LED
 	peakLed.setBounds(scaledRect(190, 316, 10, 10));
@@ -136,7 +145,7 @@ void SignalNoiseOpampGUI::resized()
 
 void SignalNoiseOpampGUI::timerCallback()
 {
-	inputMeter .setLevel(processor.getInputLevel());
-	outputMeter.setLevel(processor.getOutputLevel());
+	inputMeter->setLevel(processor.getInputLevel());
+	outputMeter->setLevel(processor.getOutputLevel());
 	peakLed.setLevel(processor.getOutputLevel());
 }
