@@ -156,7 +156,8 @@ void SignalNoiseLimiter::processImpl(juce::AudioBuffer<Sample>& buffer)
 	const bool mode = getParamChoice(SNE_MODE) == 0; // 0 - limiter
 	const bool hpon = getParamChoice(SNE_HPON) == 1;
 	const double wet  = clipParam;
-	const double dry  = 1 - wet;
+	const double dry  = 1.0 - wet;
+	const bool soft_clip = wet > 0.0f;
 
 	for (int n = 0; n < numSamples; ++n)
 	{
@@ -217,7 +218,7 @@ void SignalNoiseLimiter::processImpl(juce::AudioBuffer<Sample>& buffer)
 		}
 
 		//soft clipper
-		if(wet)
+		if (soft_clip)
 		{
 			L = erf(L) * wet + L * dry;
 			R = erf(R) * wet + R * dry;
