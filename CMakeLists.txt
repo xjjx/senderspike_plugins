@@ -35,6 +35,20 @@ else()
 endif()
 
 # ----------------------
+# CPU optimization flags
+# ----------------------
+if(MSVC)
+	add_compile_options(/arch:AVX2 /fp:fast)
+else()
+	add_compile_options(
+		-msse4.2
+		-mavx2
+		-mfma
+		-ffast-math
+	)
+endif()
+
+# ----------------------
 # Add plugins
 # ----------------------
 add_subdirectory(src/shared)
