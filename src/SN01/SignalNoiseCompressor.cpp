@@ -39,7 +39,7 @@ SignalNoiseCompressor::~SignalNoiseCompressor()
 
 //------------------------------------------------------------------------------------
 
-void SignalNoiseCompressor::prepareToPlay(double newSampleRate, int /*samplesPerBlock*/)
+void SignalNoiseCompressor::prepareToPlay(double /*newSampleRate*/, int /*samplesPerBlock*/)
 {
 	setupEnvelope();
 	setupSidechain();
