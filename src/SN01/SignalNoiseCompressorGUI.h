@@ -36,6 +36,7 @@ private:
 	SignalNoiseKnobLookAndFeel largeLNF;
 	SignalNoiseKnobLookAndFeel normalLNF;
 	SignalNoiseKnobLookAndFeel screwLNF;
+	SignalNoiseKnobLookAndFeel smallScrewLNF;
 	SignalNoiseFilmstripLNF switchLNF;
 
 	std::unique_ptr<SignalNoiseKnobPrecise>	thrsKnob;		// threshold
@@ -46,7 +47,9 @@ private:
 	std::unique_ptr<SignalNoiseKnob>		kwdtKnob;		// knee width
 	std::unique_ptr<SignalNoiseKnob>		kneeKnob;		// knee strength
 	std::unique_ptr<SignalNoiseKnob>		compKnob;		// dry amount
+	std::unique_ptr<SignalNoiseKnob>		linkKnob;		// link amount
 	std::unique_ptr<SignalNoiseSwitchButton> fbckSwitch;	// FF/FB switch
+	std::unique_ptr<SignalNoiseSwitchButton> linkSwitch;	// Detector Max/Avg switch
 
 	std::unique_ptr<SignalNoiseGR>	grMeter; // GR meter
 	juce::Slider	modeSlider;	// mode [flat, A, B]
