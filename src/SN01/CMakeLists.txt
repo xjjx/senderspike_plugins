@@ -25,6 +25,8 @@ juce_add_binary_data(SN01_BinaryData
         ../graphics/sn01g/sn01g_gr.png # needle
         ../graphics/sn01g/sn01g_s1.png
         ../graphics/sn01g/sn01g_s3.png
+        ../graphics/sn04g/sn04g_s3.png # "A" button
+        ../graphics/sn06g/sn06g_b1.png # screw knob
 )
 
 target_link_libraries(SN01 PRIVATE SN01_BinaryData)
