@@ -35,6 +35,8 @@ enum
 	SNE_PUSH,		// 'thrust'
 	SNE_COMP,		// dry/wet
 	SNE_FBCK,		// FF/FB switch
+	SNE_LINK,		// link amount
+	SNE_DMODE,		// detector (link) mode
 	SNE_SIZE,		// num of params
 };
 
@@ -43,6 +45,7 @@ enum
 static const std::vector<const char*> MODE = { "Flat", "Type A", "Type B" };
 static const std::vector<const char*> FBCK = { "FeedForward", "FeedBack" };
 static const std::vector<const char*> PUSH = { "0", "1", "2" };
+static const std::vector<const char*> DMODE = { "Max", "Average" };
 static const ParamDesc gParams[] =
 {
     { ParamType::Decibel, "thrs",  "Thresh", "dB", -40.0f,    0.0f, -20.0f }, // SNE_TRSH threshold
@@ -53,13 +56,16 @@ static const ParamDesc gParams[] =
     { ParamType::Cubic,   "rels", "Release", "ms",  50.0f, 2000.0f, 293.75f }, // SNE_RELS release
 
     { ParamType::Decibel, "kwdt", "Knee dB", "dB",   0.0f,   24.0f,  9.00f }, // SNE_KWDT knee width
-    { ParamType::Percent, "knee",  "Knee %",  "%",   0.0f,  100.0f,  0.00f }, // SNE_KNEE knee strength
+    { ParamType::Percent, "knee",  "Knee",  "%",   0.0f,  100.0f,  0.00f }, // SNE_KNEE knee strength
 
     { ParamType::Choice,  "mode", "SC Mode",   "",   0.0f,    1.0f,  0.00f, MODE }, // SNE_MODE sidechain mode
     { ParamType::Choice,  "push",    "Push",   "",   0.0f,    1.0f,  0.00f, PUSH }, // SNE_PUSH thrust
 
     { ParamType::Percent, "comp", "Wet/Dry",  "%",   0.0f,  100.0f,  0.00f }, // SNE_COMP dry/wet
     { ParamType::Choice,  "fbck",    "Mode",   "",   0.0f,    1.0f,  0.00f, FBCK }, // SNE_FBCK feed-forward / feed-back
+
+    { ParamType::Percent, "link", "Link", "%", 0.0f, 100.0f, 100.0f }, // SNE_LINK Channels Link Ammount
+    { ParamType::Choice,  "dmode", "Detector", "", 0.0f, 1.0f, 0.00f, DMODE }, // SNE_DMODE Stereo Detector Mode
 };
 
 //------------------------------------------------------------------------------------
@@ -67,7 +73,8 @@ static const ParamDesc gParams[] =
 class SignalNoiseCompressor : public SignalNoiseFX
 {
 private:
-	double	_TdB;	// envelope filter
+	double	_TdBL;	// envelope filter left
+	double	_TdBR;	// envelope filter right
 	double	_atk;	// attack coefficient
 	double	_rls;	// release coefficient
 	double	_fbL;	// feedback line L
