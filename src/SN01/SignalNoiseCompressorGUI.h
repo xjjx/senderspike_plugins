@@ -48,15 +48,6 @@ private:
 	std::unique_ptr<SignalNoiseKnob>		compKnob;		// dry amount
 	std::unique_ptr<SignalNoiseSwitchButton> fbckSwitch;	// FF/FB switch
 
-	std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> thrsAttachment;
-	std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> funcAttachment;
-	std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> gainAttachment;
-	std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> attkAttachment;
-	std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> relsAttachment;
-	std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> kwdtAttachment;
-	std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> kprcAttachment;
-	std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> compAttachment;
-
 	std::unique_ptr<SignalNoiseGR>	grMeter; // GR meter
 	juce::Slider	modeSlider;	// mode [flat, A, B]
 	juce::Slider	pushSlider; // 'thrust' [0, +9, +18]
