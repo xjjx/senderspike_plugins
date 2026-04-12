@@ -41,9 +41,19 @@ SignalNoiseCompressorGUI::SignalNoiseCompressorGUI(SignalNoiseCompressor& p)
 		BinaryData::sn01g_b3_pngSize
 	);
 
+	juce::Image smallKnobScrewImage = juce::ImageCache::getFromMemory(
+		BinaryData::sn06g_b1_png,
+		BinaryData::sn06g_b1_pngSize
+	);
+
 	juce::Image switch1Image = juce::ImageCache::getFromMemory(
 		BinaryData::sn01g_s1_png,
 		BinaryData::sn01g_s1_pngSize
+	);
+
+	juce::Image linkSwitchImage = juce::ImageCache::getFromMemory(
+		BinaryData::sn04g_s3_png,
+		BinaryData::sn04g_s3_pngSize
 	);
 
 	juce::Image switch3Image = juce::ImageCache::getFromMemory(
@@ -59,14 +69,17 @@ SignalNoiseCompressorGUI::SignalNoiseCompressorGUI(SignalNoiseCompressor& p)
 	jassert(!knobLargeImage.isNull());
 	jassert(!knobNormalImage.isNull());
 	jassert(!knobScrewImage.isNull());
+	jassert(!smallKnobScrewImage.isNull());
 	jassert(!switch1Image.isNull());
 	jassert(!switch3Image.isNull());
+	jassert(!linkSwitchImage.isValid());
 	jassert(!needleImage.isNull());
 
 	// Knobs
 	largeLNF.setImage(knobLargeImage);
 	normalLNF.setImage(knobNormalImage);
 	screwLNF.setImage(knobScrewImage);
+	smallScrewLNF.setImage(smallKnobScrewImage);
 
 	thrsKnob = setupKnobPrecise(gParams[SNE_TRSH], &largeLNF); // threshold
 	thrsKnob->setReversed(true);
@@ -79,6 +92,7 @@ SignalNoiseCompressorGUI::SignalNoiseCompressorGUI(SignalNoiseCompressor& p)
 	kwdtKnob = setupKnob(gParams[SNE_KWDT], &normalLNF); // knee width
 	kneeKnob = setupKnob(gParams[SNE_KNEE], &normalLNF); // knee strength
 	compKnob = setupKnob(gParams[SNE_COMP], &screwLNF); // dry/wet
+	linkKnob = setupKnob(gParams[SNE_LINK], &smallScrewLNF); // link
 
 	auto& params = processor.getParameters();
 
@@ -119,6 +133,10 @@ SignalNoiseCompressorGUI::SignalNoiseCompressorGUI(SignalNoiseCompressor& p)
 	modeAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
 		params, gParams[SNE_MODE].id, modeSlider
 	);
+
+	linkSwitch = std::make_unique<SignalNoiseSwitchButton>("linkSwitch", linkSwitchImage);
+	linkSwitch->attachToParameter(params, gParams[SNE_DMODE].id);
+	addAndMakeVisible(*linkSwitch);
 
 	// GR Meter
 	grMeter = std::make_unique<SignalNoiseGR>(needleImage, 100);
@@ -184,6 +202,7 @@ void SignalNoiseCompressorGUI::resized()
 
 	// screw knob ------------------------------------------
 	compKnob->setBounds(640, 140, 40, 40);
+	linkKnob->setBounds(510, 40, 30, 30);
 
 	// GR meter --------------------------------------------
 	grMeter->setBounds(570, 20, 180, 80);
@@ -193,6 +212,7 @@ void SignalNoiseCompressorGUI::resized()
 	pushSlider.setBounds(698, 150, 45, 45);
 
 	fbckSwitch->setBounds(25, 90, 40, 40);
+	linkSwitch->setBounds(504, 5, 40, 30);
 }
 
 //------------------------------------------------------------------------------------
