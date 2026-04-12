@@ -2,9 +2,9 @@ name: Build Plugins and Tools
 
 on:
   push:
-    branches: [ main, juce ]
+    branches: [ main, stereo ]
   pull_request:
-    branches: [ main, juce ]
+    branches: [ main, stereo ]
 
 permissions:
   contents: write
