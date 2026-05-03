@@ -37,6 +37,7 @@ bool SignalNoiseOpamp::isBusesLayoutSupported(const BusesLayout& layouts) const
 // ----------------------
 void SignalNoiseOpamp::prepareToPlay(double sampleRate, int /*samplesPerBlock*/)
 {
+	juce::FloatVectorOperations::disableDenormalisedNumberSupport();
 	_hpfL.setup(15.0, sampleRate);
 	_hpfR.setup(15.0, sampleRate);
 }
@@ -52,6 +53,8 @@ void SignalNoiseOpamp::parameterChanged (const juce::String& id, float /*newValu
 template <typename Sample>
 void SignalNoiseOpamp::processImpl(juce::AudioBuffer<Sample>& buffer)
 {
+	juce::ScopedNoDenormals noDenormals;
+
 	const int numSamples  = buffer.getNumSamples();
 	const int numChannels = buffer.getNumChannels();
 	const bool mono       = (numChannels == 1);

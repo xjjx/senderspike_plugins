@@ -41,6 +41,8 @@ SignalNoiseCompressor::~SignalNoiseCompressor()
 
 void SignalNoiseCompressor::prepareToPlay(double /*newSampleRate*/, int /*samplesPerBlock*/)
 {
+	juce::FloatVectorOperations::disableDenormalisedNumberSupport();
+
 	setupEnvelope();
 	setupSidechain();
 #ifdef SN01G
@@ -106,6 +108,8 @@ void SignalNoiseCompressor::setupSidechain()
 template <typename Sample>
 void SignalNoiseCompressor::processImpl(juce::AudioBuffer<Sample>& buffer)
 {
+	juce::ScopedNoDenormals noDenormals;
+
 	const int numSamples  = buffer.getNumSamples();
 	const int numChannels = buffer.getNumChannels();
 	const bool mono       = (numChannels == 1);

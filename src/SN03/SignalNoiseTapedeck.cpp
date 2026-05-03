@@ -44,6 +44,8 @@ SignalNoiseTapedeck::~SignalNoiseTapedeck()
 
 void SignalNoiseTapedeck::prepareToPlay(double newSampleRate, int /*samplesPerBlock*/)
 {
+	juce::FloatVectorOperations::disableDenormalisedNumberSupport();
+
 	sampleRate = newSampleRate;
 
 	setupTapeheads();
@@ -145,6 +147,8 @@ void SignalNoiseTapedeck::setupEqualizer()
 template <typename Sample>
 void SignalNoiseTapedeck::processImpl(juce::AudioBuffer<Sample>& buffer)
 {
+	juce::ScopedNoDenormals noDenormals;
+
 	const int numSamples  = buffer.getNumSamples();
 	const int numChannels = buffer.getNumChannels();
 	const bool mono       = (numChannels == 1);

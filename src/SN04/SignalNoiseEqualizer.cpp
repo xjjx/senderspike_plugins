@@ -40,6 +40,8 @@ void SignalNoiseEqualizer::prepareToPlay(double newSampleRate, int /*samplesPerB
 {
 	sampleRate = newSampleRate;
 
+	juce::FloatVectorOperations::disableDenormalisedNumberSupport();
+
 	setupHF();
 	setupMF();
 	setupLF();
@@ -390,6 +392,8 @@ void SignalNoiseEqualizer::setupAnalog()
 template <typename Sample>
 void SignalNoiseEqualizer::processImpl(juce::AudioBuffer<Sample>& buffer)
 {
+	juce::ScopedNoDenormals noDenormals;
+
 	const int numSamples  = buffer.getNumSamples();
 	const int numChannels = buffer.getNumChannels();
 	const bool mono       = (numChannels == 1);

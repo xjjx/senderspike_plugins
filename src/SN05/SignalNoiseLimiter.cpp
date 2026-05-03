@@ -53,6 +53,8 @@ void SignalNoiseLimiter::prepareToPlay(double newSampleRate, int /*samplesPerBlo
 {
 	sampleRate = newSampleRate;
 
+	juce::FloatVectorOperations::disableDenormalisedNumberSupport();
+
 	setupLimiter();
 	setupClipper();
 	setupSidechain();
@@ -134,6 +136,8 @@ void SignalNoiseLimiter::setupSidechain()
 template <typename Sample>
 void SignalNoiseLimiter::processImpl(juce::AudioBuffer<Sample>& buffer)
 {
+	juce::ScopedNoDenormals noDenormals;
+
 	const int numSamples  = buffer.getNumSamples();
 	const int numChannels = buffer.getNumChannels();
 	const bool mono       = (numChannels == 1);
