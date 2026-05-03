@@ -116,12 +116,12 @@ jobs:
 
     - name: Create ZIP with commit hash
       run: |
-        COMMIT_HASH=$(git rev-parse --short HEAD)
+        RELEASE_NUM=${{ github.run_number }}
         mkdir SenderSpikePlugins
         mv linux_build SenderSpikePlugins/Linux
         mv windows_build SenderSpikePlugins/Windows
-        zip -r SenderSpikePlugins-$COMMIT_HASH.zip SenderSpikePlugins/
-        echo "ZIP_NAME=SenderSpikePlugins-$COMMIT_HASH.zip" >> $GITHUB_ENV
+        zip -r SenderSpikePlugins-$RELEASE_NUM.zip SenderSpikePlugins/
+        echo "ZIP_NAME=SenderSpikePlugins-$RELEASE_NUM.zip" >> $GITHUB_ENV
 
     - name: Create GitHub Release
       id: create_release
