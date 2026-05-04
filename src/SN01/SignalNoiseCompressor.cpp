@@ -192,17 +192,20 @@ void SignalNoiseCompressor::processImpl(juce::AudioBuffer<Sample>& buffer)
 		double rL = std::abs(fL);
 		double rR = std::abs(fR);
 
-		// --- stereo link ---
-		double fullyLinked = (detMode == 0)
-		                   ? juce::jmax(rL, rR)
-		                   : (rL + rR) * 0.5;
+		// --- stereo link / detection mode ---
+		double env;
+		switch (detMode)
+		{
+			case 1: env = 0.5 * (rL + rR);						break; // Average
+			case 2: env = std::sqrt(0.5 * (rL * rL + rR * rR));	break; // Power
+			default: env = juce::jmax(rL, rR);					break; // Max
+		}
 
-		double linkedL = mono ? rL : rL + linkAmount * (fullyLinked - rL);
-		double linkedR = mono ? rL : rR + linkAmount * (fullyLinked - rR);
-
-		double noise = push ? _rnd.pink() * 2.0 * push : 0.0;
+		double linkedL = mono ? rL : rL + linkAmount * (env - rL);
+		double linkedR = mono ? rL : rR + linkAmount * (env - rR);
 
 		// --- ratio + knee ---
+		double noise = push ? _rnd.pink() * 2.0 * push : 0.0;
 		double dBL = processCurve(linkedL, trsh, func, knee, kh, noise);
 		double dBR = processCurve(linkedR, trsh, func, knee, kh, noise);
 
