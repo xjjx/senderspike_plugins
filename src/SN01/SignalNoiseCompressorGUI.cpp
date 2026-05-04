@@ -41,6 +41,11 @@ SignalNoiseCompressorGUI::SignalNoiseCompressorGUI(SignalNoiseCompressor& p)
 		BinaryData::sn01g_b3_pngSize
 	);
 
+	juce::Image smallKnobScrewImage = juce::ImageCache::getFromMemory(
+		BinaryData::sn06g_b1_png,
+		BinaryData::sn06g_b1_pngSize
+	);
+
 	juce::Image switch1Image = juce::ImageCache::getFromMemory(
 		BinaryData::sn01g_s1_png,
 		BinaryData::sn01g_s1_pngSize
@@ -59,6 +64,7 @@ SignalNoiseCompressorGUI::SignalNoiseCompressorGUI(SignalNoiseCompressor& p)
 	jassert(!knobLargeImage.isNull());
 	jassert(!knobNormalImage.isNull());
 	jassert(!knobScrewImage.isNull());
+	jassert(!smallKnobScrewImage.isNull());
 	jassert(!switch1Image.isNull());
 	jassert(!switch3Image.isNull());
 	jassert(!needleImage.isNull());
@@ -67,6 +73,7 @@ SignalNoiseCompressorGUI::SignalNoiseCompressorGUI(SignalNoiseCompressor& p)
 	largeLNF.setImage(knobLargeImage);
 	normalLNF.setImage(knobNormalImage);
 	screwLNF.setImage(knobScrewImage);
+	smallScrewLNF.setImage(smallKnobScrewImage);
 
 	thrsKnob = setupKnobPrecise(gParams[SNE_TRSH], &largeLNF); // threshold
 	thrsKnob->setReversed(true);
@@ -79,6 +86,7 @@ SignalNoiseCompressorGUI::SignalNoiseCompressorGUI(SignalNoiseCompressor& p)
 	kwdtKnob = setupKnob(gParams[SNE_KWDT], &normalLNF); // knee width
 	kneeKnob = setupKnob(gParams[SNE_KNEE], &normalLNF); // knee strength
 	compKnob = setupKnob(gParams[SNE_COMP], &screwLNF); // dry/wet
+	linkKnob = setupKnob(gParams[SNE_LINK], &smallScrewLNF); // link
 
 	auto& params = processor.getParameters();
 
@@ -88,37 +96,13 @@ SignalNoiseCompressorGUI::SignalNoiseCompressorGUI(SignalNoiseCompressor& p)
 
 	// Push switch
 	switchLNF.setImage(switch1Image, 3);
-
-	pushSlider.setSliderStyle (juce::Slider::LinearBar);
-	pushSlider.setTextBoxStyle (juce::Slider::NoTextBox, false, 0, 0);
-
-	pushSlider.setRange (0, 2, 1);
-//	pushSlider.setSnapsToMousePosition (false);
-	pushSlider.setDoubleClickReturnValue (false, 0);
-	pushSlider.setVelocityBasedMode (false);
-	pushSlider.setMouseDragSensitivity (1000);
-	pushSlider.setLookAndFeel (&switchLNF);
-	addAndMakeVisible(pushSlider);
-
-	pushAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
-		params, gParams[SNE_PUSH].id, pushSlider
-	);
+	setup3waySwitch(&pushSlider, gParams[SNE_PUSH], &switchLNF, pushAttachment);
 
 	// Mode switch
-	modeSlider.setSliderStyle (juce::Slider::LinearBar);
-	modeSlider.setTextBoxStyle (juce::Slider::NoTextBox, false, 0, 0);
+	setup3waySwitch(&modeSlider, gParams[SNE_MODE], &switchLNF, modeAttachment);
 
-	modeSlider.setRange (0, 2, 1);
-//	pushSlider.setSnapsToMousePosition (false);
-	modeSlider.setDoubleClickReturnValue (false, 0);
-	modeSlider.setVelocityBasedMode (false);
-	modeSlider.setMouseDragSensitivity (1000);
-	modeSlider.setLookAndFeel (&switchLNF);
-	addAndMakeVisible(modeSlider);
-
-	modeAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
-		params, gParams[SNE_MODE].id, modeSlider
-	);
+	// Stereo Link switch
+	setup3waySwitch(&linkSlider, gParams[SNE_DMODE], &switchLNF, linkAttachment);
 
 	// GR Meter
 	grMeter = std::make_unique<SignalNoiseGR>(needleImage, 100);
@@ -128,6 +112,30 @@ SignalNoiseCompressorGUI::SignalNoiseCompressorGUI(SignalNoiseCompressor& p)
 	setSize(background.getWidth(), background.getHeight());
 
 	startTimerHz(30); // GUI refresh rate
+}
+
+void SignalNoiseCompressorGUI::setup3waySwitch(
+	juce::Slider* slider,
+	const ParamDesc& p,
+	juce::LookAndFeel* lnf,
+	std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment>& attachment)
+{
+	auto& params = processor.getParameters();
+
+	slider->setSliderStyle (juce::Slider::LinearBar);
+	slider->setTextBoxStyle (juce::Slider::NoTextBox, false, 0, 0);
+
+	slider->setRange (0, 2, 1);
+//	slider->setSnapsToMousePosition (false);
+	slider->setDoubleClickReturnValue (false, 0);
+	slider->setVelocityBasedMode (false);
+	slider->setMouseDragSensitivity (1000);
+	slider->setLookAndFeel (lnf);
+	addAndMakeVisible(slider);
+
+	attachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
+		params, p.id, *slider
+	);
 }
 
 std::unique_ptr<SignalNoiseKnobPrecise> SignalNoiseCompressorGUI::setupKnobPrecise(
@@ -184,6 +192,7 @@ void SignalNoiseCompressorGUI::resized()
 
 	// screw knob ------------------------------------------
 	compKnob->setBounds(640, 140, 40, 40);
+	linkKnob->setBounds(510, 70, 30, 30);
 
 	// GR meter --------------------------------------------
 	grMeter->setBounds(570, 20, 180, 80);
@@ -191,6 +200,7 @@ void SignalNoiseCompressorGUI::resized()
 	// switches --------------------------------------------
 	modeSlider.setBounds(578, 150, 45, 45);
 	pushSlider.setBounds(698, 150, 45, 45);
+	linkSlider.setBounds(500, 20, 45, 45);
 
 	fbckSwitch->setBounds(25, 90, 40, 40);
 }

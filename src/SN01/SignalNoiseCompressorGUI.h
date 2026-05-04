@@ -36,6 +36,7 @@ private:
 	SignalNoiseKnobLookAndFeel largeLNF;
 	SignalNoiseKnobLookAndFeel normalLNF;
 	SignalNoiseKnobLookAndFeel screwLNF;
+	SignalNoiseKnobLookAndFeel smallScrewLNF;
 	SignalNoiseFilmstripLNF switchLNF;
 
 	std::unique_ptr<SignalNoiseKnobPrecise>	thrsKnob;		// threshold
@@ -46,19 +47,28 @@ private:
 	std::unique_ptr<SignalNoiseKnob>		kwdtKnob;		// knee width
 	std::unique_ptr<SignalNoiseKnob>		kneeKnob;		// knee strength
 	std::unique_ptr<SignalNoiseKnob>		compKnob;		// dry amount
+	std::unique_ptr<SignalNoiseKnob>		linkKnob;		// link amount
 	std::unique_ptr<SignalNoiseSwitchButton> fbckSwitch;	// FF/FB switch
 
 	std::unique_ptr<SignalNoiseGR>	grMeter; // GR meter
 	juce::Slider	modeSlider;	// mode [flat, A, B]
-	juce::Slider	pushSlider; // 'thrust' [0, +9, +18]
+	juce::Slider	pushSlider;	// 'thrust' [0, +9, +18]
+	juce::Slider	linkSlider;	// Detector Max/Avg/Power switch
 
 	std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> modeAttachment;
 	std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> pushAttachment;
+	std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> linkAttachment;
 
 	int				_open;
 
 	virtual std::unique_ptr<SignalNoiseKnobPrecise> setupKnobPrecise(const ParamDesc&, juce::LookAndFeel*);
 	virtual std::unique_ptr<SignalNoiseKnob> setupKnob(const ParamDesc&, juce::LookAndFeel*);
+	virtual void setup3waySwitch(
+		juce::Slider* slider,
+		const ParamDesc& p,
+		juce::LookAndFeel* lnf,
+		std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment>& attachment
+	);
 
 public:
 	SignalNoiseCompressorGUI(SignalNoiseCompressor&);
