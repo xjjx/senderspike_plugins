@@ -51,11 +51,6 @@ SignalNoiseCompressorGUI::SignalNoiseCompressorGUI(SignalNoiseCompressor& p)
 		BinaryData::sn01g_s1_pngSize
 	);
 
-	juce::Image linkSwitchImage = juce::ImageCache::getFromMemory(
-		BinaryData::sn04g_s3_png,
-		BinaryData::sn04g_s3_pngSize
-	);
-
 	juce::Image switch3Image = juce::ImageCache::getFromMemory(
 		BinaryData::sn01g_s3_png,
 		BinaryData::sn01g_s3_pngSize
@@ -72,7 +67,6 @@ SignalNoiseCompressorGUI::SignalNoiseCompressorGUI(SignalNoiseCompressor& p)
 	jassert(!smallKnobScrewImage.isNull());
 	jassert(!switch1Image.isNull());
 	jassert(!switch3Image.isNull());
-	jassert(!linkSwitchImage.isValid());
 	jassert(!needleImage.isNull());
 
 	// Knobs
@@ -102,41 +96,13 @@ SignalNoiseCompressorGUI::SignalNoiseCompressorGUI(SignalNoiseCompressor& p)
 
 	// Push switch
 	switchLNF.setImage(switch1Image, 3);
-
-	pushSlider.setSliderStyle (juce::Slider::LinearBar);
-	pushSlider.setTextBoxStyle (juce::Slider::NoTextBox, false, 0, 0);
-
-	pushSlider.setRange (0, 2, 1);
-//	pushSlider.setSnapsToMousePosition (false);
-	pushSlider.setDoubleClickReturnValue (false, 0);
-	pushSlider.setVelocityBasedMode (false);
-	pushSlider.setMouseDragSensitivity (1000);
-	pushSlider.setLookAndFeel (&switchLNF);
-	addAndMakeVisible(pushSlider);
-
-	pushAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
-		params, gParams[SNE_PUSH].id, pushSlider
-	);
+	setup3waySwitch(&pushSlider, gParams[SNE_PUSH], &switchLNF, pushAttachment);
 
 	// Mode switch
-	modeSlider.setSliderStyle (juce::Slider::LinearBar);
-	modeSlider.setTextBoxStyle (juce::Slider::NoTextBox, false, 0, 0);
+	setup3waySwitch(&modeSlider, gParams[SNE_MODE], &switchLNF, modeAttachment);
 
-	modeSlider.setRange (0, 2, 1);
-//	pushSlider.setSnapsToMousePosition (false);
-	modeSlider.setDoubleClickReturnValue (false, 0);
-	modeSlider.setVelocityBasedMode (false);
-	modeSlider.setMouseDragSensitivity (1000);
-	modeSlider.setLookAndFeel (&switchLNF);
-	addAndMakeVisible(modeSlider);
-
-	modeAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
-		params, gParams[SNE_MODE].id, modeSlider
-	);
-
-	linkSwitch = std::make_unique<SignalNoiseSwitchButton>("linkSwitch", linkSwitchImage);
-	linkSwitch->attachToParameter(params, gParams[SNE_DMODE].id);
-	addAndMakeVisible(*linkSwitch);
+	// Stereo Link switch
+	setup3waySwitch(&linkSlider, gParams[SNE_DMODE], &switchLNF, linkAttachment);
 
 	// GR Meter
 	grMeter = std::make_unique<SignalNoiseGR>(needleImage, 100);
@@ -146,6 +112,30 @@ SignalNoiseCompressorGUI::SignalNoiseCompressorGUI(SignalNoiseCompressor& p)
 	setSize(background.getWidth(), background.getHeight());
 
 	startTimerHz(30); // GUI refresh rate
+}
+
+void SignalNoiseCompressorGUI::setup3waySwitch(
+	juce::Slider* slider,
+	const ParamDesc& p,
+	juce::LookAndFeel* lnf,
+	std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment>& attachment)
+{
+	auto& params = processor.getParameters();
+
+	slider->setSliderStyle (juce::Slider::LinearBar);
+	slider->setTextBoxStyle (juce::Slider::NoTextBox, false, 0, 0);
+
+	slider->setRange (0, 2, 1);
+//	slider->setSnapsToMousePosition (false);
+	slider->setDoubleClickReturnValue (false, 0);
+	slider->setVelocityBasedMode (false);
+	slider->setMouseDragSensitivity (1000);
+	slider->setLookAndFeel (lnf);
+	addAndMakeVisible(slider);
+
+	attachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
+		params, p.id, *slider
+	);
 }
 
 std::unique_ptr<SignalNoiseKnobPrecise> SignalNoiseCompressorGUI::setupKnobPrecise(
@@ -202,7 +192,7 @@ void SignalNoiseCompressorGUI::resized()
 
 	// screw knob ------------------------------------------
 	compKnob->setBounds(640, 140, 40, 40);
-	linkKnob->setBounds(510, 40, 30, 30);
+	linkKnob->setBounds(510, 70, 30, 30);
 
 	// GR meter --------------------------------------------
 	grMeter->setBounds(570, 20, 180, 80);
@@ -210,9 +200,9 @@ void SignalNoiseCompressorGUI::resized()
 	// switches --------------------------------------------
 	modeSlider.setBounds(578, 150, 45, 45);
 	pushSlider.setBounds(698, 150, 45, 45);
+	linkSlider.setBounds(500, 20, 45, 45);
 
 	fbckSwitch->setBounds(25, 90, 40, 40);
-	linkSwitch->setBounds(504, 5, 40, 30);
 }
 
 //------------------------------------------------------------------------------------

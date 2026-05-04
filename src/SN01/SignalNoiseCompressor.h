@@ -45,7 +45,7 @@ enum
 static const std::vector<const char*> MODE = { "Flat", "Type A", "Type B" };
 static const std::vector<const char*> FBCK = { "FeedForward", "FeedBack" };
 static const std::vector<const char*> PUSH = { "0", "1", "2" };
-static const std::vector<const char*> DMODE = { "Max", "Average" };
+static const std::vector<const char*> DMODE = { "Max", "Average", "Power" };
 static const ParamDesc gParams[] =
 {
     { ParamType::Decibel, "thrs",  "Thresh", "dB", -40.0f,    0.0f, -20.0f }, // SNE_TRSH threshold
@@ -65,7 +65,7 @@ static const ParamDesc gParams[] =
     { ParamType::Choice,  "fbck",    "Mode",   "",   0.0f,    1.0f,  0.00f, FBCK }, // SNE_FBCK feed-forward / feed-back
 
     { ParamType::Percent, "link", "Link", "%", 0.0f, 100.0f, 100.0f }, // SNE_LINK Channels Link Ammount
-    { ParamType::Choice,  "dmode", "Detector", "", 0.0f, 1.0f, 0.00f, DMODE }, // SNE_DMODE Stereo Detector Mode
+    { ParamType::Choice,  "dmode", "Detector", "",   0.0f,    1.0f, 0.00f, DMODE }, // SNE_DMODE Stereo Detector Mode
 };
 
 //------------------------------------------------------------------------------------
