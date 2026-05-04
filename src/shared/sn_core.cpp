@@ -449,17 +449,19 @@ noise::noise()
 
 //------------------------------------------------------------------------------------
 
-int noise::CTZ(int num)
+inline int CTZ(uint32_t x)
 {
-	int i = 0;
-	while (((num >> i) & 1) == 0 && i < (signed)sizeof(int))
-		i++;
-	return i;
+#if defined(_MSC_VER)
+	unsigned long index;
+	return _BitScanForward(&index, x) ? static_cast<int>(index) : 32;
+#else
+	return x ? __builtin_ctz(x) : 32;
+#endif
 }
 
 //------------------------------------------------------------------------------------
 
-void noise::seed(dword s)
+void noise::seed(uint32_t s)
 {
 	_seed = s ? s : juce::Time::getMillisecondCounter();
 }
@@ -480,7 +482,7 @@ float noise::pink()
 {
 	float pr;
 	float cr;
-	dword k = CTZ(_count) & (PINK_MAX - 1);
+	uint32_t k = CTZ(_count) & (PINK_MAX - 1);
 
 	//get previous value of this octave
 	pr = _pinks[k];

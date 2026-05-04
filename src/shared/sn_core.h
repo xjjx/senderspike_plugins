@@ -12,15 +12,11 @@
 #ifndef _SN_CORE_H
 #define _SN_CORE_H
 
+#include <cstdint>
 #include <juce_audio_processors/juce_audio_processors.h>
 
 //------------------------------------------------------------------------------------
-// types & consts
-//------------------------------------------------------------------------------------
-
-typedef unsigned int uint;
-typedef unsigned long dword;
-
+// consts
 //------------------------------------------------------------------------------------
 
 #define DC_OFFSET			1.0e-25
@@ -169,7 +165,7 @@ public:
 		return y1 = y0;
 	}
 	inline bool valid() {	//<- filter is set up
-		return cc != 0.0;
+		return ! juce::approximatelyEqual(cc, 0.0);
 	}
 	void clear();
 	void reset();
@@ -194,21 +190,19 @@ class noise
 {
 private:
 	union {
-		uint  iw;
+		uint32_t iw;
 		float fw;
 	};
-	uint	_seed;					// PRNG seed
-	uint	_count;					// hash counter				
+	uint32_t _seed;					// PRNG seed
+	uint32_t _count;				// hash counter				
 	float	_pink;					// last pink
 	float	_brown;					// last brown
 	float	_pinks[PINK_MAX];		// pink storage
-private:
-	int CTZ(int num);
 public:
 	//create & destroy
 	noise();
 	//methods
-	void seed(dword s = 0);			// set PRNG seed
+	void seed(uint32_t s = 0);		// set PRNG seed
 	float white(float scl = 0.5f);	// get white noise number [-scl..scl]
 	float pink();					// get pink noise number [-0.5..0.5]
 	float brown();					// get brown noise number [-0.5..0.5]
