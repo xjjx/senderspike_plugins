@@ -3,8 +3,8 @@ name: Build Plugins and Tools
 on:
   push:
     branches: [ main, juce ]
-  pull_request:
-    branches: [ main, juce ]
+#  pull_request:
+#    branches: [ main, juce ]
 
 permissions:
   contents: write
