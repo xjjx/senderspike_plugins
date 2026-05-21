@@ -55,8 +55,6 @@ private:
 	std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> modeAttachment;
 	std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> pushAttachment;
 
-	int				_open;
-
 	virtual std::unique_ptr<SignalNoiseKnobPrecise> setupKnobPrecise(const ParamDesc&, juce::LookAndFeel*);
 	virtual std::unique_ptr<SignalNoiseKnob> setupKnob(const ParamDesc&, juce::LookAndFeel*);
 

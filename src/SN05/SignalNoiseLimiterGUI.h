@@ -58,7 +58,6 @@ private:
 
     SignalNoiseKnobLabel gainLabel;
     SignalNoiseKnobLabel ceilLabel;
-	int						_open;
 
 	virtual std::unique_ptr<SignalNoiseKnobPrecise> setupKnobPrecise(
 		const ParamDesc&,

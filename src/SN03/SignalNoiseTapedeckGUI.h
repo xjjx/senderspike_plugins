@@ -72,8 +72,6 @@ private:
     SignalNoiseKnobLabel trimLabel;
     SignalNoiseKnobLabel gainLabel;
 
-	int					_open;
-
 	virtual std::unique_ptr<SignalNoiseKnobPrecise> setupKnobPrecise(const ParamDesc&, juce::LookAndFeel*);
 	virtual std::unique_ptr<SignalNoiseKnob> setupKnob(const ParamDesc&, juce::LookAndFeel*);
 public:

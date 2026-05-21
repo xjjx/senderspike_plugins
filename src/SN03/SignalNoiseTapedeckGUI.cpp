@@ -273,31 +273,12 @@ void SignalNoiseTapedeckGUI::resized()
 	vuMeter->setBounds(165, 62, 190, 90);
 
 /*
-	dword vut[] = {4, 21, 32, 42, 56, 65, 74, 84, 97, 109, 123, 129};	//valid for specific bitmap !!!
-
-	x = 165;
-	y = 62; 
-	rc(x, y, x + SN03_METER_W, y + SN03_METER_H);
-	_vumt = new SignalNoiseVU(rc, vublk, vut, effect->getSampleRate());
-	frm->addView(_vumt);
-	
 	x = 356 - peakl->getWidth();
 	y = 71; 
 	rc(x, y, x + peakl->getWidth(), y + peakl->getWidth());
 	_peak = new SignalNoisePeakLed(rc, peakl);
 	frm->addView(_peak);
-
-	if(effect->getParameter(SNE_HOLD) > 0.5)
-		_vumt->setPeakBitmap(vured);
-
-	float rm = effect->getParameter(SNE_ROOM);
-	if(rm < .25f)		_vumt->setLevel(-12);
-	else if(rm < .50f)	_vumt->setLevel(-14);
-	else if(rm < .75f)	_vumt->setLevel(-18);
-	else				_vumt->setLevel(-20);
 */
-
-	_open = 1;
 }
 
 //------------------------------------------------------------------------------------

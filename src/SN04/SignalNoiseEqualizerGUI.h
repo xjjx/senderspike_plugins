@@ -145,8 +145,6 @@ private:
 //global blinking timer
 	dword							_time;	// last change time
 	bool							_blnk;	// global blink state (sync)
-//guard
-	int								_open;
 
 	virtual std::unique_ptr<SignalNoiseKnobPrecise> setupKnobPrecise(
 		const ParamDesc&,
