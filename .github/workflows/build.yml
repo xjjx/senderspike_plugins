@@ -14,6 +14,18 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - name: Checkout code
+      uses: actions/checkout@v6
+      with:
+        submodules: recursive
+
+    - name: Cache apt packages
+      uses: actions/cache@v4
+      with:
+        path: /var/cache/apt/archives
+        key: apt-${{ runner.os }}-${{ hashFiles('.github/workflows/*.yml') }}
+        restore-keys: apt-${{ runner.os }}-
+
     - name: Install Dependencies
       run: |
         sudo apt-get update
@@ -28,11 +40,6 @@ jobs:
           libasound2-dev \
           libfreetype6-dev \
           libfontconfig1-dev
-
-    - name: Checkout code
-      uses: actions/checkout@v6
-      with:
-        submodules: recursive
 
     - name: Get VST 2.4 SDK
       run: git clone https://github.com/R-Tur/VST_SDK_2.4.git
