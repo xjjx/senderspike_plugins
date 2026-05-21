@@ -137,7 +137,6 @@ SignalNoiseTapedeckGUI::SignalNoiseTapedeckGUI(SignalNoiseTapedeck& p)
 
 	attnSwitch.setSliderStyle(juce::Slider::LinearBarVertical);
 	attnSwitch.setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
-	attnSwitch.setRange(0.0, 2.0, 1.0);
 	attnSwitch.setLookAndFeel(&attnLNF);
 	attnAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
 		params, gParams[SNE_ATTN].id, attnSwitch
