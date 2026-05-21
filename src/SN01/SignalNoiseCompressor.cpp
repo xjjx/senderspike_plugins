@@ -39,9 +39,11 @@ SignalNoiseCompressor::~SignalNoiseCompressor()
 
 //------------------------------------------------------------------------------------
 
-void SignalNoiseCompressor::prepareToPlay(double /*newSampleRate*/, int /*samplesPerBlock*/)
+void SignalNoiseCompressor::prepareToPlay(double newSampleRate, int /*samplesPerBlock*/)
 {
 	juce::FloatVectorOperations::disableDenormalisedNumberSupport();
+
+	sampleRate = newSampleRate;
 
 	setupEnvelope();
 	setupSidechain();
@@ -72,8 +74,8 @@ void SignalNoiseCompressor::parameterChanged (const juce::String& id, float /*ne
 
 void SignalNoiseCompressor::setupEnvelope()
 {
-	double attkn = getParamValue(SNE_ATTK);
-	double relsn = getParamValue(SNE_RELS);
+	double attkn = getParamNorm(SNE_ATTK);
+	double relsn = getParamNorm(SNE_RELS);
 
 	double attk = gParams[SNE_ATTK].normToCubic(attkn);
 	double rels = gParams[SNE_RELS].normToCubic(relsn);
