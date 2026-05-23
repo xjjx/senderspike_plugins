@@ -75,3 +75,8 @@ set_target_properties(SN01 PROPERTIES
     LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
     ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
 )
+
+clap_juce_extensions_plugin(TARGET SN01
+    CLAP_ID "signalnoise.sn01"
+    CLAP_FEATURES audio-effect compressor dynamics
+)

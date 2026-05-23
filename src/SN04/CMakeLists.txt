@@ -81,3 +81,8 @@ set_target_properties(SN04 PROPERTIES
     LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
     ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
 )
+
+clap_juce_extensions_plugin(TARGET SN04
+    CLAP_ID "signalnoise.sn04"
+    CLAP_FEATURES audio-effect equalizer filter
+)

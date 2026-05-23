@@ -4,3 +4,7 @@
 [submodule "vst3sdk"]
 	path = vst3sdk
 	url = https://github.com/steinbergmedia/vst3sdk.git
+[submodule "clap-juce-extensions"]
+	path = clap-juce-extensions
+	url = https://github.com/free-audio/clap-juce-extensions.git
+	branch = main

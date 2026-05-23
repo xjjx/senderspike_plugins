@@ -26,6 +26,11 @@ juce_set_vst2_sdk_path("${CMAKE_SOURCE_DIR}/VST_SDK_2.4")
 #set(JUCE_VST2SDK_PATH "" CACHE PATH "Disable VST2")
 
 # ----------------------
+# CLAP
+# ----------------------
+add_subdirectory(clap-juce-extensions EXCLUDE_FROM_ALL)
+
+# ----------------------
 # Global warning settings (safe)
 # ----------------------
 if (MSVC)
