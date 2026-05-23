@@ -55,6 +55,7 @@ jobs:
         mv build/VST/*.so release/
         mv build/VST3/*.vst3 release/
         mv build/LV2/*.lv2 release/
+        mv build/CLAP/*.clap release/
 
     - name: Upload Artifacts
       uses: actions/upload-artifact@v6
@@ -94,6 +95,9 @@ jobs:
             Move-Item -Destination release\
 
           Get-ChildItem build\LV2 -Filter *.lv2 -Recurse |
+            Move-Item -Destination release\
+
+          Get-ChildItem build\CLAP -Filter *.clap -Recurse |
             Move-Item -Destination release\
 
       - name: Upload Artifacts
