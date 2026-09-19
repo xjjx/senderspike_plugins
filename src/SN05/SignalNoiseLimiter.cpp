@@ -55,6 +55,10 @@ void SignalNoiseLimiter::prepareToPlay(double newSampleRate, int /*samplesPerBlo
 
 	juce::FloatVectorOperations::disableDenormalisedNumberSupport();
 
+	// fixed _dlL/_dlR shift register depth
+	const int lookaheadLatency = 5;
+	setLatencySamples(lookaheadLatency);
+
 	setupLimiter();
 	setupClipper();
 	setupSidechain();
