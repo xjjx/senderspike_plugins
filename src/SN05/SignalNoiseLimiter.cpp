@@ -162,6 +162,8 @@ void SignalNoiseLimiter::processImpl(juce::AudioBuffer<Sample>& buffer)
 	const double wet  = clipParam;
 	const double dry  = 1.0 - wet;
 	const bool soft_clip = wet > 0.0f;
+	float maxLimiterGr = 0.0f;
+	float maxClipperGr = 0.0f;
 
 	for (int n = 0; n < numSamples; ++n)
 	{
@@ -248,9 +250,12 @@ void SignalNoiseLimiter::processImpl(juce::AudioBuffer<Sample>& buffer)
 		(*outL++) = static_cast<Sample>(L * gr);
 		(*outR++) = static_cast<Sample>(R * gr);
 
-		limiterGR.store(grh);
-		clipperGR.store(dB);
+		maxLimiterGr = juce::jmax(maxLimiterGr, (float)grh);
+		maxClipperGr = juce::jmax(maxClipperGr, (float)dB);
 	}
+
+	limiterGR.store(maxLimiterGr);
+	clipperGR.store(maxClipperGr);
 }
 
 void SignalNoiseLimiter::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer&)
