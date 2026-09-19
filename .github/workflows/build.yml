@@ -76,7 +76,7 @@ jobs:
   
       - name: Configure Build (Release)
         run: |
-          cmake -B build -S . -G "Visual Studio 17 2022" -A x64
+          cmake -B build -S . -A x64
   
       - name: Build Plugins
         run: |
