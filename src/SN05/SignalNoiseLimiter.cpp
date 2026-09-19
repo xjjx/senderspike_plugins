@@ -201,20 +201,17 @@ void SignalNoiseLimiter::processImpl(juce::AudioBuffer<Sample>& buffer)
 			gr = 1 > ec ? ec : 1;
 			ec = gr < _grH ? _atH : _rlH;
 			_grH = (1 - ec) * _grH + ec * gr;
-		
+
 			fL = _grH * _dlL[4];
 			fR = _grH * _dlR[4];
 
-			_dlL[4] = _dlL[3];
-			_dlL[3] = _dlL[2];
-			_dlL[2] = _dlL[1];
-			_dlL[1] = _dlL[0];
+			// lookahead
+			for (int i = 4; i > 0; --i)
+			{
+				_dlL[i] = _dlL[i - 1];
+				_dlR[i] = _dlR[i - 1];
+			}
 			_dlL[0] = L;
-
-			_dlR[4] = _dlR[3];
-			_dlR[3] = _dlR[2];
-			_dlR[2] = _dlR[1];
-			_dlR[1] = _dlR[0];
 			_dlR[0] = R;
 
 			L = fL;
