@@ -234,7 +234,7 @@ void SignalNoiseEqualizer::setupLF()
 	float G = getParamNorm(SNE_LF_G);
 	float Gdb = getParamValue(SNE_LF_G);
 	int fi = getParamChoice(SNE_LF_F);
-	biquad_e typ = getParamValue(SNE_LF_M) == 1 ? PKF : LSF; // 1 - Bell
+	biquad_e typ = getParamChoice(SNE_LF_M) == 1 ? PKF : LSF; // 1 - Bell
 
 	if(!fi)
 	{
