@@ -35,14 +35,16 @@ bool SignalNoiseOpamp::isBusesLayoutSupported(const BusesLayout& layouts) const
 // ----------------------
 // Playback
 // ----------------------
-void SignalNoiseOpamp::prepareToPlay(double sampleRate, int /*samplesPerBlock*/)
+void SignalNoiseOpamp::prepareToPlay(double newSampleRate, int /*samplesPerBlock*/)
 {
+	sampleRate = newSampleRate;
+
 	juce::FloatVectorOperations::disableDenormalisedNumberSupport();
 	_hpfL.setup(15.0, sampleRate);
 	_hpfR.setup(15.0, sampleRate);
 }
 
-void SignalNoiseOpamp::parameterChanged (const juce::String& id, float /*newValue*/)
+void SignalNoiseOpamp::parameterChanged (const juce::String& /*id*/, float /*newValue*/)
 {
 	return;
 }

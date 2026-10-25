@@ -39,7 +39,7 @@ public:
 	~SignalNoiseOpamp() override = default;
 
 	// JUCE overrides
-	void prepareToPlay(double sampleRate, int samplesPerBlock) override;
+	void prepareToPlay(double newSampleRate, int samplesPerBlock) override;
 	void parameterChanged(const juce::String& parameterID, float newValue) override;
 
 	void processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer&) override;
